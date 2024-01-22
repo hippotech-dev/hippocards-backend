@@ -4,11 +4,10 @@ namespace App\Enums;
 
 use App\Traits\EnumWithValues;
 
-enum EStatus: int
+enum ECodeChallengeMethod: string
 {
     use EnumWithValues;
 
-    case PENDING = 0;
-    case SUCCESS = 1;
-    case FAILURE = 2;
+    case PLAIN = "PLAIN";
+    case S256 = "S256";
 }

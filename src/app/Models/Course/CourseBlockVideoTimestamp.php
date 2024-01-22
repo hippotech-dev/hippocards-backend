@@ -10,7 +10,7 @@ class CourseBlockVideoTimestamp extends Model
     public $table = "v3_course_video_timestamps";
     public $timestamps = false;
 
-    protected $fillables = [
+    protected $fillable = [
         "type",
         "content",
         "start",

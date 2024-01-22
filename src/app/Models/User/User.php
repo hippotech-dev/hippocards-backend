@@ -2,7 +2,8 @@
 
 namespace App\Models\User;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\EUserLoginType;
+use App\Models\SSO\OAuthAuthenticationAttempt;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -45,6 +46,10 @@ class User extends Authenticatable implements JWTSubject
         'remember_token',
     ];
 
+    public $casts = [
+        "login_type" => EUserLoginType::class
+    ];
+
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
@@ -65,4 +70,8 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
+    public function authenticationAttempts()
+    {
+        return $this->hasMany(OAuthAuthenticationAttempt::class);
+    }
 }

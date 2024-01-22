@@ -35,7 +35,7 @@ return new class () extends Migration {
             $table->id();
             $table->string("path", 256);
             $table->integer("size")->default(0);
-            $table->enum("type", EAssetType::values())->default(EAssetType::UNKNOWN->value);
+            $table->string("type")->default(EAssetType::UNKNOWN->value);
             $table->json("metadata")->nullable();
         });
 
@@ -44,7 +44,7 @@ return new class () extends Migration {
             $table->string("name");
             $table->string("description")->nullable();
             $table->string("thumbnail")->nullable();
-            $table->enum("level", ELanguageLevel::values())->default(ELanguageLevel::BEGINNER->value);
+            $table->string("level")->default(ELanguageLevel::BEGINNER->value);
             $table->json("additional")->nullable();
             $table->foreignId("v3_thumbnail_asset_id")
                 ->nullable()
@@ -102,7 +102,7 @@ return new class () extends Migration {
             $table->id();
             $table->string("name")->nullable();
             $table->integer("order")->default(0);
-            $table->enum("type", ECourseBlockType::values())->default(ECourseBlockType::LESSON->value);
+            $table->string("type")->default(ECourseBlockType::LESSON->value);
             $table->integer("sort_id")->index()->nullable();
             $table->foreign("sort_id")
                 ->references("id")
@@ -137,7 +137,7 @@ return new class () extends Migration {
 
         Schema::create("v3_course_block_videos", function (Blueprint $table) {
             $table->id();
-            $table->enum("type", ECourseBlockVideoType::values())->default(ECourseBlockVideoType::TRANSLATION->value);
+            $table->string("type")->default(ECourseBlockVideoType::TRANSLATION->value);
             $table->integer("duration")->default(0);
             $table->foreignId("v3_course_group_block_id")
                 ->index()
@@ -158,7 +158,7 @@ return new class () extends Migration {
                 ->references("id")
                 ->on("v3_course_block_videos")
                 ->cascadeOnDelete();
-            $table->enum("type", ECourseBlockVideoTimestampType::values())->default(ECourseBlockVideoTimestampType::EXAM->value);
+            $table->string("type")->default(ECourseBlockVideoTimestampType::EXAM->value);
             $table->json("content")->nullable();
             $table->integer("start")->default(0);
             $table->integer("end")->default(0);
@@ -166,7 +166,7 @@ return new class () extends Migration {
 
         Schema::create("v3_course_exam_instances", function (Blueprint $table) {
             $table->id();
-            $table->enum("type", ETestType::values());
+            $table->string("type");
             $table->json("questions")->nullable();
             $table->foreignId("v3_course_group_block_id")
                 ->index()
@@ -194,7 +194,7 @@ return new class () extends Migration {
 
         Schema::create("v3_course_completions", function (Blueprint $table) {
             $table->id();
-            $table->enum("status", EStatus::values())->default(EStatus::PENDING->value);
+            $table->tinyInteger("status")->default(EStatus::PENDING->value);
             $table->unsignedInteger("user_id")->index();
             $table->foreign("user_id")
                 ->references("id")
@@ -232,6 +232,6 @@ return new class () extends Migration {
         Schema::dropIfExists("v3_course_pricings");
         Schema::dropIfExists("v3_course_details");
         Schema::dropIfExists("v3_courses");
-
+        Schema::dropIfExists("v3_assets");
     }
 };

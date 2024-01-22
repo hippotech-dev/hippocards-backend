@@ -10,7 +10,7 @@ class CourseBlockVideo extends Model
     public $table = "v3_course_block_videos";
     public $timestamps = false;
 
-    protected $fillables = [
+    protected $fillable = [
         "type",
         "duration",
         "v3_course_group_block_id",

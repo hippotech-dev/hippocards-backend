@@ -30,9 +30,9 @@ class ResponseServiceProvider extends ServiceProvider
             );
         });
 
-        Response::macro("fail", function ($data = null, $status_code = 400) {
+        Response::macro("fail", function ($message = null, $status_code = 400) {
             $response = ["success" => false];
-            boolval($data) && $response["data"] = $data;
+            boolval($message) && $response["message"] = $message;
 
             return response()->json(
                 $response,

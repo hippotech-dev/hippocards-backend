@@ -4,11 +4,10 @@ namespace App\Enums;
 
 use App\Traits\EnumWithValues;
 
-enum EStatus: int
+enum EConfirmationType: int
 {
     use EnumWithValues;
 
-    case PENDING = 0;
-    case SUCCESS = 1;
-    case FAILURE = 2;
+    case PHONE = 0;
+    case EMAIL = 1;
 }

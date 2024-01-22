@@ -347,3 +347,10 @@ if (!function_exists("generate_random_string_code")) {
         return $code;
     }
 }
+
+if (!function_exists("check_email")) {
+    function check_email(string $string)
+    {
+        return filter_var($string, FILTER_VALIDATE_EMAIL);
+    }
+}
