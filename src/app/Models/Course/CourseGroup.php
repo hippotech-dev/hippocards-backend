@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class CourseGroup extends Model
+{
+    public $timestamps = false;
+
+    protected $fillable = [
+        "course_id",
+        "name",
+        "type",
+        "order"
+    ];
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function blocks()
+    {
+        return $this->hasMany(CourseGroupBlock::class);
+    }
+}
