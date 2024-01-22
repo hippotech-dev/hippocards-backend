@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Course;
 
 use App\Casts\Json;
 use Illuminate\Database\Eloquent\Model;

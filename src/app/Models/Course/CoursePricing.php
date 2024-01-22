@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Course;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,7 +12,8 @@ class CoursePricing extends Model
         "price_string"
     ];
 
-    public function course() {
+    public function course()
+    {
         return $this->belongsTo(Course::class);
     }
 }

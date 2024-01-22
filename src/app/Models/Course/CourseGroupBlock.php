@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Course;
 
 use App\Enums\ECourseBlockType;
 use Illuminate\Database\Eloquent\Model;
