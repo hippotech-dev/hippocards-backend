@@ -2,11 +2,13 @@
 
 namespace App\Models\Course;
 
-use App\Casts\Json;
 use Illuminate\Database\Eloquent\Model;
 
 class CourseDetail extends Model
 {
+    public $table = "v3_course_details";
+    public $timestamps = false;
+
     protected $fillable = [
         "course_id",
         "content"

@@ -8,8 +8,8 @@ use Ramsey\Collection\Sort;
 
 class CourseGroupBlock extends Model
 {
-    public $timestamps = false;
     public $table = "v3_course_group_block";
+    public $timestamps = false;
 
     protected $fillable = [
         "course_id",
@@ -41,6 +41,6 @@ class CourseGroupBlock extends Model
 
     public function videos()
     {
-        return $this->hasMany(CourseVideo::class);
+        return $this->hasMany(CourseBlockVideo::class);
     }
 }

@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class CoursePricing extends Model
 {
+    public $table = "v3_course_pricings";
+    public $timestamps = false;
+
     protected $fillable = [
         "course_id",
         "price",

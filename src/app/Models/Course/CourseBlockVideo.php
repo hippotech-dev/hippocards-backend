@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Models\Course;
+
+use App\Models\Utility\Asset;
+use Illuminate\Database\Eloquent\Model;
+
+class CourseBlockVideo extends Model
+{
+    public $table = "v3_course_block_videos";
+    public $timestamps = false;
+
+    protected $fillables = [
+        "type",
+        "duration",
+        "v3_course_group_block_id",
+        "v3_asset_id"
+    ];
+
+    public function asset()
+    {
+        return $this->belongsTo(Asset::class);
+    }
+
+    public function courseGroupBlock()
+    {
+        return $this->belongsTo(CourseGroupBlock::class);
+    }
+}

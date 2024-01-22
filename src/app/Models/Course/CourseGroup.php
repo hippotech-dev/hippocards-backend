@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CourseGroup extends Model
 {
+    public $table = "v3_course_groups";
     public $timestamps = false;
 
     protected $fillable = [

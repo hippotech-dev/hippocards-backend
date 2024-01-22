@@ -21,7 +21,7 @@ return new class () extends Migration {
         Schema::dropIfExists("v3_course_completions");
         Schema::dropIfExists("v3_course_exam_results");
         Schema::dropIfExists("v3_course_video_timestamps");
-        Schema::dropIfExists("v3_course_exams_instance");
+        Schema::dropIfExists("v3_course_exam_instances");
         Schema::dropIfExists("v3_course_block_videos");
         Schema::dropIfExists("v3_course_packages");
         Schema::dropIfExists("v3_course_group_blocks");
@@ -72,7 +72,6 @@ return new class () extends Migration {
                 ->references("id")
                 ->on("v3_courses")
                 ->cascadeOnDelete();
-            $table->timestamps();
         });
 
         Schema::create("v3_course_pricings", function (Blueprint $table) {
@@ -85,7 +84,6 @@ return new class () extends Migration {
                 ->references("id")
                 ->on("v3_courses")
                 ->cascadeOnDelete();
-            $table->timestamps();
         });
 
         Schema::create("v3_course_groups", function (Blueprint $table) {
@@ -166,7 +164,7 @@ return new class () extends Migration {
             $table->integer("end")->default(0);
         });
 
-        Schema::create("v3_course_exams_instance", function (Blueprint $table) {
+        Schema::create("v3_course_exam_instances", function (Blueprint $table) {
             $table->id();
             $table->enum("type", ETestType::values());
             $table->json("questions")->nullable();
@@ -182,10 +180,10 @@ return new class () extends Migration {
             $table->id();
             $table->json("answers", "[]");
             $table->unsignedInteger("user_id")->index();
-            $table->foreignId("v3_course_exam_id")
+            $table->foreignId("v3_course_exam_instance_id")
                 ->index()
                 ->references("id")
-                ->on("v3_course_exams_instance")
+                ->on("v3_course_exam_instances")
                 ->cascadeOnDelete();
             $table->foreign("user_id")
                 ->references("id")
@@ -226,7 +224,7 @@ return new class () extends Migration {
         Schema::dropIfExists("v3_course_completions");
         Schema::dropIfExists("v3_course_exam_results");
         Schema::dropIfExists("v3_course_video_timestamps");
-        Schema::dropIfExists("v3_course_exams_instance");
+        Schema::dropIfExists("v3_course_exam_instances");
         Schema::dropIfExists("v3_course_block_videos");
         Schema::dropIfExists("v3_course_packages");
         Schema::dropIfExists("v3_course_group_blocks");
