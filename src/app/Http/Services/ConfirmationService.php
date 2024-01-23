@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Enums\EConfirmationType;
 use App\Enums\EStatus;
+use App\Exceptions\AppException;
 use App\Jobs\SMSJob;
 use App\Mail\EmailConfirmationMail;
 use App\Models\Utility\EmailConfirmation;
@@ -16,6 +17,7 @@ class ConfirmationService
     public function getConfirmationByFilter($filters)
     {
         $filterModel = [
+            "id" => [ "where", "id" ],
             "user_id" => [ "where", "user_id" ],
             "code" => [ "where", "code" ],
             "value" => [ "where", "email" ],
@@ -67,6 +69,27 @@ class ConfirmationService
         return $confirmation;
     }
 
+    public function updateConfirmation(int $id, array $data)
+    {
+        return EmailConfirmation::find($id)->update($data);
+    }
+
+    public function approveConfirmation(int $comfirmationId, string $code)
+    {
+        $confirmation = $this->getConfirmationByFilter([
+            "id" => $comfirmationId,
+            "code" => $code
+        ]);
+
+        if (is_null($confirmation)) {
+            throw new AppException("Invalid confirmation code!");
+        }
+
+        $this->updateConfirmation($confirmation->id, [
+            "status" => EStatus::SUCCESS
+        ]);
+    }
+
     public function checkConfirmationFrequency(string $value)
     {
         $minuteBefore = date("Y-m-d H:i:s", strtotime("-1 minute"));
@@ -76,5 +99,17 @@ class ConfirmationService
         ]);
 
         return !is_null($check);
+    }
+
+    public function checkConfirmationValidity(string $confirmationId)
+    {
+        $minuteBefore = date("Y-m-d H:i:s", strtotime("-500 minute"));
+
+        $check = $this->getConfirmationByFilter([
+            "id" => $confirmationId,
+            "created_at_lte" => $minuteBefore
+        ]);
+
+        return $check;
     }
 }

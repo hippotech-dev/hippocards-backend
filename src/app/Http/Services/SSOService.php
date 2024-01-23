@@ -3,11 +3,13 @@
 namespace App\Http\Services;
 
 use App\Enums\ECodeChallengeMethod;
+use App\Enums\EConfirmationType;
 use App\Enums\EUserLoginType;
 use App\Exceptions\UnauthorizedException;
 use App\Models\SSO\OAuthAuthenticationAttempt;
 use App\Models\SSO\OAuthClient;
 use App\Models\User\User;
+use App\Models\Utility\EmailConfirmation;
 use Exception;
 use Illuminate\Support\Facades\Config;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -106,7 +108,7 @@ class SSOService
         return false;
     }
 
-    public function authorize(OAuthClient $client, array $credentials, array $oauthOptions)
+    public function authorizeUser(OAuthClient $client, array $credentials, array $oauthOptions)
     {
         $oauthOptions["v3_oauth_client_id"] = $client->id;
         $user = $this->checkUserCredentials($credentials["value"], $credentials["password"]);
@@ -127,5 +129,29 @@ class SSOService
             "expires_in" => Config::get("jwt.ttl", 3600),
             "openid" => $user->id
         ];
+    }
+
+    public function registerUser(EmailConfirmation $confirmation, $userData)
+    {
+        $credentials = [];
+        switch ($confirmation->type) {
+            case EConfirmationType::EMAIL:
+                $credentials["email"] = $confirmation->email;
+                break;
+            case EConfirmationType::PHONE:
+                $credentials["phone"] = $confirmation->email;
+                break;
+        }
+
+        $check = $this->userService->getUserByFilter($credentials);
+
+        if (!is_null($check)) {
+            throw new UnauthorizedException("User with such email or phone number is already registered!");
+        }
+
+        return $this->userService->createNormalUser(array_merge(
+            $credentials,
+            $userData
+        ));
     }
 }

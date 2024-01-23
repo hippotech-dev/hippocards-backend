@@ -9,6 +9,7 @@ use App\Http\Services\ConfirmationService;
 use App\Http\Services\SSOService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
 class SSOController extends Controller
@@ -90,7 +91,9 @@ class SSOController extends Controller
                 "oauth.scopes" => "required|array",
                 "oauth.state" => "required|string|max:128",
                 "oauth.challenge" => "required|string|max:128",
-                "oauth.challenge_method" => "required|in:" . ECodeChallengeMethod::PLAIN->value . "," . ECodeChallengeMethod::S256->value . "|max:12",
+                "oauth.challenge_method" => [ "required", Rule::in(ECodeChallengeMethod::PLAIN->value, ECodeChallengeMethod::S256->value)],
+
+
                 "credentials.value" => "required|string|max:64",
                 "credentials.password" => "required|string|max:32"
             ]
@@ -106,7 +109,7 @@ class SSOController extends Controller
             return response()->notFound();
         }
 
-        $result = $this->service->authorize($client, $credentials, $oauth);
+        $result = $this->service->authorizeUser($client, $credentials, $oauth);
 
         return response()->success($result);
     }
@@ -180,5 +183,66 @@ class SSOController extends Controller
             "id" => $confirmation->id,
             "value" => $confirmation->email,
         ]);
+    }
+
+    /**
+     * Approve comfirmation
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function approveConfirmation(Request $request)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "confirmation_id",
+                "code"
+            ),
+            [
+                "confirmation_id" => "required|integer",
+                "code" => "required|string|max:6"
+            ]
+        )
+            ->validate();
+
+        $this->confirmationService->approveConfirmation($validatedData["confirmation_id"], $validatedData["code"]);
+
+        return response()->success();
+    }
+
+    /**
+     * Registration
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function registerUser(Request $request)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "confirmation_id",
+                "name",
+                "password"
+            ),
+            [
+                "confirmation_id" => "required|integer",
+                "name" => "required|string|max:128",
+                "password" => "required|string|max:32"
+            ]
+        )
+            ->validate();
+
+        $confirmation = $this->confirmationService->checkConfirmationValidity($validatedData["confirmation_id"]);
+
+        if (is_null($confirmation)) {
+            return response()->fail("Confirmation is expired!");
+        }
+
+        $this->service->registerUser($confirmation, [
+            "name" => $validatedData["name"],
+            "password" => $validatedData["password"]
+        ]);
+
+        return response()->success();
     }
 }

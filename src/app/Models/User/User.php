@@ -3,6 +3,7 @@
 namespace App\Models\User;
 
 use App\Enums\EUserLoginType;
+use App\Enums\EUserRole;
 use App\Models\SSO\OAuthAuthenticationAttempt;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -47,7 +48,9 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     public $casts = [
-        "login_type" => EUserLoginType::class
+        "login_type" => EUserLoginType::class,
+        "role_id" => EUserRole::class,
+        "new_role" => EUserRole::class,
     ];
 
     /**

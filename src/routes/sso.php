@@ -21,5 +21,7 @@ Route::apiResources([
 ]);
 
 Route::post("authorize", [ SSOController::class, "authorizeUser" ]);
+Route::post("register", [ SSOController::class, "registerUser" ]);
 Route::post("token", [ SSOController::class, "getAuthenticationToken" ]);
-Route::post("verify", [ SSOController::class, "verifyCredential" ]);
+Route::post("confirmation/verify", [ SSOController::class, "verifyCredential" ]);
+Route::post("confirmation/approve", [ SSOController::class, "approveConfirmation" ]);

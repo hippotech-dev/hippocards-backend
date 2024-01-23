@@ -23,8 +23,21 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->reportable(function (Throwable $e) {
-            //
-        });
+        $this->reportable(function (Throwable $e) {});
     }
+
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof AppException) {
+            return response()->fail($exception->getMessage());
+        }
+
+        if ($exception instanceof UnauthorizedException) {
+            return response()->fail($exception->getMessage());
+        }
+
+        return parent::render($request, $exception);
+    }
+
+
 }
