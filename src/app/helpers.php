@@ -81,8 +81,15 @@ if (!function_exists("filter_query_with_model")) {
                     if (count($modelQuery) < 2) {
                         continue 2;
                     }
+
                     $commands = $modelQuery[0];
-                    $values = $modelQuery[1];
+
+                    if (count($modelQuery) === 3) {
+                        $operator = $modelQuery[1];
+                        $values = $modelQuery[2];
+                    } else {
+                        $values = $modelQuery[1];
+                    }
                     // $configs = count($modelQuery) > 2 ? $modelQuery[2] : [];
                     switch (gettype($values)) {
                         case "array":
@@ -127,7 +134,11 @@ if (!function_exists("filter_query_with_model")) {
                             if (!isset($queryName) || !isset($queryValue)) {
                                 continue 3;
                             }
-                            $query = $query->$commands($queryName, $queryValue);
+                            if (isset($operator)) {
+                                $query = $query->$commands($queryName, $operator, $queryValue);
+                            } else {
+                                $query = $query->$commands($queryName, $queryValue);
+                            }
                             break;
                         default:
                             continue 3;

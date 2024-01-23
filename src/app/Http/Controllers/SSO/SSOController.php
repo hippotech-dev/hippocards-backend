@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\SSO;
 
 use App\Enums\ECodeChallengeMethod;
+use App\Enums\EConfirmationType;
 use App\Http\Controllers\Controller;
+use App\Http\Services\ConfirmationService;
 use App\Http\Services\SSOService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Enum;
 
 class SSOController extends Controller
 {
-    public function __construct(private SSOService $service) {}
+    public function __construct(private SSOService $service, private ConfirmationService $confirmationService) {}
 
     /**
      * Authorize SSO request
@@ -146,5 +149,36 @@ class SSOController extends Controller
         $result = $this->service->getAuthenticationToken($attemt);
 
         return response()->success($result);
+    }
+
+    /**
+     * Verify credential
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function verifyCredential(Request $request)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "value",
+                "type"
+            ),
+            [
+                "value" => "required|string|max:128",
+                "type" => [ "required", new Enum(EConfirmationType::class) ],
+            ]
+        )
+            ->validate();
+
+        if ($this->confirmationService->checkConfirmationFrequency($validatedData["value"])) {
+            return response()->fail("Please resend after some time!");
+        }
+
+        $confirmation = $this->confirmationService->createConfirmation(EConfirmationType::from($validatedData["type"]), $validatedData["value"]);
+        return response()->success([
+            "id" => $confirmation->id,
+            "value" => $confirmation->email,
+        ]);
     }
 }

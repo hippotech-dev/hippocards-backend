@@ -22,3 +22,4 @@ Route::apiResources([
 
 Route::post("authorize", [ SSOController::class, "authorizeUser" ]);
 Route::post("token", [ SSOController::class, "getAuthenticationToken" ]);
+Route::post("verify", [ SSOController::class, "verifyCredential" ]);
