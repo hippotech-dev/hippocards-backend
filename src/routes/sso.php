@@ -23,5 +23,13 @@ Route::apiResources([
 Route::post("authorize", [ SSOController::class, "authorizeUser" ]);
 Route::post("register", [ SSOController::class, "registerUser" ]);
 Route::post("token", [ SSOController::class, "getAuthenticationToken" ]);
+Route::post("forgot/password", [ SSOController::class, "forgotPassword" ]);
 Route::post("confirmation/verify", [ SSOController::class, "verifyCredential" ]);
 Route::post("confirmation/approve", [ SSOController::class, "approveConfirmation" ]);
+
+Route::prefix("social")->group(function () {
+    Route::post("google/auth", [ SSOController::class, "authorizeGmail" ]);
+    Route::get("google/callback", [ SSOController::class, "callbackGmail" ]);
+    Route::post("facebook/auth", [ SSOController::class, "authorizeGacebook" ]);
+    Route::get("facebook/callback", [ SSOController::class, "callbackFacebook" ]);
+});

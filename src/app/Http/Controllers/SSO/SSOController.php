@@ -6,6 +6,7 @@ use App\Enums\ECodeChallengeMethod;
 use App\Enums\EConfirmationType;
 use App\Http\Controllers\Controller;
 use App\Http\Services\ConfirmationService;
+use App\Http\Services\GoogleService;
 use App\Http\Services\SSOService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -92,8 +93,6 @@ class SSOController extends Controller
                 "oauth.state" => "required|string|max:128",
                 "oauth.challenge" => "required|string|max:128",
                 "oauth.challenge_method" => [ "required", Rule::in(ECodeChallengeMethod::PLAIN->value, ECodeChallengeMethod::S256->value)],
-
-
                 "credentials.value" => "required|string|max:64",
                 "credentials.password" => "required|string|max:32"
             ]
@@ -245,4 +244,132 @@ class SSOController extends Controller
 
         return response()->success();
     }
+
+    /**
+     * Forgot password
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function forgotPassword(Request $request)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "confirmation_id",
+                "password"
+            ),
+            [
+                "confirmation_id" => "required|integer",
+                "password" => "required|string|max:32"
+            ]
+        )
+            ->validate();
+
+        $confirmation = $this->confirmationService->checkConfirmationValidity($validatedData["confirmation_id"]);
+
+        if (is_null($confirmation)) {
+            return response()->fail("Confirmation is expired!");
+        }
+
+        $this->service->forgotPassword($confirmation, $validatedData["password"]);
+
+        return response()->success();
+    }
+
+    /**
+     * Gmail Authentication
+     *
+     * @param  \App\Http\Services\GoogleService $googleService
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function authorizeGmail(Request $request, GoogleService $googleService)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "response_type",
+                "client_id",
+                "redirect_uri",
+                "scopes",
+                "state",
+                "challenge",
+                "challenge_method",
+            ),
+            [
+                "response_type" => "required|string|max:24",
+                "client_id" => "required|string|max:128",
+                "redirect_uri" => "required|string|max:256",
+                "scopes" => "required|array",
+                "state" => "required|string|max:128",
+                "challenge" => "required|string|max:128",
+                "challenge_method" => [ "required", Rule::in(ECodeChallengeMethod::PLAIN->value, ECodeChallengeMethod::S256->value)],
+            ]
+        )
+            ->validate();
+
+        $googleService->setState($validatedData);
+        $authURL = $googleService->getAuthUrl();
+
+        return response()->success($authURL);
+    }
+
+    /**
+     * Gmail Callback
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function callbackGmail(Request $request, GoogleService $googleService)
+    {
+        $data = json_decode($request->get("state", "[]"), true);
+        $validatedData = Validator::make(
+            $data,
+            [
+                "response_type" => "required|string|max:24",
+                "client_id" => "required|string|max:128",
+                "redirect_uri" => "required|string|max:256",
+                "scopes" => "required|array",
+                "state" => "required|string|max:128",
+                "challenge" => "required|string|max:128",
+                "challenge_method" => [ "required", Rule::in(ECodeChallengeMethod::PLAIN->value, ECodeChallengeMethod::S256->value)],
+            ]
+        )
+            ->validate();
+
+        $authorizationCode = $request->get("code", null);
+        $authorizationError = $request->get("error", null);
+
+        if (!is_null($authorizationError)) {
+            return response()->fail("Google OAuth2 Error!");
+        }
+
+        $userData = $googleService->getUserData($authorizationCode);
+        $user = $this->service->getGoogleUser($userData);
+
+        $client = $this->service->getClientByClientId($validatedData["client_id"]);
+
+        if (is_null($client)) {
+            return response()->notFound();
+        }
+
+        $result = $this->service->authorizeUser($client, $user, $validatedData);
+
+        return response()->redirectTo($result["redirect_uri"] . "?" . http_build_query($result));
+    }
+
+    /**
+     * Facebook Authentication
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function authorizeFacebook(Request $request) {}
+
+    /**
+     * Gmail Callback
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function callbackFacebook(Request $request) {}
+
 }

@@ -71,7 +71,7 @@ class ConfirmationService
 
     public function updateConfirmation(int $id, array $data)
     {
-        return EmailConfirmation::find($id)->update($data);
+        return EmailConfirmation::where("id", $id)->update($data);
     }
 
     public function approveConfirmation(int $comfirmationId, string $code)

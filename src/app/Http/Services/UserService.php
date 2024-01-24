@@ -8,7 +8,7 @@ use App\Models\User\User;
 
 class UserService
 {
-    public function getUserByFilter($filters)
+    public function getUserByFilter(array $filters)
     {
         $filterModel = [
             "email" => [ "where", "email" ],
@@ -18,20 +18,33 @@ class UserService
         return filter_query_with_model(User::query(), $filterModel, $filters)->first();
     }
 
-    public function createNormalUser($userData)
+    public function createNormalUser(array $userData)
     {
         $userData["role_id"] = EUserRole::USER;
         $userData["new_role"] = EUserRole::USER;
-        $userData["password"] = bcrypt($userData["password"]);
-        $userData["login_type"] = EUserLoginType::LOGIN_NORMAL;
+        $userData["password"] = $userData["password"] ? $this->hashPassword($userData["password"]) : "none";
+        $userData["login_type"] = $userData["login_type"] ?? EUserLoginType::LOGIN_NORMAL;
         $userData["area_code"] = "976";
-        $userData["image"] = "";
-        $userData["phone"] = 0;
-        $userData["fid"] = "";
+        $userData["image"] = $userData["image"] ?? "";
+        $userData["phone"] = $userData["phone"] ?? 0;
+        $userData["fid"] = $userData["fid"] ?? "";
         $userData["ftoken"] = "";
         $userData["logged_in"] = false;
         $userData["model"] = "";
         $userData["code_push"] = 0;
         return User::create($userData);
+    }
+
+    public function updateUser(int $id, array $userData)
+    {
+        if (array_key_exists("password", $userData)) {
+            $userData["password"] = $this->hashPassword($userData["password"]);
+        }
+        return User::where("id", $id)->update($userData);
+    }
+
+    public function hashPassword(string $password)
+    {
+        return bcrypt($password);
     }
 }
