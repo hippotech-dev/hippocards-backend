@@ -45,17 +45,28 @@ class ConfirmationService
         return $code;
     }
 
-    public function createConfirmation(EConfirmationType $type, string $value)
+    public function createConfirmation(EConfirmationType $type, string $value, int $confirmationId = null)
     {
-        $confirmation = EmailConfirmation::create([
-            "email" => $value,
-            "status" => EStatus::PENDING,
-            "code" => $this->generateUniqueOTPCode($value),
-            "type" => $type,
-            "created_at" => date("Y-m-d H:i:s"),
-            "email_token" => "none",
-            "body" => "none"
-        ]);
+        if (is_null($confirmationId)) {
+            $confirmation = EmailConfirmation::create([
+                "email" => $value,
+                "status" => EStatus::PENDING,
+                "code" => $this->generateUniqueOTPCode($value),
+                "type" => $type,
+                "created_at" => date("Y-m-d H:i:s"),
+                "email_token" => "none",
+                "body" => "none"
+            ]);
+        } else {
+            $confirmation = $this->getConfirmationByFilter([
+                "id" => $confirmationId
+            ]);
+
+            $confirmation->update([
+                "code" => $this->generateUniqueOTPCode($value),
+                "created_at" => date("Y-m-d H:i:s"),
+            ]);
+        }
 
         switch ($type) {
             case EConfirmationType::EMAIL:

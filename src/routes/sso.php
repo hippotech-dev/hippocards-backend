@@ -20,6 +20,7 @@ Route::apiResources([
     "oauth-client" => OAuthClientController::class
 ]);
 
+Route::post("validate", [ SSOController::class, "checkAuthorizeRequest" ]);
 Route::post("authorize", [ SSOController::class, "authorizeUser" ]);
 Route::post("register", [ SSOController::class, "registerUser" ]);
 Route::post("token", [ SSOController::class, "getAuthenticationToken" ]);

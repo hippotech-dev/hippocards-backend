@@ -32,8 +32,8 @@ class SSOController extends Controller
                 "redirect_uri",
                 "scopes",
                 "state",
-                "code_challange",
-                "code_challange_method"
+                "challenge",
+                "challenge_method"
             ),
             [
                 "response_type" => "required|string|max:24",
@@ -41,13 +41,13 @@ class SSOController extends Controller
                 "redirect_uri" => "required|string|max:256",
                 "scopes" => "required|array",
                 "state" => "required|string|max:128",
-                "code_challange" => "required|string|max:128",
-                "code_challange_method" => "required|in:" . ECodeChallengeMethod::PLAIN->value . "," . ECodeChallengeMethod::S256->value . "|max:12"
+                "challenge" => "required|string|max:128",
+                "challenge_method" => "required|in:" . ECodeChallengeMethod::PLAIN->value . "," . ECodeChallengeMethod::S256->value . "|max:12"
             ]
         )
             ->validate();
 
-        $client = $this->service->getClientByClientId($validatedData["clinet_id"]);
+        $client = $this->service->getClientByClientId($validatedData["client_id"]);
 
         if (is_null($client)) {
             return response()->notFound();
@@ -163,10 +163,12 @@ class SSOController extends Controller
     {
         $validatedData = Validator::make(
             $request->only(
+                "confirmation_id",
                 "value",
                 "type"
             ),
             [
+                "confirmation_id" => "nullable|integer|exists:email_comfirmation,id",
                 "value" => "required|string|max:128",
                 "type" => [ "required", new Enum(EConfirmationType::class) ],
             ]
@@ -177,9 +179,9 @@ class SSOController extends Controller
             return response()->fail("Please resend after some time!");
         }
 
-        $confirmation = $this->confirmationService->createConfirmation(EConfirmationType::from($validatedData["type"]), $validatedData["value"]);
+        $confirmation = $this->confirmationService->createConfirmation(EConfirmationType::from($validatedData["type"]), $validatedData["value"], $validatedData["confirmation_id"] ?? null);
         return response()->success([
-            "id" => $confirmation->id,
+            "confirmation_id" => $confirmation->id,
             "value" => $confirmation->email,
         ]);
     }
