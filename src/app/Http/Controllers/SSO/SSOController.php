@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Services\ConfirmationService;
 use App\Http\Services\GoogleService;
 use App\Http\Services\SSOService;
+use App\Http\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -374,4 +375,28 @@ class SSOController extends Controller
      */
     public function callbackFacebook(Request $request) {}
 
+    /**
+     * Check user credential
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkUserCredential(Request $request)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "value",
+                "type",
+            ),
+            [
+                "value" => "required|string",
+                "type" => "required|string|in:forgot,register"
+            ]
+        )
+            ->validate();
+
+        $this->service->checkUserValue($validatedData["value"], $validatedData["type"]);
+
+        return response()->success();
+    }
 }

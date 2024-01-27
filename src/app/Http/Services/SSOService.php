@@ -138,45 +138,14 @@ class SSOService
 
     public function registerUser(EmailConfirmation $confirmation, array $userData)
     {
-        $credentials = [];
-        switch ($confirmation->type) {
-            case EConfirmationType::EMAIL:
-                $credentials["email"] = $confirmation->email;
-                break;
-            case EConfirmationType::PHONE:
-                $credentials["phone"] = $confirmation->email;
-                break;
-        }
+        $this->checkUserValue($userData["value"], "register");
 
-        $checkUser = $this->userService->getUserByFilter($credentials);
-
-        if (!is_null($checkUser)) {
-            throw new UnauthorizedException("User with such email or phone number is already registered!");
-        }
-
-        return $this->userService->createNormalUser(array_merge(
-            $credentials,
-            $userData
-        ));
+        return $this->userService->createNormalUser($userData);
     }
 
     public function forgotPassword(EmailConfirmation $confirmation, string $password)
     {
-        $credentials = [];
-        switch ($confirmation->type) {
-            case EConfirmationType::EMAIL:
-                $credentials["email"] = $confirmation->email;
-                break;
-            case EConfirmationType::PHONE:
-                $credentials["phone"] = $confirmation->email;
-                break;
-        }
-
-        $checkUser = $this->userService->getUserByFilter($credentials);
-
-        if (is_null($checkUser)) {
-            throw new UnauthorizedException("User with such email or phone number does not exist!");
-        }
+        $checkUser = $this->checkUserValue($confirmation->email, "forgot");
 
         return $this->userService->updateUser($checkUser->id, [
             "password" => $password
@@ -212,5 +181,32 @@ class SSOService
         }
 
         return $checkUser;
+    }
+
+    public function checkUserValue(string $value, string $type)
+    {
+        $credentials = [];
+        check_email($value)
+            && $credentials["email"] = $value;
+
+        !check_email($value)
+            && $credentials["phone"] = $value;
+
+        $user =  $this->userService->getUserByFilter($credentials);
+
+        switch ($type) {
+            case "register":
+                if (is_null($user)) {
+                    throw new UnauthorizedException("User with such email or phone number is already registered!");
+                }
+                break;
+            case "forgot":
+                if (is_null($user)) {
+                    throw new UnauthorizedException("User with such email or phone number is not registered!");
+                }
+                break;
+        }
+
+        return $user;
     }
 }

@@ -261,41 +261,6 @@ if (!function_exists("class_map")) {
     }
 }
 
-if (!function_exists("calculate_vacation_days")) {
-    function calculate_vacation_days($startDate, $duration)
-    {
-        $initial = 15;
-        $dateDiff = date_diff_in_months($startDate, date("Y-m-d H:i:s"));
-        $totalMonth = $duration + $dateDiff;
-
-        if ($totalMonth > 60 && $totalMonth <= 120) {
-            $initial += 3;
-        }
-
-        if ($totalMonth > 120 && $totalMonth <= 180) {
-            $initial += 5;
-        }
-
-        if ($totalMonth > 180 && $totalMonth <= 240) {
-            $initial += 7;
-        }
-
-        if ($totalMonth > 240 && $totalMonth <= 300) {
-            $initial += 9;
-        }
-
-        if ($totalMonth > 300 && $totalMonth <= 372) {
-            $initial += 11;
-        }
-
-        if ($totalMonth > 372) {
-            $initial += 14;
-        }
-
-        return $initial;
-    }
-}
-
 if (!function_exists("get_array_value")) {
     function get_array_value($property, $array)
     {
