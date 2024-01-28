@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/root/redis
+      - ./redis/custom.conf:/usr/local/etc/redis/redis.conf
+    env_file: .env.production
+    networks:
+      - app-network
+  hippo-api:
+    build:
+      context: .
+      dockerfile: ./src/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - .:/usr/src/app
+      - vendor:/var/www/vendor
+    networks:
+      - app-network
+    env_file: ./src/.env.production
+    deploy:
+      replicas: 3
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/servers:/etc/nginx/servers
+      - ./certbot/www/:/var/www/certbot/:ro
+      - ./certbot/conf/:/etc/letsencrypt/:ro
+    depends_on:
+      - carcare-api
+      - database
+    networks:
+      - app-network
+  certbot:
+    image: certbot/certbot:latest
+    command: sh -c "certbot certonly --standalone -d api.carcare.mn --text --agree-tos --email you@example.com --server https://acme-v02.api.letsencrypt.org/directory --rsa-key-size 4096 --verbose --keep-until-expiring --preferred-challenges=http"
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
+  redis-data:
+    driver: local
+  node_modules:
+    driver: local
