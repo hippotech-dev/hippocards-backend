@@ -16,13 +16,13 @@ class CourseService
     public function getCourses(array $filter = [], array $with = [])
     {
 
-        return filter_query_with_model(Course::lastest(), $this->filterModel, $filter)->get();
+        return filter_query_with_model(Course::latest(), $this->filterModel, $filter)->get();
     }
 
-    public function getCourseWithPage(array $filter = [], array $with = [], int $size)
+    public function getCourseWithPage(array $filter = [], array $with = [], int $size = 20)
     {
 
-        return filter_query_with_model(Course::lastest(), $this->filterModel, $filter)->paginate($size);
+        return filter_query_with_model(Course::latest(), $this->filterModel, $filter)->paginate($size);
     }
 
     public function getCourseById(int $id)

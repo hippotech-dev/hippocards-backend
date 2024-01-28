@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\System\Academy\CourseController;
 use App\Http\Controllers\System\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -14,3 +15,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::apiResources([
+    "course" => CourseController::class
+]);

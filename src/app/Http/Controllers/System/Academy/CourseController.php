@@ -20,7 +20,7 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = $this->service->getCourses();
+        $courses = $this->service->getCourseWithPage();
 
         return CourseResource::collection($courses);
     }
