@@ -14,5 +14,10 @@ return [
     "google" => [
         "CLIENT_ID" => env("GOOGLE_CLIENT_ID", ""),
         "CLIENT_SECRET" => env("GOOGLE_CLIENT_SECRET", ""),
+    ],
+    "hippo" => [
+        "CLIENT_ID" =>  env("HIPPO_CLIENT_ID", ""),
+        "CLIENT_SECRET" =>  env("HIPPO_CLIENT_SECRET", ""),
+        "VERIFIER" => env("HIPPO_VERIFIER", "")
     ]
 ];

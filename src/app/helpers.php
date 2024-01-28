@@ -17,7 +17,7 @@ if (!function_exists('cdn_path')) {
         if ($path) {
             $path = '/' . trim($path, '/');
         }
-        return urldecode(config('app.cdn') . $path);
+        return urldecode(config('constants.CDN_URL') . $path);
     }
 }
 

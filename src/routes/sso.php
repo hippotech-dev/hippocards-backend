@@ -20,10 +20,10 @@ Route::apiResources([
     "oauth-client" => OAuthClientController::class
 ]);
 
-Route::post("validate", [ SSOController::class, "checkAuthorizeRequest" ]);
-Route::post("authorize", [ SSOController::class, "authorizeUser" ]);
+Route::post("validate", [ SSOController::class, "checkAuthorizeRequest" ])->name("sso-validate");
+Route::post("authorize", [ SSOController::class, "authorizeUser" ])->name("sso-authorize");
 Route::post("register", [ SSOController::class, "registerUser" ]);
-Route::post("token", [ SSOController::class, "getAuthenticationToken" ]);
+Route::post("token", [ SSOController::class, "getAuthenticationToken" ])->name("sso-token");
 Route::post("forgot/password", [ SSOController::class, "forgotPassword" ]);
 
 Route::post("confirmation/verify", [ SSOController::class, "verifyCredential" ]);

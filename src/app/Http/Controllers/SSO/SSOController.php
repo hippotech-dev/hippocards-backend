@@ -10,6 +10,8 @@ use App\Http\Services\GoogleService;
 use App\Http\Services\SSOService;
 use App\Http\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -48,27 +50,11 @@ class SSOController extends Controller
         )
             ->validate();
 
-        $client = $this->service->getClientByClientId($validatedData["client_id"]);
+        $this->service->checkAuthorizeRequest($validatedData);
 
-        if (is_null($client)) {
-            return response()->notFound();
-        }
+        $URL = $this->service->getAuthURL($validatedData);
 
-        $check = $this->service->checkAuthorizeRequest(
-            $client,
-            [
-                "scopes" => $validatedData["scopes"],
-                "state" => $validatedData["state"],
-                "redirect_uri" => $validatedData["redirect_uri"],
-                "response_type" => $validatedData["response_type"],
-            ],
-        );
-
-        if (!$check) {
-            return response()->fail("Authorization request failed!");
-        }
-
-        return response()->success();
+        return response()->success($URL);
     }
 
     /**
@@ -138,18 +124,7 @@ class SSOController extends Controller
         )
             ->validate();
 
-        $client = $this->service->getClientByClientId($validatedData["client_id"]);
-        $attemt = $this->service->getAuthenticationAttemptByCode($validatedData["code"]);
-
-        if (is_null($client) || $client->client_secret !== $validatedData["client_secret"]) {
-            return response()->notFound();
-        }
-
-        if (is_null($attemt) || $attemt->code !== $validatedData["code"] || $attemt->v3_oauth_client_id !== $client->id) {
-            return response()->notFound();
-        }
-
-        $result = $this->service->getAuthenticationToken($attemt);
+        $result = $this->service->getAuthenticationToken($validatedData);
 
         return response()->success($result);
     }

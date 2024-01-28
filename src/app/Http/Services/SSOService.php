@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Enums\ECodeChallengeMethod;
 use App\Enums\EConfirmationType;
 use App\Enums\EUserLoginType;
+use App\Exceptions\AppException;
 use App\Exceptions\UnauthorizedException;
 use App\Models\SSO\OAuthAuthenticationAttempt;
 use App\Models\SSO\OAuthClient;
@@ -13,6 +14,7 @@ use App\Models\Utility\EmailConfirmation;
 use Exception;
 use Google\Service\Oauth2\Userinfo;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class SSOService
@@ -53,7 +55,12 @@ class SSOService
         return $user->authenticationAttempts()->create($validatedData);
     }
 
-    public function checkAuthorizeRequest(
+    public function deleteAuthenticationAttempt(int $id)
+    {
+        return OAuthAuthenticationAttempt::where("id", $id)->delete();
+    }
+
+    public function checkClientData(
         OAuthClient $client,
         array $options,
     ) {
@@ -70,31 +77,32 @@ class SSOService
         }
     }
 
-    public function checkUserCredentials(string $value, string $password)
+    public function checkAuthorizeRequest($validatedData)
     {
-        $credentials = [];
-        check_email($value)
-            && $credentials["email"] = $value;
+        $client = $this->getClientByClientId($validatedData["client_id"]);
 
-        !check_email($value)
-            && $credentials["phone"] = $value;
-
-        $user = $this->userService->getUserByFilter($credentials);
-        $credentials["password"] = $password;
-
-        if (is_null($user)) {
-            throw new UnauthorizedException("Email or phone number does not exists!");
+        if (is_null($client)) {
+            throw new AppException("Invalid client!");
         }
 
-        if ($user->login_type !== EUserLoginType::LOGIN_NORMAL) {
-            throw new UnauthorizedException("This account is signed up using Gmail!");
-        }
+        $check = $this->checkClientData(
+            $client,
+            [
+                "scopes" => $validatedData["scopes"],
+                "state" => $validatedData["state"],
+                "redirect_uri" => $validatedData["redirect_uri"],
+                "response_type" => $validatedData["response_type"],
+            ],
+        );
 
-        if (!auth()->validate($credentials)) {
-            throw new UnauthorizedException("Incorrect password!");
+        if (!$check) {
+            throw new UnauthorizedException("Authorization request failed!");
         }
+    }
 
-        return $user;
+    public function getAuthURL($validatedData)
+    {
+        return Config::get("constants.SSO_ENDPOINT", "") . "/login?" . http_build_query($validatedData);
     }
 
     public function validateCodeChallange(OAuthAuthenticationAttempt $attempt, string $codeVerifier)
@@ -115,7 +123,7 @@ class SSOService
         if ($credentials instanceof User) {
             $user = $credentials;
         } else {
-            $user = $this->checkUserCredentials($credentials["value"], $credentials["password"]);
+            $user = $this->checkUserValue($credentials["value"], "login", $credentials["password"]);
         }
         $attempt = $this->createAuthenticationAttempt($user, $oauthOptions);
         return [
@@ -125,7 +133,7 @@ class SSOService
         ];
     }
 
-    public function getAuthenticationToken(OAuthAuthenticationAttempt $attempt)
+    public function getToken(OAuthAuthenticationAttempt $attempt)
     {
         $user = $attempt->user()->first();
         $accessToken = auth()->login($user);
@@ -134,6 +142,25 @@ class SSOService
             "expires_in" => Config::get("jwt.ttl", 3600),
             "openid" => $user->id
         ];
+    }
+
+    public function getAuthenticationToken(array $validatedData)
+    {
+        $client = $this->getClientByClientId($validatedData["client_id"]);
+        $attemt = $this->getAuthenticationAttemptByCode($validatedData["code"]);
+
+        if (is_null($client) || $client->client_secret !== $validatedData["client_secret"]) {
+            throw new AppException("Invalid request!");
+        }
+
+        if (is_null($attemt) || $attemt->code !== $validatedData["code"] || $attemt->v3_oauth_client_id !== $client->id) {
+            throw new AppException("Invalid request!");
+        }
+
+        return DB::transaction(function () use ($attemt) {
+            $this->deleteAuthenticationAttempt($attemt->id);
+            return $this->getToken($attemt);
+        });
     }
 
     public function registerUser(EmailConfirmation $confirmation, array $userData)
@@ -183,7 +210,7 @@ class SSOService
         return $checkUser;
     }
 
-    public function checkUserValue(string $value, string $type)
+    public function checkUserValue(string $value, string $type, string $password = null)
     {
         $credentials = [];
         check_email($value)
@@ -194,6 +221,8 @@ class SSOService
 
         $user =  $this->userService->getUserByFilter($credentials);
 
+        !is_null($password) && $credentials["password"] = $password;
+
         switch ($type) {
             case "register":
                 if (is_null($user)) {
@@ -203,6 +232,19 @@ class SSOService
             case "forgot":
                 if (is_null($user)) {
                     throw new UnauthorizedException("User with such email or phone number is not registered!");
+                }
+                break;
+            case "login":
+                if (is_null($user)) {
+                    throw new UnauthorizedException("Email or phone number does not exists!");
+                }
+
+                if ($user->login_type !== EUserLoginType::LOGIN_NORMAL) {
+                    throw new UnauthorizedException("This account is signed up using Gmail!");
+                }
+
+                if (!auth()->validate($credentials)) {
+                    throw new UnauthorizedException("Incorrect password!");
                 }
                 break;
         }

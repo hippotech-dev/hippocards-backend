@@ -5,6 +5,8 @@ use App\Utils\Constant;
 
 return [
 
+    "SSO_ENDPOINT" => env("SSO_ENDPOINT", "https://auth.hippo.cards"),
+
     "CATEGORY_COLORS" => [
         "#AFD224",
         "#FFE172",
