@@ -20,6 +20,7 @@ return [
     ],
 
     "CDN_URL" => env("CDN_URL", ""),
+    "CLOUDFRONT_URL" => env("CLOUDFRONT_URL", ""),
     "MAIN_URL" => env("MAIN_APP_URL", ""),
     "CONTENT_URL" => env("CONTENT_APP_URL", ""),
     "CLASS_URL" => env("CLASS_URL", ""),

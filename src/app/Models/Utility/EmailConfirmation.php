@@ -4,10 +4,12 @@ namespace App\Models\Utility;
 
 use App\Enums\EConfirmationType;
 use App\Enums\EStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class EmailConfirmation extends Model
 {
+    use HasFactory;
     protected $table = 'email_comfirmation';
 
     protected $fillable = [

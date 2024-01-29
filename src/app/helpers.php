@@ -37,6 +37,22 @@ if (!function_exists('append_cdn_path')) {
     }
 }
 
+if (!function_exists('append_s3_path')) {
+    function append_s3_path(?string $path)
+    {
+        if (is_null($path)) {
+            return null;
+        }
+        if (str_starts_with($path, "https://")) {
+            return $path;
+        }
+        if ($path) {
+            $path = '/' . trim($path, '/');
+        }
+        return urldecode(Config::get("constants.CLOUDFRONT_URL") . $path);
+    }
+}
+
 if (!function_exists("generate_phantom_model")) {
     function generate_phantom_model($class, $fieldsWithValues = null, $relations = null)
     {

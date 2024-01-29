@@ -12,4 +12,5 @@ enum EAssetType: string
     case PDF = "PDF";
     case IMAGE = "IMAGE";
     case VIDEO = "VIDEO";
+    case AUDIO = "AUDIO";
 }

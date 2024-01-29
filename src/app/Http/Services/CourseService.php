@@ -30,30 +30,42 @@ class CourseService
         return Course::find($id);
     }
 
-    public function createCourse(array $validatedData)
+    public function createCourse(array $data)
     {
-        array_key_exists("thumbnail_asset_id", $validatedData)
-            && $validatedData["thumbnail"] = $this->assetService->getAssetPath($validatedData["thumbnail_asset_id"]);
+        array_key_exists("v3_thumbnail_asset_id", $data)
+            && $data["thumbnail"] = $this->assetService->getAssetPath($data["v3_thumbnail_asset_id"]);
 
-        return Course::create($validatedData);
+        return Course::create($data);
     }
 
-    public function updateCourse(Course $course, array $validatedData)
+    public function updateCourse(Course $course, array $data)
     {
-        array_key_exists("thumbnail_asset_id", $validatedData)
-            && $validatedData["thumbnail_asset_id"] !== $course->thumbnail_asset_id
-            && $validatedData["thumbnail"] = $this->assetService->getAssetPath($validatedData["thumbnail_asset_id"]);
+        array_key_exists("v3_thumbnail_asset_id", $data)
+            && $data["v3_thumbnail_asset_id"] !== $course->v3_thumbnail_asset_id
+            && $data["thumbnail"] = $this->assetService->getAssetPath($data["v3_thumbnail_asset_id"]);
 
-        $course->update($validatedData);
+        $course->update($data);
 
         return $course;
     }
 
     public function deleteCourse(Course $course)
     {
-        !is_null($course->thumbnail_asset_id)
-            && $this->assetService->deleteAssetById($course->thumbnail_asset_id);
+        !is_null($course->v3_thumbnail_asset_id)
+            && $this->assetService->deleteAssetById($course->v3_thumbnail_asset_id);
 
         return $course->delete();
+    }
+
+    public function createOrUpdateDetail(Course $course, $data)
+    {
+        array_key_exists("price", $data)
+            && $data["price_string"] = number_format($data["price"]);
+        return $course->detail()->updateOrCreate([], $data);
+    }
+
+    public function getCourseDetail(Course $course)
+    {
+        return $course->detail()->first();
     }
 }

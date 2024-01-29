@@ -34,16 +34,23 @@ class CourseController extends Controller
             $request->only(
                 "name",
                 "description",
-                "thumbnail_asset_id",
+                "v3_thumbnail_asset_id",
                 "language_id",
                 "level"
             ),
             [
                 "name" => "required|string|max:64",
                 "description" => "required|string|max:256",
-                "thumbnail_asset_id" => "required|integer|exists:v3_assets,id",
+                "v3_thumbnail_asset_id" => "required|integer|exists:v3_assets,id",
                 "language_id" => "required|integer|exists:language,id",
-                "level" => ["required", Rule::in(ELanguageLevel::BEGINNER->value, ELanguageLevel::INTERMIDIATE->value), ELanguageLevel::ADVANCED->value]
+                "level" => [
+                    "required",
+                    Rule::in(
+                        ELanguageLevel::BEGINNER->value,
+                        ELanguageLevel::INTERMIDIATE->value,
+                        ELanguageLevel::ADVANCED->value
+                    )
+                ]
             ]
         )
             ->validate();
@@ -71,16 +78,23 @@ class CourseController extends Controller
             $request->only(
                 "name",
                 "description",
-                "thumbnail_asset_id",
+                "v3_thumbnail_asset_id",
                 "language_id",
                 "level"
             ),
             [
                 "name" => "required|string|max:64",
                 "description" => "required|string|max:256",
-                "thumbnail_asset_id" => "required|integer|exists:v3_assets,id",
+                "v3_thumbnail_asset_id" => "required|integer|exists:v3_assets,id",
                 "language_id" => "required|integer|exists:language,id",
-                "level" => ["required", Rule::in(ELanguageLevel::BEGINNER->value, ELanguageLevel::INTERMIDIATE->value), ELanguageLevel::ADVANCED->value]
+                "level" => [
+                    "required",
+                    Rule::in(
+                        ELanguageLevel::BEGINNER->value,
+                        ELanguageLevel::INTERMIDIATE->value,
+                        ELanguageLevel::ADVANCED->value
+                    )
+                ]
             ]
         )
             ->validate();

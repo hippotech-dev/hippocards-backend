@@ -12,7 +12,8 @@ class CoursePricing extends Model
     protected $fillable = [
         "course_id",
         "price",
-        "price_string"
+        "price_string",
+        "duration_days"
     ];
 
     public function course()

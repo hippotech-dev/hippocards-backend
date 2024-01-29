@@ -44,6 +44,11 @@ class RouteServiceProvider extends ServiceProvider
                 ->name("sso.")
                 ->group(base_path('routes/sso.php'));
 
+            Route::middleware('api')
+                ->prefix('utility')
+                ->name("utility.")
+                ->group(base_path('routes/utility.php'));
+
             // Route::middleware('web')
             //     ->group(base_path('routes/web.php'));
         });

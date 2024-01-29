@@ -3,10 +3,12 @@
 namespace App\Models\Utility;
 
 use App\Models\Package\Baseklass;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class MainCategory extends Model
 {
+    use HasFactory;
     public $timestamps = false;
 
     protected $fillable = [

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\System\Academy\CourseController;
+use App\Http\Controllers\System\Academy\CourseDetailController;
 use App\Http\Controllers\System\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,5 +18,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::apiResources([
-    "course" => CourseController::class
+    "course" => CourseController::class,
+    "course.detail" => CourseDetailController::class,
 ]);

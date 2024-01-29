@@ -10,16 +10,16 @@ class Asset extends Model
 {
     use HasFactory;
     public $table = "v3_assets";
+    public $timestamps = false;
 
     protected $fillable = [
         "path",
         "size",
-        "type",
+        "mime_type",
         "metadata"
     ];
 
     public $casts = [
-        "type" => EAssetType::class,
         "metadata" => "array"
     ];
 }

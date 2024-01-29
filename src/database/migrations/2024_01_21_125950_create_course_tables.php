@@ -35,7 +35,7 @@ return new class () extends Migration {
             $table->id();
             $table->string("path", 256);
             $table->integer("size")->default(0);
-            $table->string("type")->default(EAssetType::UNKNOWN->value);
+            $table->string("mime_type");
             $table->json("metadata")->nullable();
         });
 
@@ -67,15 +67,6 @@ return new class () extends Migration {
         Schema::create("v3_course_details", function (Blueprint $table) {
             $table->id();
             $table->json("content")->nullable();
-            $table->foreignId("v3_course_id")
-                ->index()
-                ->references("id")
-                ->on("v3_courses")
-                ->cascadeOnDelete();
-        });
-
-        Schema::create("v3_course_pricings", function (Blueprint $table) {
-            $table->id();
             $table->double("price")->default(0);
             $table->string("price_string")->default("0");
             $table->integer("duration_days");

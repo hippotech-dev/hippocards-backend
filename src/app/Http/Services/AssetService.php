@@ -2,7 +2,10 @@
 
 namespace App\Http\Services;
 
+use App\Enums\EAssetType;
 use App\Models\Utility\Asset;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class AssetService
 {
@@ -18,6 +21,22 @@ class AssetService
             return null;
         }
         return $asset->path;
+    }
+
+    public function createAsset(string $folder, UploadedFile $file)
+    {
+        $fileExtension = $file->extension();
+        $filename = bin2hex(random_bytes(16)) . "." . $fileExtension;
+
+        $path = $folder . "/" . $filename;
+
+        Storage::putFileAs($folder, $file, $filename);
+
+        return Asset::create([
+            "path" => $path,
+            "size" => $file->getSize(),
+            "mime_type" => $file->getMimeType(),
+        ]);
     }
 
     public function deleteAssetById(int $id)

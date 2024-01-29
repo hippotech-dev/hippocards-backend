@@ -10,8 +10,11 @@ class CourseDetail extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        "course_id",
-        "content"
+        "v3_course_id",
+        "content",
+        "price",
+        "price_string",
+        "duration_days"
     ];
 
     public $casts = [

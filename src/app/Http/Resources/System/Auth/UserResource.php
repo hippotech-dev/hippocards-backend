@@ -22,7 +22,7 @@ class UserResource extends JsonResource
             "login_type" => $this->login_type,
             "logged_in" => boolval($this->logged_in),
             "image" => !is_null($this->image) && strlen($this->image) > 0
-                ? (cdn_path(str_contains($this->image, "upload/avatar")
+                ? (append_cdn_path(str_contains($this->image, "upload/avatar")
                     ? $this->image
                     : "upload/avatar/" . $this->image))
                 : "https://api.dicebear.com/5.x/initials/png?seed=" . $this->name,

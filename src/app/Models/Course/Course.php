@@ -13,7 +13,7 @@ class Course extends Model
         "name",
         "description",
         "thumbnail",
-        "thumbnail_asset_id",
+        "v3_thumbnail_asset_id",
         "language_id",
         "author_id",
         "additional",
@@ -27,12 +27,7 @@ class Course extends Model
 
     public function detail()
     {
-        return $this->hasOne(CourseDetail::class);
-    }
-
-    public function pricing()
-    {
-        return $this->hasOne(CoursePricing::class);
+        return $this->hasOne(CourseDetail::class, "v3_course_id");
     }
 
     public function groups()
