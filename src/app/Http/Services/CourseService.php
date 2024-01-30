@@ -2,8 +2,10 @@
 
 namespace App\Http\Services;
 
+use App\Exceptions\AppException;
 use App\Models\Course\Course;
-use App\Models\Utility\Asset;
+use App\Models\Course\CourseGroup;
+use Illuminate\Support\Facades\DB;
 
 class CourseService
 {
@@ -25,9 +27,16 @@ class CourseService
         return filter_query_with_model(Course::latest(), $this->filterModel, $filter)->paginate($size);
     }
 
-    public function getCourseById(int $id)
+    public function getCourseById(int $id, $short = true)
     {
-        return Course::find($id);
+        if ($short) {
+            return Course::find($id);
+        }
+        return Course::with([
+            "groups",
+            "detail"
+        ])
+            ->find($id);
     }
 
     public function createCourse(array $data)
@@ -57,7 +66,7 @@ class CourseService
         return $course->delete();
     }
 
-    public function createOrUpdateDetail(Course $course, $data)
+    public function createOrUpdateDetail(Course $course, array $data)
     {
         array_key_exists("price", $data)
             && $data["price_string"] = number_format($data["price"]);
@@ -67,5 +76,42 @@ class CourseService
     public function getCourseDetail(Course $course)
     {
         return $course->detail()->first();
+    }
+
+    public function getCourseGroups(Course $course)
+    {
+        return $course->groups()->get();
+    }
+
+    public function getCourseGroupById(Course $course, int $id)
+    {
+        return $course->groups()->where("id", $id)->first();
+    }
+
+    public function createCourseGroup(Course $course, array $data)
+    {
+        return $course->groups()->create($data);
+    }
+
+    public function updateCourseGroup(CourseGroup &$group, array $data)
+    {
+        return $group->update($data);
+    }
+
+    public function deleteCourseGroup(CourseGroup &$group)
+    {
+        return $group->delete($group);
+    }
+
+    public function shiftCourseGroup(Course $course, CourseGroup $group, int $newPosition)
+    {
+        $count = $course->groups()->count();
+        if ($newPosition > $count) {
+            throw new AppException("New order is exceeding the current number of groups!");
+        }
+        return DB::transaction(function () use ($course, $group, $newPosition) {
+            return $course->groups()->where("order", ">=", $newPosition)->increment("order");
+            $this->updateCourseGroup($group, [ "order" => $newPosition ]);
+        });
     }
 }

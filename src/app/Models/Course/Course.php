@@ -32,11 +32,11 @@ class Course extends Model
 
     public function groups()
     {
-        return $this->hasMany(CourseGroup::class);
+        return $this->hasMany(CourseGroup::class, "v3_course_id");
     }
 
     public function blocks()
     {
-        return $this->hasMany(CourseGroupBlock::class);
+        return $this->hasMany(CourseGroupBlock::class, "v3_course_id");
     }
 }

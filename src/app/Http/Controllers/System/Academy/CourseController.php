@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
+use function Aws\boolean_value;
+
 class CourseController extends Controller
 {
     public function __construct(private CourseService $service) {}
@@ -63,9 +65,10 @@ class CourseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(int $id)
+    public function show(Request $request, int $id)
     {
-        $course = $this->service->getCourseById($id);
+        $short = boolean_value($request->get("short", true)) ?? true;
+        $course = $this->service->getCourseById($id, $short);
         return new CourseResource($course);
     }
 
