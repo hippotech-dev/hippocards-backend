@@ -3,6 +3,7 @@
 namespace App\Models\Course;
 
 use App\Enums\ELanguageLevel;
+use App\Models\Package\Baseklass;
 use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
@@ -38,5 +39,20 @@ class Course extends Model
     public function blocks()
     {
         return $this->hasMany(CourseGroupBlock::class, "v3_course_id");
+    }
+
+    public function packages()
+    {
+        return $this->belongsToMany(
+            Baseklass::class,
+            "v3_course_packages",
+            "v3_course_id",
+            "package_id"
+        );
+    }
+
+    public function packagePivots()
+    {
+        return $this->hasMany(CoursePackage::class, "v3_course_id");
     }
 }

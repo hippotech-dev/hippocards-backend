@@ -5,6 +5,7 @@ namespace App\Http\Controllers\System\Academy;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\System\Academy\CourseGroupResource;
 use App\Http\Services\CourseService;
+use App\Http\Services\PackageService;
 use App\Models\Course\Course;
 use App\Models\Course\CourseGroup;
 use Illuminate\Http\Request;

@@ -6,6 +6,7 @@ use App\Enums\ELanguageLevel;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\System\Academy\CourseResource;
 use App\Http\Services\CourseService;
+use App\Http\Services\PackageService;
 use App\Models\Course\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -114,6 +115,38 @@ class CourseController extends Controller
     public function destroy(Course $course)
     {
         $this->service->deleteCourse($course);
+        return response()->success();
+    }
+
+    /**
+     * Attach packages to course
+     */
+    public function attachPackages(Request $request, Course $course)
+    {
+        $validatedData = Validator::make(
+            $request->only([
+                "packages",
+            ]),
+            [
+                "packages" => "required|string|array",
+                "packages.*.package_id" => "required|integer",
+                "packages.*.order" => "required|integer"
+            ]
+        )
+            ->validate();
+
+        $this->service->attachPackagesToCourse($course, $validatedData);
+
+        return response()->success();
+    }
+
+    /**
+     * Automated groups and block creation
+     */
+    public function automatedGroupsAndBlockCreate(Course $course)
+    {
+        $this->service->createGroupsWithBlocks($course);
+
         return response()->success();
     }
 }

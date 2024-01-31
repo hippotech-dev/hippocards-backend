@@ -69,6 +69,7 @@ return new class () extends Migration {
             $table->json("content")->nullable();
             $table->double("price")->default(0);
             $table->string("price_string")->default("0");
+            $table->integer("total_days")->default((0));
             $table->integer("duration_days");
             $table->foreignId("v3_course_id")
                 ->index()
@@ -124,6 +125,7 @@ return new class () extends Migration {
                 ->references("id")
                 ->on("baseklass")
                 ->cascadeOnDelete();
+            $table->integer("order")->default(0);
         });
 
         Schema::create("v3_course_block_videos", function (Blueprint $table) {

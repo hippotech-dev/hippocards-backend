@@ -26,12 +26,12 @@ class CourseGroupBlock extends Model
 
     public function course()
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(Course::class, "v3_course_id");
     }
 
     public function group()
     {
-        return $this->belongsTo(CourseGroup::class);
+        return $this->belongsTo(CourseGroup::class, "v3_course_group_id");
     }
 
     public function wordSort()

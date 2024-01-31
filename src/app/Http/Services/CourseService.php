@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Exceptions\AppException;
 use App\Models\Course\Course;
 use App\Models\Course\CourseGroup;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class CourseService
@@ -13,7 +14,7 @@ class CourseService
 
     ];
 
-    public function __construct(private AssetService $assetService) {}
+    public function __construct(private AssetService $assetService, private PackageService $packageService) {}
 
     public function getCourses(array $filter = [], array $with = [])
     {
@@ -73,6 +74,11 @@ class CourseService
         return $course->detail()->updateOrCreate([], $data);
     }
 
+    public function attachPackagesToCourse(Course $course, array $data)
+    {
+        return $course->packagePivots()->create($data);
+    }
+
     public function getCourseDetail(Course $course)
     {
         return $course->detail()->first();
@@ -113,5 +119,10 @@ class CourseService
             return $course->groups()->where("order", ">=", $newPosition)->increment("order");
             $this->updateCourseGroup($group, [ "order" => $newPosition ]);
         });
+    }
+
+    public function createGroupsWithBlocks(Course $course)
+    {
+        //
     }
 }
