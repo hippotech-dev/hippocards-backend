@@ -13,10 +13,7 @@ use Illuminate\Support\Facades\Validator;
 
 class GroupBlockController extends Controller
 {
-    public function __construct(private CourseService $service)
-    {
-        $this->var = $var;
-    }
+    public function __construct(private CourseService $service) {}
 
     /**
      * Display a listing of the resource.
