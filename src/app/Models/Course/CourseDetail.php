@@ -15,7 +15,6 @@ class CourseDetail extends Model
         "price",
         "price_string",
         "duration_days",
-        "total_days"
     ];
 
     public $casts = [

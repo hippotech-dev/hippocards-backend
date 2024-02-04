@@ -33,7 +33,6 @@ class CourseDetailController extends Controller
                 "price",
                 "price_string",
                 "duration_days",
-                "total_days"
             ),
             [
                 "contents" => "required|array",
@@ -41,7 +40,6 @@ class CourseDetailController extends Controller
                 "contents.*.body" => "required|string|max:4096",
                 "price" => "required|integer",
                 "duration_days" => "required|integer",
-                "total_days" => "required|integer"
             ]
         )
             ->validate();

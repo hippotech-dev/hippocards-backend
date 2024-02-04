@@ -69,8 +69,7 @@ return new class () extends Migration {
             $table->json("content")->nullable();
             $table->double("price")->default(0);
             $table->string("price_string")->default("0");
-            $table->integer("total_days")->default((0));
-            $table->integer("duration_days");
+            $table->integer("duration_days")->default(0);
             $table->foreignId("v3_course_id")
                 ->index()
                 ->references("id")

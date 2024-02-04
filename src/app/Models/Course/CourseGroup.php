@@ -10,7 +10,7 @@ class CourseGroup extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        "course_id",
+        "v3_course_id",
         "name",
         "type",
         "order"
@@ -18,11 +18,11 @@ class CourseGroup extends Model
 
     public function course()
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(Course::class, "v3_course_id");
     }
 
     public function blocks()
     {
-        return $this->hasMany(CourseGroupBlock::class);
+        return $this->hasMany(CourseGroupBlock::class, "v3_course_group_id");
     }
 }

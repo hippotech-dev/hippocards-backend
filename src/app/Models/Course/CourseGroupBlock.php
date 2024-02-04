@@ -8,7 +8,7 @@ use Ramsey\Collection\Sort;
 
 class CourseGroupBlock extends Model
 {
-    public $table = "v3_course_group_block";
+    public $table = "v3_course_group_blocks";
     public $timestamps = false;
 
     protected $fillable = [

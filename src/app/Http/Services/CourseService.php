@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Enums\ECourseBlockType;
 use App\Exceptions\AppException;
 use App\Models\Course\Course;
 use App\Models\Course\CourseGroup;
@@ -16,6 +17,10 @@ class CourseService
     ];
 
     public function __construct(private AssetService $assetService, private PackageService $packageService) {}
+
+    /**
+     * Course
+     */
 
     public function getCourses(array $filter = [], array $with = [])
     {
@@ -68,6 +73,20 @@ class CourseService
         return $course->delete();
     }
 
+    public function getCoursePackages(Course $course)
+    {
+        if ($course->relationLoaded("packages")) {
+            $packages = $course->packages;
+        } else {
+            $packages = $course->packages()->get();
+        }
+        return $packages;
+    }
+
+    /**
+     * Detail
+     */
+
     public function createOrUpdateDetail(Course $course, array $data)
     {
         array_key_exists("price", $data)
@@ -77,8 +96,12 @@ class CourseService
 
     public function attachPackagesToCourse(Course $course, array $data)
     {
-        return $course->packagePivots()->create($data);
+        return $course->packagePivots()->createMany($data);
     }
+
+    /**
+     * Course Group
+     */
 
     public function getCourseDetail(Course $course)
     {
@@ -122,7 +145,29 @@ class CourseService
         });
     }
 
-    public function createGroupsWithBlocks(Course $course) {}
+    public function createManyCourseGroups(Course $course)
+    {
+        $detail = $this->getCourseDetail($course);
+        if (is_null($detail)) {
+            throw new AppException("Coursse detail is not added!");
+        }
+        $totalDays = $detail->duration_days;
+
+        $courseGroupData = [];
+
+        for ($day = 1; $day <= $totalDays; $day++) {
+            array_push($courseGroupData, [
+                "name" => "Day $day",
+                "order" => $day - 1
+            ]);
+        }
+
+        return $course->groups()->createMany($courseGroupData);
+    }
+
+    /**
+     * Group Block
+     */
 
     public function getGroupBlocks(CourseGroup $group)
     {
@@ -142,7 +187,7 @@ class CourseService
             if (is_null($sort) || is_null($sort->word)) {
                 throw new AppException("Invalid sort!");
             }
-            $data["sort"] = $sort->word->word;
+            $data["name"] = $sort->word->word;
         }
 
         $data["order"] = $count;
@@ -178,5 +223,61 @@ class CourseService
             return $group->blocks()->where("order", ">=", $newPosition)->increment("order");
             $this->updateGroupBlock($block, [ "order" => $newPosition ]);
         });
+    }
+
+    public function createManyGroupBlocks(CourseGroup $group, Collection $packageSorts)
+    {
+        $blockData = [];
+
+        $sortIndex = 0;
+        foreach ($packageSorts as &$sort) {
+            if (is_null($sort->word)) {
+                continue;
+            }
+            array_push($blockData, [
+                "sort_id" => $sort->id,
+                "name" => $sort->word->word,
+                "type" => ECourseBlockType::LESSON,
+                "order" => $sortIndex,
+                "v3_course_id" => $group->v3_course_id
+            ]);
+
+            $sortIndex++;
+        }
+
+        $group->blocks()->createMany($blockData);
+    }
+
+    public function createBlocksMultipleGroup(Collection $groups, Collection $packageSorts)
+    {
+        $totalGroupCount = $groups->count();
+        $totalPackageCount = $packageSorts->count();
+        $totalSortPerGroup = $totalPackageCount / $totalGroupCount;
+
+        $groupIndex = 0;
+        foreach ($groups as &$group) {
+            $slicedPackageSorts = $packageSorts->slice($groupIndex * $totalSortPerGroup, $totalSortPerGroup);
+            $this->createManyGroupBlocks($group, $slicedPackageSorts);
+            $groupIndex++;
+        }
+    }
+
+    /**
+     * Automated creation
+     */
+
+    public function createGroupsWithBlocks(Course $course)
+    {
+        $packages = $this->getCoursePackages($course);
+
+        if (count($packages) === 0) {
+            throw new AppException("Packages are not added!");
+        }
+
+        $packageSorts = $this->packageService->getPackagesSorts($packages);
+
+        $courseGroups = $this->createManyCourseGroups($course);
+
+        $this->createBlocksMultipleGroup($courseGroups, $packageSorts);
     }
 }

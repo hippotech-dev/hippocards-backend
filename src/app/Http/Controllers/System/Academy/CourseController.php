@@ -9,6 +9,7 @@ use App\Http\Services\CourseService;
 use App\Http\Services\PackageService;
 use App\Models\Course\Course;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -119,33 +120,13 @@ class CourseController extends Controller
     }
 
     /**
-     * Attach packages to course
-     */
-    public function attachPackages(Request $request, Course $course)
-    {
-        $validatedData = Validator::make(
-            $request->only([
-                "packages",
-            ]),
-            [
-                "packages" => "required|string|array",
-                "packages.*.package_id" => "required|integer",
-                "packages.*.order" => "required|integer"
-            ]
-        )
-            ->validate();
-
-        $this->service->attachPackagesToCourse($course, $validatedData);
-
-        return response()->success();
-    }
-
-    /**
      * Automated groups and block creation
      */
     public function automatedGroupsAndBlockCreate(Course $course)
     {
-        $this->service->createGroupsWithBlocks($course);
+        DB::transaction(function () use ($course) {
+            $this->service->createGroupsWithBlocks($course);
+        });
 
         return response()->success();
     }
