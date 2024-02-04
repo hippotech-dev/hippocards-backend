@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Exceptions\AppException;
 use App\Models\Course\Course;
 use App\Models\Course\CourseGroup;
+use App\Models\Course\CourseGroupBlock;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -124,5 +125,38 @@ class CourseService
     public function createGroupsWithBlocks(Course $course)
     {
         //
+    }
+
+    public function getGroupBlocks(CourseGroup $group)
+    {
+        return $group->blocks()->get();
+    }
+
+    public function createGroupBlock(CourseGroup $group, array $data)
+    {
+        $count = $group->blocks()->count();
+        if (array_key_exists("sort_id", $data)) {
+            $sort = $this->packageService->getSortById($data["sort_id"]);
+            if (is_null($sort) || is_null($sort->word)) {
+                throw new AppException("Invalid sort!");
+            }
+            $data["sort"] = $sort->word->word;
+        }
+
+        $data["order"] = $count;
+        return $group->blocks()->create($data);
+    }
+
+    public function updateGroupBlock(CourseGroupBlock $block, array $data)
+    {
+        if (array_key_exists("sort_id", $data)) {
+            $sort = $this->packageService->getSortById($data["sort_id"]);
+            if (is_null($sort) || is_null($sort->word)) {
+                throw new AppException("Invalid sort!");
+            }
+            $data["sort"] = $sort->word->word;
+        }
+
+        return $block->update($data);
     }
 }

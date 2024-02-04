@@ -97,6 +97,7 @@ return new class () extends Migration {
             $table->string("type")->default(ECourseBlockType::LESSON->value);
             $table->integer("sort_id")->index()->nullable();
             $table->foreign("sort_id")
+                ->nullable()
                 ->references("id")
                 ->on("sort")
                 ->cascadeOnDelete();
