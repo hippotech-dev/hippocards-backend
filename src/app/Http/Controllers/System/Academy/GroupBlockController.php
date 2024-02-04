@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\System\Academy;
 
+use App\Enums\ECourseBlockType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\System\Academy\GroupBlockResource;
 use App\Http\Services\CourseService;
@@ -10,6 +11,7 @@ use App\Models\Course\CourseGroupBlock;
 use Google\Service\SearchConsole\BlockedResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class GroupBlockController extends Controller
 {
@@ -37,7 +39,7 @@ class GroupBlockController extends Controller
             ),
             [
                 "sort_id" => "required|exists:sort,id",
-                "type"
+                "type" => ["required", Rule::in([ ECourseBlockType::EXAM->value, ECourseBlockType::FINAL_EXAM->value, ECourseBlockType::LESSON->value ])]
             ]
         )
             ->validate();
@@ -50,12 +52,16 @@ class GroupBlockController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id) {}
+    public function show(CourseGroup $group, int $id)
+    {
+        $block = $this->service->getGroupBlockById($group, $id);
+        return new BlockedResource($block);
+    }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, int $course, CourseGroupBlock $block)
+    public function update(Request $request, int $group, CourseGroupBlock $block)
     {
         $validatedData = Validator::make(
             $request->only(
@@ -63,13 +69,13 @@ class GroupBlockController extends Controller
                 "type",
             ),
             [
-                "sort_id" => "required|exists:sort,id",
-                "type"
+                "sort_id" => "sometimes|exists:sort,id",
+                "type" => ["sometimes", Rule::in([ ECourseBlockType::EXAM->value, ECourseBlockType::FINAL_EXAM->value, ECourseBlockType::LESSON->value ])]
             ]
         )
             ->validate();
 
-        $block = $this->service->updateGroupBlock($block, $validatedData);
+        $this->service->updateGroupBlock($block, $validatedData);
 
         return new BlockedResource($block);
     }
@@ -77,8 +83,10 @@ class GroupBlockController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(int $group, CourseGroupBlock $block)
     {
-        //
+        $this->service->deleteGroupBlock($block);
+
+        return response()->success();
     }
 }

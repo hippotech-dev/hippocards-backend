@@ -107,7 +107,7 @@ class CourseService
 
     public function deleteCourseGroup(CourseGroup &$group)
     {
-        return $group->delete($group);
+        return $group->delete();
     }
 
     public function shiftCourseGroup(Course $course, CourseGroup $group, int $newPosition)
@@ -130,6 +130,11 @@ class CourseService
     public function getGroupBlocks(CourseGroup $group)
     {
         return $group->blocks()->get();
+    }
+
+    public function getGroupBlockById(CourseGroup $group, int $id)
+    {
+        return $group->blocks()->where("id", $id)->first();
     }
 
     public function createGroupBlock(CourseGroup $group, array $data)
@@ -158,5 +163,10 @@ class CourseService
         }
 
         return $block->update($data);
+    }
+
+    public function deleteGroupBlock(CourseGroupBlock $block)
+    {
+        return $block->delete();
     }
 }
