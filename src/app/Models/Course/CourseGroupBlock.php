@@ -12,8 +12,8 @@ class CourseGroupBlock extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        "course_id",
-        "course_group_id",
+        "v3_course_id",
+        "v3_course_group_id",
         "sort_id",
         "name",
         "type",

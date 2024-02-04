@@ -86,9 +86,9 @@ class CourseGroupController extends Controller
     }
 
     /**
-     * Shift course gorups
+     * Shift course groups
      */
-    public function shiftGroups(Request $request, Course $course, CourseGroup $group)
+    public function shiftGroup(Request $request, Course $course, CourseGroup $group)
     {
         $validatedData = Validator::make(
             $request->only(

@@ -122,10 +122,7 @@ class CourseService
         });
     }
 
-    public function createGroupsWithBlocks(Course $course)
-    {
-        //
-    }
+    public function createGroupsWithBlocks(Course $course) {}
 
     public function getGroupBlocks(CourseGroup $group)
     {
@@ -149,6 +146,7 @@ class CourseService
         }
 
         $data["order"] = $count;
+        $data["v3_course_id"] = $group->v3_course_id;
         return $group->blocks()->create($data);
     }
 
@@ -168,5 +166,17 @@ class CourseService
     public function deleteGroupBlock(CourseGroupBlock $block)
     {
         return $block->delete();
+    }
+
+    public function shiftGroupBlock(CourseGroup $group, CourseGroupBlock $block, int $newPosition)
+    {
+        $count = $group->blocks()->count();
+        if ($newPosition > $count) {
+            throw new AppException("New order is exceeding the current number of blocks!");
+        }
+        return DB::transaction(function () use ($group, $block, $newPosition) {
+            return $group->blocks()->where("order", ">=", $newPosition)->increment("order");
+            $this->updateGroupBlock($block, [ "order" => $newPosition ]);
+        });
     }
 }

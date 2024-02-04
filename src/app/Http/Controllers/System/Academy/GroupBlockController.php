@@ -89,4 +89,24 @@ class GroupBlockController extends Controller
 
         return response()->success();
     }
+
+    /**
+     * Shift group blocks
+     */
+    public function shiftBlock(Request $request, CourseGroup $group, CourseGroupBlock $block)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "order"
+            ),
+            [
+                "order" => "required|integer"
+            ]
+        )
+            ->validate();
+
+        $this->service->shiftGroupBlock($group, $block, $validatedData["order"]);
+
+        return response()->success();
+    }
 }
