@@ -27,6 +27,7 @@ class CourseResource extends JsonResource
             "detail" => new CourseDetailResource($this->whenLoaded("detail")),
             "language" => new LanguageResource($this->whenLoaded("language")),
             "groups" => CourseGroupResource::collection($this->whenLoaded("groups")),
+            "packages" => PackageResource::collection($this->whenLoaded("packages"))
         ];
     }
 }

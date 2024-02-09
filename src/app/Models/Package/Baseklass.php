@@ -5,6 +5,7 @@ namespace App\Models\Package;
 use App\Models\Package\Sort;
 use App\Models\Utility\Language;
 use App\Models\Utility\MainCategory;
+use App\Models\Utility\SystemIcon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -42,5 +43,10 @@ class Baseklass extends Model
     public function wordSorts()
     {
         return $this->hasMany(Sort::class);
+    }
+
+    public function systemIcon()
+    {
+        return $this->belongsTo(SystemIcon::class);
     }
 }

@@ -41,7 +41,9 @@ class CourseService
         }
         return Course::with([
             "groups",
-            "detail"
+            "detail",
+            "packages",
+            "groups",
         ])
             ->find($id);
     }
