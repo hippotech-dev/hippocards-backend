@@ -44,6 +44,7 @@ return new class () extends Migration {
             $table->string("name");
             $table->string("description")->nullable();
             $table->string("thumbnail")->nullable();
+            $table->integer("status")->default(EStatus::PENDING->value);
             $table->string("level")->default(ELanguageLevel::BEGINNER->value);
             $table->json("additional")->nullable();
             $table->foreignId("v3_thumbnail_asset_id")

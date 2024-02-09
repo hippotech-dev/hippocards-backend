@@ -4,6 +4,7 @@ namespace App\Models\Course;
 
 use App\Enums\ELanguageLevel;
 use App\Models\Package\Baseklass;
+use App\Models\Utility\Language;
 use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
@@ -18,7 +19,8 @@ class Course extends Model
         "language_id",
         "author_id",
         "additional",
-        "level"
+        "level",
+        "status"
     ];
 
     protected $casts = [
@@ -39,6 +41,11 @@ class Course extends Model
     public function blocks()
     {
         return $this->hasMany(CourseGroupBlock::class, "v3_course_id");
+    }
+
+    public function language()
+    {
+        return $this->belongsTo(Language::class);
     }
 
     public function packages()

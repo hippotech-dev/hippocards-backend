@@ -31,7 +31,7 @@ class CourseService
     public function getCourseWithPage(array $filter = [], array $with = [], int $size = 20)
     {
 
-        return filter_query_with_model(Course::latest(), $this->filterModel, $filter)->paginate($size);
+        return filter_query_with_model(Course::with("language")->latest(), $this->filterModel, $filter)->paginate($size);
     }
 
     public function getCourseById(int $id, $short = true)

@@ -11,4 +11,5 @@ enum EStatus: int
     case PENDING = 0;
     case SUCCESS = 1;
     case FAILURE = 2;
+    case PUBLISHED = 3;
 }

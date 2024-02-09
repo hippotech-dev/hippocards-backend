@@ -43,7 +43,9 @@ class AuthController extends Controller
     public function getAcademyIdentity()
     {
         $requestUser = auth()->user();
-        return response()->success(new UserResource($requestUser));
+        return response()->success([
+            "user" => new UserResource($requestUser)
+        ]);
     }
 
     /**

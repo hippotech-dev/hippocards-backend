@@ -16,7 +16,8 @@ class Asset extends Model
         "path",
         "size",
         "mime_type",
-        "metadata"
+        "metadata",
+        "is_uploaded"
     ];
 
     public $casts = [

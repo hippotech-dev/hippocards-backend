@@ -1,11 +1,14 @@
 <?php
 
 use App\Models\AppConnection;
+use App\Models\Course\Course;
+use App\Models\Course\CourseBlockVideo;
+use App\Models\Course\CourseDetail;
 use App\Utils\Constant;
 
 return [
 
-    "SSO_ENDPOINT" => env("SSO_ENDPOINT", "https://auth.hippo.cards"),
+    "SSO_ENDPOINT" => env("SSO_ENDPOINT", "http://localhost:3000"),
 
     "CATEGORY_COLORS" => [
         "#AFD224",
@@ -150,4 +153,9 @@ return [
             "active" => true
         ]
     ],
+
+    "CLASS_MAP" => [
+        "course-block-video" => CourseBlockVideo::class,
+        "course-thumbnail-video" => CourseDetail::class,
+    ]
 ];

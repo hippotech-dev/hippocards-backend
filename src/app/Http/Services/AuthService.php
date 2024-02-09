@@ -29,7 +29,7 @@ class AuthService
             "challenge_method" => "PLAIN",
             "response_type" => "code",
             "redirect_uri" => $redirectURI,
-            "scopes" => [ "openid" ],
+            "scopes" => "openid",
             "state" => "openid"
         ]);
     }

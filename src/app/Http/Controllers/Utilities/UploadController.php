@@ -14,26 +14,50 @@ class UploadController extends Controller
 
     /**
      * Upload file
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function uploadFile(Request $request)
     {
         $validatedData = Validator::make(
             $request->only(
                 "file",
-                "folder"
             ),
             [
                 "file" => "required|file|max:131072",
-                "folder" => "required|string|max:64"
             ]
         )
             ->validate();
 
-        $asset = $this->service->createAsset($validatedData["folder"], $validatedData["file"]);
+        $asset = $this->service->createAsset($validatedData["file"]);
 
         return new AssetResource($asset);
+    }
+
+    /**
+     * Get signed url
+     */
+    public function getVideoSignedUrl(Request $request)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "filename",
+                "object_type",
+                "object_id"
+            ),
+            [
+                "filename" => "required|string|max:32",
+                "object_type" => "required|string|max:128",
+                "object_id" => "required|integer",
+            ]
+        )
+            ->validate();
+
+
+        $asset = $this->service->createNonuploadedAssetByObject($validatedData["object_type"], $validatedData["object_id"], $validatedData["filename"]);
+        $url = $this->service->createVideoUploadUrl($validatedData["filename"], [
+
+            "asset_id" => $asset->id
+        ]);
+
+        return response()->success($url);
     }
 }

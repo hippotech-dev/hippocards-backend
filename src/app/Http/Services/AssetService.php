@@ -2,7 +2,6 @@
 
 namespace App\Http\Services;
 
-use App\Enums\EAssetType;
 use App\Models\Utility\Asset;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -23,11 +22,10 @@ class AssetService
         return $asset->path;
     }
 
-    public function createAsset(string $folder, UploadedFile $file)
+    public function createAsset(UploadedFile $file)
     {
-        $fileExtension = $file->extension();
-        $filename = bin2hex(random_bytes(16)) . "." . $fileExtension;
-
+        $folder = "assets/" . date("Y-m");
+        $filename = $this->generateRandomFilename($file->extension());
         $path = $folder . "/" . $filename;
 
         Storage::putFileAs($folder, $file, $filename);
@@ -39,9 +37,39 @@ class AssetService
         ]);
     }
 
+    public function createNonuploadedAssetByObject(string $objectType, int $objectId, string $filename)
+    {
+        $path = $objectType . "/" . $this->generateRandomFilename($filename);
+
+        return Asset::create([
+            "path" => $path,
+            "size" => 0,
+            "mime_type" => "unknown",
+        ]);
+    }
+
     public function deleteAssetById(int $id)
     {
         // $asset = $this->getAssetById($id);
         return Asset::where("id", $id)->delete();
+    }
+
+    public function createVideoUploadUrl($path, array $metaData = [])
+    {
+        [ "url" => $url ] = Storage::disk("s3-tokyo")->temporaryUploadUrl(
+            "video/" . $path,
+            now()->addMinutes(2),
+            [
+                'Metadata' => $metaData,
+                "ContentType" => "application/octet-stream"
+            ]
+        );
+
+        return $url;
+    }
+
+    public function generateRandomFilename(string $ext)
+    {
+        return bin2hex(random_bytes(16)) . "." . $ext;
     }
 }

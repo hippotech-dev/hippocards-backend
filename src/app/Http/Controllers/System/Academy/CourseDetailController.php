@@ -29,15 +29,16 @@ class CourseDetailController extends Controller
     {
         $validatadData = Validator::make(
             $request->only(
-                "contents",
+                "content",
                 "price",
                 "price_string",
                 "duration_days",
             ),
             [
-                "contents" => "required|array",
-                "contents.*.title" => "required|string|max:128",
-                "contents.*.body" => "required|string|max:4096",
+                "content" => "required|array",
+                "content.*.title" => "required|string|max:128",
+                "content.*.body" => "required|string|max:4096",
+                "content.*.index" => "required|integer",
                 "price" => "required|integer",
                 "duration_days" => "required|integer",
             ]

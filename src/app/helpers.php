@@ -218,39 +218,6 @@ if (!function_exists("date_diff_in_months")) {
     }
 }
 
-if (!function_exists("upload_file")) {
-    function upload_file(string $path, UploadedFile | string $file, $ext = "pdf")
-    {
-        $extension = $file instanceof UploadedFile ? $file->getClientOriginalExtension() : $ext;
-        $filename = md5(time()) . "." . $extension;
-        if ($file instanceof UploadedFile) {
-            Storage::putFileAs(
-                $path,
-                $file,
-                $filename
-            );
-        } else {
-            $destinationPath = $path . "/" . $filename;
-
-            Storage::put($destinationPath, $file);
-        }
-        return $path . "/" . $filename;
-    }
-}
-
-if (!function_exists("location_distance")) {
-    function location_distance($lat1, $lon1, $lat2, $lon2)
-    {
-        $R = 6371;
-        $dLat = deg2rad($lat2 - $lat1);
-        $dLon = deg2rad($lon2 - $lon1);
-        $a = sin($dLat / 2) *  sin($dLat / 2) + cos(deg2rad($lat1)) *  cos(deg2rad($lat2)) * sin($dLon / 2) *  sin($dLon / 2);
-        $c = 2 *  atan2(sqrt($a), sqrt(1 - $a));
-        $d = $R * $c * 1000;
-        return $d;
-    }
-}
-
 if (!function_exists("fetch_url")) {
     function fetch_url(string $url, string $method, array $options)
     {
@@ -263,17 +230,6 @@ if (!function_exists("fetch_url")) {
         );
 
         return json_decode($response->getBody()->getContents(), true);
-    }
-}
-
-if (!function_exists("class_map")) {
-    function class_map($type)
-    {
-        $map = Config::get("constants.CLASSES", []);
-        if (array_key_exists($type, $map)) {
-            return $map[$type];
-        }
-        return null;
     }
 }
 
@@ -299,20 +255,6 @@ if (!function_exists("convert_array_to_object_with_key")) {
             unset($generatedObj[$item[$key]][$key]);
         }
         return $generatedObj;
-    }
-}
-
-if (!function_exists("get_class_id")) {
-    function get_class_id($classString)
-    {
-        $classes = Config::get("constants.CLASSES", []);
-        $keys = array_keys($classes);
-        foreach ($keys as $key) {
-            if ($classes[$key] === $classString) {
-                return $key;
-            }
-        }
-        return null;
     }
 }
 
@@ -344,5 +286,24 @@ if (!function_exists("check_email")) {
     function check_email(string $string)
     {
         return filter_var($string, FILTER_VALIDATE_EMAIL);
+    }
+}
+
+if (!function_exists("get_class_map")) {
+    function get_class_map(string $string)
+    {
+        $classMap = Config::get("constants.CLASS_MAP", []);
+
+        if (!array_key_exists($string, $classMap)) {
+            return null;
+        }
+        return $classMap[$string];
+    }
+}
+
+if (!function_exists("get_object_by_id")) {
+    function get_object_by_id(string $class, int $id)
+    {
+        return ($class)::find($id);
     }
 }

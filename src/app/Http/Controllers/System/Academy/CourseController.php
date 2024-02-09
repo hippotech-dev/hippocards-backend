@@ -69,7 +69,7 @@ class CourseController extends Controller
      */
     public function show(Request $request, int $id)
     {
-        $short = boolean_value($request->get("short", true)) ?? true;
+        $short = boolean_value($request->get("short", false)) ?? true;
         $course = $this->service->getCourseById($id, $short);
         return new CourseResource($course);
     }
@@ -88,10 +88,10 @@ class CourseController extends Controller
                 "level"
             ),
             [
-                "name" => "required|string|max:64",
-                "description" => "required|string|max:256",
-                "v3_thumbnail_asset_id" => "required|integer|exists:v3_assets,id",
-                "language_id" => "required|integer|exists:language,id",
+                "name" => "sometimes|string|max:64",
+                "description" => "sometimes|string|max:256",
+                "v3_thumbnail_asset_id" => "sometimes|integer|exists:v3_assets,id",
+                "language_id" => "sometimes|integer|exists:language,id",
                 "level" => [
                     "required",
                     Rule::in(
