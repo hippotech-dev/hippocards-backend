@@ -16,7 +16,7 @@ class ResponseServiceProvider extends ServiceProvider
     {
         Response::macro("success", function ($data = null) {
             $response = ["success" => true];
-            boolval($data) && $response["data"] = $data;
+            !is_null($data) && $response["data"] = $data;
             return response()->json($response);
         });
 
