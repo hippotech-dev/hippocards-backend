@@ -130,4 +130,14 @@ class CourseController extends Controller
 
         return response()->success();
     }
+
+    /**
+     * Get course kanban data
+     */
+    public function getCourseKanbanData(Course $course)
+    {
+        $kanbanData = $this->service->getCourseKanbanData($course);
+
+        return response()->success($kanbanData);
+    }
 }

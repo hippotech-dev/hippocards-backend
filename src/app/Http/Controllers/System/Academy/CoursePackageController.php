@@ -33,7 +33,7 @@ class CoursePackageController extends Controller
                 "packages",
             ]),
             [
-                "packages" => "required|array",
+                "packages" => "present|array",
                 "packages.*.package_id" => "required|integer",
                 "packages.*.order" => "required|integer"
             ]

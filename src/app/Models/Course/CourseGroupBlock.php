@@ -3,8 +3,8 @@
 namespace App\Models\Course;
 
 use App\Enums\ECourseBlockType;
+use App\Models\Package\Sort;
 use Illuminate\Database\Eloquent\Model;
-use Ramsey\Collection\Sort;
 
 class CourseGroupBlock extends Model
 {
@@ -36,7 +36,7 @@ class CourseGroupBlock extends Model
 
     public function wordSort()
     {
-        return $this->belongsTo(Sort::class);
+        return $this->belongsTo(Sort::class, "sort_id");
     }
 
     public function videos()

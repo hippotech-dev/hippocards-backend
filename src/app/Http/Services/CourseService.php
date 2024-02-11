@@ -4,6 +4,8 @@ namespace App\Http\Services;
 
 use App\Enums\ECourseBlockType;
 use App\Exceptions\AppException;
+use App\Http\Resources\System\Academy\CourseGroupResource;
+use App\Http\Resources\System\Academy\GroupBlockResource;
 use App\Models\Course\Course;
 use App\Models\Course\CourseGroup;
 use App\Models\Course\CourseGroupBlock;
@@ -85,9 +87,30 @@ class CourseService
         return $packages;
     }
 
+    public function getCourseKanbanData(Course $course)
+    {
+        $blocks = $this->getCourseBlocks($course);
+        $columns = $this->getCourseGroups($course);
+
+        foreach ($columns as $column) {
+            $column->cardIds = $blocks->where("v3_course_group_id", $column->id)->pluck("id");
+        }
+
+        return [
+            "cards" => GroupBlockResource::collection($blocks),
+            "columns" => CourseGroupResource::collection($columns),
+            "columnOrder" => $columns->pluck("id")
+        ];
+    }
+
     /**
      * Detail
      */
+
+    public function getCourseDetail(Course $course)
+    {
+        return $course->detail()->first();
+    }
 
     public function createOrUpdateDetail(Course $course, array $data)
     {
@@ -98,21 +121,24 @@ class CourseService
 
     public function attachPackagesToCourse(Course $course, array $data)
     {
-        return $course->packagePivots()->createMany($data);
+        $generatedData = array();
+        foreach ($data as &$item) {
+            $generatedData[$item["package_id"] ?? 0] = [
+                "order" => $item["order"] ?? 0
+            ];
+        }
+
+        $course->packages()->detach();
+        return $course->packages()->attach($generatedData);
     }
 
     /**
      * Course Group
      */
 
-    public function getCourseDetail(Course $course)
-    {
-        return $course->detail()->first();
-    }
-
     public function getCourseGroups(Course $course)
     {
-        return $course->groups()->get();
+        return $course->groups()->orderBy("order", "asc")->get();
     }
 
     public function getCourseGroupById(Course $course, int $id)
@@ -170,10 +196,14 @@ class CourseService
     /**
      * Group Block
      */
-
     public function getGroupBlocks(CourseGroup $group)
     {
         return $group->blocks()->get();
+    }
+
+    public function getCourseBlocks(Course $course)
+    {
+        return $course->blocks()->get();
     }
 
     public function getGroupBlockById(CourseGroup $group, int $id)
