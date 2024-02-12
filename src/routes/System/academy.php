@@ -5,8 +5,6 @@ use App\Http\Controllers\System\Academy\CourseDetailController;
 use App\Http\Controllers\System\Academy\CourseGroupController;
 use App\Http\Controllers\System\Academy\CoursePackageController;
 use App\Http\Controllers\System\Academy\GroupBlockController;
-use App\Http\Controllers\System\AuthController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,6 +32,12 @@ Route::prefix("course")->group(function () {
             Route::get("kanban", [ CourseController::class, "getCourseKanbanData" ]);
             Route::post("auto", [ CourseController::class, "automatedGroupsAndBlockCreate" ]);
         });
-        Route::post("group/{id}/shift", [ CourseGroupController::class, "shiftGroups" ]);
+        Route::post("group/{group}/shift", [ CourseGroupController::class, "shiftGroup" ]);
+    });
+});
+
+Route::prefix("group")->group(function () {
+    Route::prefix("{group}")->group(function () {
+        Route::post("block/{block}/shift", [ GroupBlockController::class, "shiftBlock" ]);
     });
 });

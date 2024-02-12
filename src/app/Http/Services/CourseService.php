@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Enums\ECourseBlockType;
 use App\Exceptions\AppException;
+use App\Exceptions\UnauthorizedException;
 use App\Http\Resources\System\Academy\CourseGroupResource;
 use App\Http\Resources\System\Academy\GroupBlockResource;
 use App\Models\Course\Course;
@@ -93,7 +94,7 @@ class CourseService
         $columns = $this->getCourseGroups($course);
 
         foreach ($columns as $column) {
-            $column->cardIds = $blocks->where("v3_course_group_id", $column->id)->pluck("id");
+            $column->cardIds = $blocks->where("v3_course_group_id", $column->id)->sortBy("order")->pluck("id");
         }
 
         return [
@@ -148,6 +149,7 @@ class CourseService
 
     public function createCourseGroup(Course $course, array $data)
     {
+        $data["order"] = $course->groups()->count();
         return $course->groups()->create($data);
     }
 
@@ -158,6 +160,7 @@ class CourseService
 
     public function deleteCourseGroup(CourseGroup &$group)
     {
+        CourseGroup::where("v3_course_id", $group->v3_course_id)->where("order", ">", $group->order)->decrement("order");
         return $group->delete();
     }
 
@@ -167,9 +170,16 @@ class CourseService
         if ($newPosition > $count) {
             throw new AppException("New order is exceeding the current number of groups!");
         }
+        if ($newPosition === $group->order) {
+            throw new AppException("No change!");
+        }
         return DB::transaction(function () use ($course, $group, $newPosition) {
-            return $course->groups()->where("order", ">=", $newPosition)->increment("order");
-            $this->updateCourseGroup($group, [ "order" => $newPosition ]);
+            if ($group->order < $newPosition) {
+                $course->groups()->where("order", "<=", $newPosition)->where("order", ">", $group->order)->decrement("order");
+            } else {
+                $course->groups()->where("order", ">=", $newPosition)->where("order", "<", $group->order)->increment("order");
+            }
+            return $this->updateCourseGroup($group, [ "order" => $newPosition ]);
         });
     }
 
@@ -242,18 +252,29 @@ class CourseService
 
     public function deleteGroupBlock(CourseGroupBlock $block)
     {
+        CourseGroupBlock::where("v3_course_group_id", $block->v3_course_group_id)->where("order", ">", $block->order)->decrement("order");
         return $block->delete();
     }
 
-    public function shiftGroupBlock(CourseGroup $group, CourseGroupBlock $block, int $newPosition)
+    public function shiftGroupBlock(CourseGroup $group, CourseGroupBlock $block, int $newGroup, int $newPosition)
     {
+        if ($group->id !== $block->v3_course_group_id) {
+            throw new UnauthorizedException("Invalid object!");
+        }
         $count = $group->blocks()->count();
         if ($newPosition > $count) {
             throw new AppException("New order is exceeding the current number of blocks!");
         }
-        return DB::transaction(function () use ($group, $block, $newPosition) {
-            return $group->blocks()->where("order", ">=", $newPosition)->increment("order");
-            $this->updateGroupBlock($block, [ "order" => $newPosition ]);
+        return DB::transaction(function () use ($group, $block, $newGroup, $newPosition) {
+            if ($block->v3_course_group_id !== $newGroup) {
+                $group->blocks()->where("order", ">", $block->order)->decrement("order");
+                CourseGroupBlock::where("v3_course_group_id", $newGroup)->where("order", ">=", $newPosition)->increment("order");
+            } elseif ($block->order < $newPosition) {
+                $group->blocks()->where("order", "<=", $newPosition)->where("order", ">", $block->order)->decrement("order");
+            } else {
+                $group->blocks()->where("order", ">=", $newPosition)->where("order", "<", $block->order)->increment("order");
+            }
+            return $this->updateGroupBlock($block, [ "order" => $newPosition, "v3_course_group_id" => $newGroup ]);
         });
     }
 

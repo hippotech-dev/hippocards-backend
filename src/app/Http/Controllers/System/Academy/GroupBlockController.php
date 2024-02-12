@@ -97,15 +97,17 @@ class GroupBlockController extends Controller
     {
         $validatedData = Validator::make(
             $request->only(
+                "v3_course_group_id",
                 "order"
             ),
             [
+                "v3_course_group_id" => "required|integer",
                 "order" => "required|integer"
             ]
         )
             ->validate();
 
-        $this->service->shiftGroupBlock($group, $block, $validatedData["order"]);
+        $this->service->shiftGroupBlock($group, $block, $validatedData["v3_course_group_id"], $validatedData["order"]);
 
         return response()->success();
     }
