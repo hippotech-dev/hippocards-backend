@@ -30,7 +30,7 @@ Route::prefix("course")->group(function () {
     Route::prefix("{course}")->group(function () {
         Route::prefix("action")->group(function () {
             Route::get("kanban", [ CourseController::class, "getCourseKanbanData" ]);
-            Route::post("auto", [ CourseController::class, "automatedGroupsAndBlockCreate" ]);
+            Route::post("import", [ CourseController::class, "automatedGroupsAndBlockCreate" ]);
         });
         Route::post("group/{group}/shift", [ CourseGroupController::class, "shiftGroup" ]);
     });

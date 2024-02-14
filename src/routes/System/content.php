@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\System\Content\PackageController;
+use App\Http\Controllers\System\Content\WordController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,5 +22,11 @@ Route::apiResources([
 Route::prefix("package")->group(function () {
     Route::prefix("action")->group(function () {
         Route::get("search", [ PackageController::class, "search" ]);
+    });
+});
+
+Route::prefix("word")->group(function () {
+    Route::prefix("action")->group(function () {
+        Route::get("search", [ WordController::class, "search" ]);
     });
 });

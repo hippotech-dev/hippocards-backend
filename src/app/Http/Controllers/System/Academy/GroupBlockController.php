@@ -8,7 +8,6 @@ use App\Http\Resources\System\Academy\GroupBlockResource;
 use App\Http\Services\CourseService;
 use App\Models\Course\CourseGroup;
 use App\Models\Course\CourseGroupBlock;
-use Google\Service\SearchConsole\BlockedResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -46,7 +45,7 @@ class GroupBlockController extends Controller
 
         $block = $this->service->createGroupBlock($group, $validatedData);
 
-        return new BlockedResource($block);
+        return new GroupBlockResource($block);
     }
 
     /**
@@ -54,8 +53,8 @@ class GroupBlockController extends Controller
      */
     public function show(CourseGroup $group, int $id)
     {
-        $block = $this->service->getGroupBlockById($group, $id);
-        return new BlockedResource($block);
+        $block = $this->service->getGroupBlockById($group, $id, [ "wordSort" ]);
+        return new GroupBlockResource($block);
     }
 
     /**
@@ -77,7 +76,7 @@ class GroupBlockController extends Controller
 
         $this->service->updateGroupBlock($block, $validatedData);
 
-        return new BlockedResource($block);
+        return new GroupBlockResource($block);
     }
 
     /**

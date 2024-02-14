@@ -28,7 +28,7 @@ class CourseService
     public function getCourses(array $filter = [], array $with = [])
     {
 
-        return filter_query_with_model(Course::latest(), $this->filterModel, $filter)->get();
+        return filter_query_with_model(Course::with($with), $this->filterModel, $filter)->get();
     }
 
     public function getCourseWithPage(array $filter = [], array $with = [], int $size = 20)
@@ -37,18 +37,9 @@ class CourseService
         return filter_query_with_model(Course::with("language")->latest(), $this->filterModel, $filter)->paginate($size);
     }
 
-    public function getCourseById(int $id, $short = true)
+    public function getCourseById(int $id, array $with = [ "groups", "detail", "packages", "groups" ])
     {
-        if ($short) {
-            return Course::find($id);
-        }
-        return Course::with([
-            "groups",
-            "detail",
-            "packages",
-            "groups",
-        ])
-            ->find($id);
+        return Course::with($with)->find($id);
     }
 
     public function createCourse(array $data)
@@ -142,9 +133,9 @@ class CourseService
         return $course->groups()->orderBy("order", "asc")->get();
     }
 
-    public function getCourseGroupById(Course $course, int $id)
+    public function getCourseGroupById(Course $course, int $id, array $with = [])
     {
-        return $course->groups()->where("id", $id)->first();
+        return $course->groups()->with($with)->where("id", $id)->first();
     }
 
     public function createCourseGroup(Course $course, array $data)
@@ -216,9 +207,9 @@ class CourseService
         return $course->blocks()->get();
     }
 
-    public function getGroupBlockById(CourseGroup $group, int $id)
+    public function getGroupBlockById(CourseGroup $group, int $id, array $with = [])
     {
-        return $group->blocks()->where("id", $id)->first();
+        return $group->blocks()->with($with)->where("id", $id)->first();
     }
 
     public function createGroupBlock(CourseGroup $group, array $data)

@@ -18,6 +18,7 @@ class GroupBlockResource extends JsonResource
             "id" => $this->id,
             "name" => $this->name,
             "type" => $this->type,
+            "v3_course_group_id" => $this->v3_course_group_id,
             "word_sort" => new WordSortResource($this->whenLoaded("wordSort")),
         ];
     }

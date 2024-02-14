@@ -5,7 +5,7 @@ namespace App\Http\Resources\System\Academy;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class WordSortResource extends JsonResource
+class WordResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,11 +14,6 @@ class WordSortResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
-            "id" => $this->id,
-            "word_id" => $this->word_id,
-            "package_id" => $this->baseklass_id,
-            "word" => new WordResource($this->whenLoaded("word"))
-        ];
+        return parent::toArray($request);
     }
 }

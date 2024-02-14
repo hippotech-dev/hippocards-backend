@@ -70,7 +70,7 @@ class CourseController extends Controller
     public function show(Request $request, int $id)
     {
         $short = boolean_value($request->get("short", false)) ?? true;
-        $course = $this->service->getCourseById($id, $short);
+        $course = $this->service->getCourseById($id);
         return new CourseResource($course);
     }
 
