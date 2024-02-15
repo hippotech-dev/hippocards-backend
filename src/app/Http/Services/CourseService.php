@@ -8,6 +8,7 @@ use App\Exceptions\UnauthorizedException;
 use App\Http\Resources\System\Academy\CourseGroupResource;
 use App\Http\Resources\System\Academy\GroupBlockResource;
 use App\Models\Course\Course;
+use App\Models\Course\CourseBlockVideo;
 use App\Models\Course\CourseGroup;
 use App\Models\Course\CourseGroupBlock;
 use Illuminate\Support\Collection;
@@ -207,7 +208,7 @@ class CourseService
         return $course->blocks()->get();
     }
 
-    public function getGroupBlockById(CourseGroup $group, int $id, array $with = [])
+    public function getGroupBlockById(CourseGroup $group, int $id, array $with = ["wordSort", "videos.asset"])
     {
         return $group->blocks()->with($with)->where("id", $id)->first();
     }
@@ -323,5 +324,29 @@ class CourseService
         $courseGroups = $this->createManyCourseGroups($course);
 
         $this->createBlocksMultipleGroup($courseGroups, $packageSorts);
+    }
+
+    /**
+     * Video
+     */
+
+    public function getBlockVideos(CourseGroupBlock $block, array $with = [])
+    {
+        return $block->videos()->get();
+    }
+
+    public function createBlockVideo(CourseGroupBlock $block, array $data)
+    {
+        return $block->videos()->create($data);
+    }
+
+    public function updateBlockVideo(CourseGroupBlock $block, CourseBlockVideo $video, $data)
+    {
+        return $block->videos()->where("id", $video->id)->update($data);
+    }
+
+    public function deleteBlockVideo(CourseBlockVideo $video)
+    {
+        return $video->delete();
     }
 }

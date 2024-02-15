@@ -24,7 +24,7 @@ class AssetService
 
     public function createAsset(UploadedFile $file)
     {
-        $folder = "assets/" . date("Y-m");
+        $folder = "v3/assets/" . date("Y-m");
         $filename = $this->generateRandomFilename($file->extension());
         $path = $folder . "/" . $filename;
 
@@ -37,9 +37,9 @@ class AssetService
         ]);
     }
 
-    public function createNonuploadedAssetByObject(string $objectType, int $objectId, string $filename)
+    public function createNonuploadedAssetByObject(string $objectType, string $filename)
     {
-        $path = $objectType . "/" . $this->generateRandomFilename($filename);
+        $path = "v3/upload/" . $objectType . "/" . $this->generateRandomFilename($filename);
 
         return Asset::create([
             "path" => $path,
@@ -54,14 +54,15 @@ class AssetService
         return Asset::where("id", $id)->delete();
     }
 
-    public function createVideoUploadUrl($path, array $metaData = [])
+    public function createVideoUploadUrl(Asset $asset, array $metaData = [])
     {
         [ "url" => $url ] = Storage::disk("s3-tokyo")->temporaryUploadUrl(
-            "video/" . $path,
+            $asset->path,
             now()->addMinutes(2),
             [
                 'Metadata' => $metaData,
-                "ContentType" => "application/octet-stream"
+                "ContentType" => "application/octet-stream",
+                "ACL" => "public-read",
             ]
         );
 

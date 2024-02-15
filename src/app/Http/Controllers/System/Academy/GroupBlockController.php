@@ -53,7 +53,7 @@ class GroupBlockController extends Controller
      */
     public function show(CourseGroup $group, int $id)
     {
-        $block = $this->service->getGroupBlockById($group, $id, [ "wordSort" ]);
+        $block = $this->service->getGroupBlockById($group, $id);
         return new GroupBlockResource($block);
     }
 

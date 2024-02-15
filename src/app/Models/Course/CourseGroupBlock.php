@@ -41,6 +41,6 @@ class CourseGroupBlock extends Model
 
     public function videos()
     {
-        return $this->hasMany(CourseBlockVideo::class);
+        return $this->hasMany(CourseBlockVideo::class, "v3_course_group_block_id");
     }
 }

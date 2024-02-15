@@ -22,10 +22,10 @@ class UploadController extends Controller
                 "file",
             ),
             [
-                "file" => "required|file|max:131072",
-            ]
+                    "file" => "required|file|max:131072",
+                ]
         )
-            ->validate();
+                ->validate();
 
         $asset = $this->service->createAsset($validatedData["file"]);
 
@@ -41,23 +41,23 @@ class UploadController extends Controller
             $request->only(
                 "filename",
                 "object_type",
-                "object_id"
             ),
             [
                 "filename" => "required|string|max:32",
                 "object_type" => "required|string|max:128",
-                "object_id" => "required|integer",
             ]
         )
             ->validate();
 
 
-        $asset = $this->service->createNonuploadedAssetByObject($validatedData["object_type"], $validatedData["object_id"], $validatedData["filename"]);
-        $url = $this->service->createVideoUploadUrl($validatedData["filename"], [
-
+        $asset = $this->service->createNonuploadedAssetByObject($validatedData["object_type"], $validatedData["filename"]);
+        $url = $this->service->createVideoUploadUrl($asset, [
             "asset_id" => $asset->id
         ]);
 
-        return response()->success($url);
+        return response()->success([
+            "url" => $url,
+            "asset" => new AssetResource($asset)
+        ]);
     }
 }

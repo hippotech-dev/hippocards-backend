@@ -19,7 +19,7 @@ class CourseBlockVideo extends Model
 
     public function asset()
     {
-        return $this->belongsTo(Asset::class);
+        return $this->belongsTo(Asset::class, "v3_asset_id");
     }
 
     public function courseGroupBlock()

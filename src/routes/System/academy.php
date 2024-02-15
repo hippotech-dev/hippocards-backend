@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\System\Academy\BlockVideoController;
 use App\Http\Controllers\System\Academy\CourseController;
 use App\Http\Controllers\System\Academy\CourseDetailController;
 use App\Http\Controllers\System\Academy\CourseGroupController;
@@ -24,6 +25,7 @@ Route::apiResources([
     "course.package" => CoursePackageController::class,
     "course.group" => CourseGroupController::class,
     "group.block" => GroupBlockController::class,
+    "block.video" => BlockVideoController::class,
 ]);
 
 Route::prefix("course")->group(function () {
