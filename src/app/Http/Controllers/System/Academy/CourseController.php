@@ -67,9 +67,8 @@ class CourseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, int $id)
+    public function show(int $id)
     {
-        $short = boolean_value($request->get("short", false)) ?? true;
         $course = $this->service->getCourseById($id);
         return new CourseResource($course);
     }

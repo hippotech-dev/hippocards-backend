@@ -3,12 +3,14 @@
 namespace App\Http\Services;
 
 use App\Enums\ECourseBlockType;
+use App\Enums\ECourseBlockVideoType;
 use App\Exceptions\AppException;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Resources\System\Academy\CourseGroupResource;
 use App\Http\Resources\System\Academy\GroupBlockResource;
 use App\Models\Course\Course;
 use App\Models\Course\CourseBlockVideo;
+use App\Models\Course\CourseBlockVideoTimestamp;
 use App\Models\Course\CourseGroup;
 use App\Models\Course\CourseGroupBlock;
 use Illuminate\Support\Collection;
@@ -236,7 +238,7 @@ class CourseService
             if (is_null($sort) || is_null($sort->word)) {
                 throw new AppException("Invalid sort!");
             }
-            $data["sort"] = $sort->word->word;
+            $data["name"] = $sort->word->word;
         }
 
         return $block->update($data);
@@ -332,21 +334,55 @@ class CourseService
 
     public function getBlockVideos(CourseGroupBlock $block, array $with = [])
     {
-        return $block->videos()->get();
+        return $block->videos()->with($with)->get();
     }
 
-    public function createBlockVideo(CourseGroupBlock $block, array $data)
+    public function getBlockVideoById(int $id, array $with = [
+        "videoTimestamps",
+        "asset"
+    ])
     {
-        return $block->videos()->create($data);
+        return CourseBlockVideo::with($with)->find($id);
     }
 
-    public function updateBlockVideo(CourseGroupBlock $block, CourseBlockVideo $video, $data)
+    public function getBlockVideoByType(CourseGroupBlock $block, ECourseBlockVideoType $type, array $with = [])
     {
-        return $block->videos()->where("id", $video->id)->update($data);
+        return $block->videos()->with($with)->where("type", $type)->first();
+    }
+
+    public function createUpdateBlockVideo(CourseGroupBlock $block, array $data)
+    {
+        $video = $this->getBlockVideoByType($block, ECourseBlockVideoType::from($data["type"]));
+        if (is_null($video)) {
+            return $block->videos()->create($data);
+        }
+        $video->update($data);
+        return $video;
     }
 
     public function deleteBlockVideo(CourseBlockVideo $video)
     {
         return $video->delete();
+    }
+
+    public function createVideoTimestamp(CourseBlockVideo $video, array $data)
+    {
+        $checkTimestamp = $video->videoTimestamps()->where("end", ">", $data["start"])->where("start", "<", $data["end"])->first();
+
+        if (!is_null($checkTimestamp)) {
+            throw new AppException("Timestamp is overlapping with other timestamp");
+        }
+
+        return $video->videoTimestamps()->create($data);
+    }
+
+    public function updateVideoTimestamp(CourseBlockVideoTimestamp $timestamp, array $data)
+    {
+        return $timestamp->update($data);
+    }
+
+    public function deleteVideoTimestamp(CourseBlockVideoTimestamp $timestamp)
+    {
+        return $timestamp->delete();
     }
 }

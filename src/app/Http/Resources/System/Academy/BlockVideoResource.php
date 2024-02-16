@@ -18,8 +18,10 @@ class BlockVideoResource extends JsonResource
         return [
             "id" => $this->id,
             "v3_asset_id" => $this->v3_asset_id,
+            "v3_course_group_block_id" => $this->v3_course_group_block_id,
             "type" => $this->type,
-            "asset" => new AssetResource($this->whenLoaded("asset"))
+            "asset" => new AssetResource($this->whenLoaded("asset")),
+            "timestamps" => VideoTimestampResource::collection($this->whenLoaded("videoTimestamps"))
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\System\Academy;
 use App\Enums\ECourseBlockVideoType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\System\Academy\BlockVideoResource;
+use App\Http\Resources\System\Academy\CourseResource;
 use App\Http\Services\CourseService;
 use App\Models\Course\CourseBlockVideo;
 use App\Models\Course\CourseGroupBlock;
@@ -45,7 +46,7 @@ class BlockVideoController extends Controller
         )
             ->validate();
 
-        $video = $this->service->createBlockVideo($block, $validatedData);
+        $video = $this->service->createUpdateBlockVideo($block, $validatedData);
 
         return new BlockVideoResource($video);
     }
@@ -53,29 +54,9 @@ class BlockVideoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id) {}
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, CourseGroupBlock $block, CourseBlockVideo $video)
+    public function show(int $block, int $id)
     {
-        $validatedData = Validator::make(
-            $request->only(
-                "type",
-                "v3_asset_id",
-                "duration"
-            ),
-            [
-                "duration" => "sometimes|integer",
-                "v3_asset_id" => "sometimes|exists:v3_assets,id",
-                "type" => ["sometimes", Rule::in(ECourseBlockVideoType::IMAGINATION->value, ECourseBlockVideoType::TRANSLATION->value)]
-            ]
-        )
-            ->validate();
-
-        $video = $this->service->updateBlockVideo($block, $video, $validatedData);
-
+        $video = $this->service->getBlockVideoById($id);
         return new BlockVideoResource($video);
     }
 

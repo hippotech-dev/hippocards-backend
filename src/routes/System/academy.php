@@ -6,6 +6,7 @@ use App\Http\Controllers\System\Academy\CourseDetailController;
 use App\Http\Controllers\System\Academy\CourseGroupController;
 use App\Http\Controllers\System\Academy\CoursePackageController;
 use App\Http\Controllers\System\Academy\GroupBlockController;
+use App\Http\Controllers\System\Academy\VideoTimestampController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,6 +27,7 @@ Route::apiResources([
     "course.group" => CourseGroupController::class,
     "group.block" => GroupBlockController::class,
     "block.video" => BlockVideoController::class,
+    "video.timestamp" => VideoTimestampController::class
 ]);
 
 Route::prefix("course")->group(function () {

@@ -26,4 +26,9 @@ class CourseBlockVideo extends Model
     {
         return $this->belongsTo(CourseGroupBlock::class);
     }
+
+    public function videoTimestamps()
+    {
+        return $this->hasMany(CourseBlockVideoTimestamp::class, "v3_course_video_id");
+    }
 }
