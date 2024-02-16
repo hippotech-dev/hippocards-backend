@@ -1,14 +1,11 @@
 <?php
 
-use App\Enums\EAssetType;
 use App\Enums\ECourseBlockType;
 use App\Enums\ECourseBlockVideoTimestampType;
 use App\Enums\ECourseBlockVideoType;
 use App\Enums\ELanguageLevel;
 use App\Enums\EStatus;
-use App\Enums\ETestType;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 

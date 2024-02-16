@@ -6,6 +6,7 @@ use App\Enums\ECourseBlockType;
 use App\Enums\ECourseBlockVideoType;
 use App\Exceptions\AppException;
 use App\Exceptions\UnauthorizedException;
+use App\Http\Resources\System\Academy\BlockKanbanCardResource;
 use App\Http\Resources\System\Academy\CourseGroupResource;
 use App\Http\Resources\System\Academy\GroupBlockResource;
 use App\Models\Course\Course;
@@ -92,7 +93,7 @@ class CourseService
         }
 
         return [
-            "cards" => GroupBlockResource::collection($blocks),
+            "cards" => BlockKanbanCardResource::collection($blocks),
             "columns" => CourseGroupResource::collection($columns),
             "columnOrder" => $columns->pluck("id")
         ];
@@ -241,6 +242,14 @@ class CourseService
             $data["name"] = $sort->word->word;
         }
 
+        if (array_key_exists("metadata", $data)) {
+            $metadata = $block->metadata ?? [];
+            $data["metadata"] = array_merge(
+                $metadata,
+                $data["metadata"]
+            );
+        }
+
         return $block->update($data);
     }
 
@@ -352,11 +361,20 @@ class CourseService
 
     public function createUpdateBlockVideo(CourseGroupBlock $block, array $data)
     {
-        $video = $this->getBlockVideoByType($block, ECourseBlockVideoType::from($data["type"]));
+        $type = ECourseBlockVideoType::from($data["type"]);
+        $video = $this->getBlockVideoByType($block, $type);
         if (is_null($video)) {
-            return $block->videos()->create($data);
+            $video = $block->videos()->create($data);
+        } else {
+            $video->update($data);
         }
-        $video->update($data);
+
+        $this->updateGroupBlock($block, [
+            "metadata" => [
+                ($type === ECourseBlockVideoType::IMAGINATION ? "upload_imagination" : "upload_definition") => true
+            ]
+        ]);
+
         return $video;
     }
 

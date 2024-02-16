@@ -28,7 +28,7 @@ class AssetService
         $filename = $this->generateRandomFilename($file->extension());
         $path = $folder . "/" . $filename;
 
-        Storage::putFileAs($folder, $file, $filename);
+        Storage::disk("s3-tokyo")->putFileAs($folder, $file, $filename);
 
         return Asset::create([
             "path" => $path,

@@ -17,11 +17,13 @@ class CourseGroupBlock extends Model
         "sort_id",
         "name",
         "type",
-        "order"
+        "order",
+        "metadata"
     ];
 
     public $casts = [
-        "type" => ECourseBlockType::class
+        "type" => ECourseBlockType::class,
+        "metadata" => "array"
     ];
 
     public function course()
