@@ -239,7 +239,7 @@ class SSOService
                     throw new UnauthorizedException("Email or phone number does not exists!");
                 }
 
-                if ($user->login_type !== EUserLoginType::LOGIN_NORMAL) {
+                if (array_key_exists("email", $credentials) && $user->login_type !== EUserLoginType::LOGIN_NORMAL) {
                     throw new UnauthorizedException("This account is signed up using Gmail!");
                 }
 
