@@ -20,6 +20,7 @@ services:
     volumes:
       - ./src:/var/www/html
       - hippo-api-vendor:/var/www/html/vendor
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - app-network
     env_file: ./src/.env.production
@@ -33,19 +34,11 @@ services:
     volumes:
       - ./src:/var/www/html
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/servers:/etc/nginx/servers
-      - ./certbot/www/:/var/www/certbot/:ro
-      - ./certbot/conf/:/etc/letsencrypt/:ro
+      - ./nginx/local-servers:/etc/nginx/servers
     depends_on:
       - hippo-api
     networks:
       - app-network
-  certbot:
-    image: certbot/certbot:latest
-    command: sh -c "certbot certonly --standalone -d api-v2.hippo.cards --text --agree-tos --email batsoyombo.kh@gmail.com --server https://acme-v02.api.letsencrypt.org/directory --rsa-key-size 4096 --verbose --keep-until-expiring --preferred-challenges=http"
-    volumes:
-      - ./certbot/www/:/var/www/certbot/:rw
-      - ./certbot/conf/:/etc/letsencrypt/:rw
 
 networks:
   app-network:
