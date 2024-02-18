@@ -142,7 +142,6 @@ class CourseController extends Controller
 
     public function test()
     {
-
         return response()->success();
     }
 }

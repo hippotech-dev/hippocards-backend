@@ -40,3 +40,6 @@ COPY --chown=www:www ./src /var/www/html
 USER www
 
 RUN composer install
+RUN php artisan optimize
+RUN php artisan config:clear
+RUN php artisan route:cache
