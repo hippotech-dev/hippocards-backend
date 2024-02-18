@@ -18,7 +18,6 @@ services:
       dockerfile: ./src/Dockerfile
     restart: unless-stopped
     volumes:
-      - ./src:/var/www/html:cached
       - hippo-api-vendor:/var/www/html/vendor:cached
     networks:
       - app-network
