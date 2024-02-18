@@ -45,3 +45,5 @@ Route::prefix("group")->group(function () {
         Route::post("block/{block}/shift", [ GroupBlockController::class, "shiftBlock" ]);
     });
 });
+
+Route::get("test", [ CourseController::class, "test" ]);

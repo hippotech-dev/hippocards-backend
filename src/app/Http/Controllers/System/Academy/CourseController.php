@@ -139,4 +139,10 @@ class CourseController extends Controller
 
         return response()->success($kanbanData);
     }
+
+    public function test()
+    {
+
+        return response()->success();
+    }
 }
