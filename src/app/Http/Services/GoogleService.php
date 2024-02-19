@@ -6,6 +6,7 @@ use App\Exceptions\AppException;
 use Google\Service\Oauth2;
 use Google_Client;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 
 class GoogleService
@@ -31,6 +32,8 @@ class GoogleService
 
     public function createAuthUrl()
     {
+        Log::info($this->redirectUri);
+        $this->client->setRedirectUri($this->redirectUri);
         $this->authUrl = $this->client->createAuthUrl();
     }
 
