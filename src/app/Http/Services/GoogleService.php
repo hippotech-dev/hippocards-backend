@@ -18,7 +18,7 @@ class GoogleService
 
     public function __construct()
     {
-        $this->redirectUri = Config::get("APP_URL") . "/sso/social/google/callback";
+        $this->redirectUri = url("/sso/social/google/callback");
         $this->client = new Google_Client();
         $this->client->setAuthConfig("client_secret.json");
         $this->client->setScopes([ Oauth2::USERINFO_EMAIL, Oauth2::USERINFO_PROFILE ]);
