@@ -12,6 +12,7 @@ use App\Http\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -322,6 +323,8 @@ class SSOController extends Controller
 
         $userData = $googleService->getUserData($authorizationCode);
         $user = $this->service->getGoogleUser($userData);
+
+        Log::info(print_r($user, true));
 
         $client = $this->service->getClientByClientId($validatedData["client_id"]);
 

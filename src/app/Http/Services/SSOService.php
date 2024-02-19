@@ -199,6 +199,7 @@ class SSOService
             "fid" => $googleUserData->getId(),
             "image" => $googleUserData->getPicture()
         ];
+
         $checkUser = $this->userService->getUserByFilter([
             "email" => $userData["email"]
         ]);
