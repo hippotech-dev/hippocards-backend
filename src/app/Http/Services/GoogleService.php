@@ -6,6 +6,7 @@ use App\Exceptions\AppException;
 use Google\Service\Oauth2;
 use Google_Client;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\URL;
 
 class GoogleService
 {
@@ -13,10 +14,11 @@ class GoogleService
 
     private string $authUrl;
 
-    private string $redirectUri = 'http://localhost:8000/sso/social/google/callback';
+    private string $redirectUri;
 
     public function __construct()
     {
+        $this->redirectUri = URL::to("/sso/social/google/callback");
         $this->client = new Google_Client();
         $this->client->setAuthConfig("client_secret.json");
         $this->client->setScopes([ Oauth2::USERINFO_EMAIL, Oauth2::USERINFO_PROFILE ]);
