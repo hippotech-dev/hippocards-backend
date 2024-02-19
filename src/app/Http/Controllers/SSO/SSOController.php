@@ -324,8 +324,6 @@ class SSOController extends Controller
         $userData = $googleService->getUserData($authorizationCode);
         $user = $this->service->getGoogleUser($userData);
 
-        Log::info(print_r($userData, true));
-
         $client = $this->service->getClientByClientId($validatedData["client_id"]);
 
         if (is_null($client)) {
