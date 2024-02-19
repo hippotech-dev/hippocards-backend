@@ -33,12 +33,12 @@ class GoogleService
     public function createAuthUrl()
     {
         $this->client->setRedirectUri($this->redirectUri);
-        return $this->authUrl;
+        return $this->client->createAuthUrl();
     }
 
     public function setState(array $params)
     {
-        $this->client->setState("dqwdwqdwq");
+        $this->client->setState("dwq");
     }
 
     public function verifyIdToken(string $token)
