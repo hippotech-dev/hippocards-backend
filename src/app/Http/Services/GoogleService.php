@@ -34,6 +34,7 @@ class GoogleService
     {
         $this->client->setRedirectUri($this->redirectUri);
         $this->authUrl = $this->client->createAuthUrl();
+        return $this->authUrl;
     }
 
     public function setState(array $params)
