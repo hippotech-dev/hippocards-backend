@@ -286,7 +286,7 @@ class SSOController extends Controller
             ->validate();
 
         $googleService->setState($validatedData);
-        $authURL = $googleService->getAuthUrl();
+        $authURL = $googleService->createAuthUrl();
 
         return response()->success($authURL);
     }

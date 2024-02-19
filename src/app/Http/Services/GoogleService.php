@@ -32,7 +32,6 @@ class GoogleService
 
     public function createAuthUrl()
     {
-        Log::info($this->redirectUri);
         $this->client->setRedirectUri($this->redirectUri);
         $this->authUrl = $this->client->createAuthUrl();
     }
@@ -40,7 +39,6 @@ class GoogleService
     public function setState(array $params)
     {
         $this->client->setState(json_encode($params));
-        $this->createAuthUrl();
     }
 
     public function getAuthUrl()
