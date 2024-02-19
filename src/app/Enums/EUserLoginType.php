@@ -8,6 +8,7 @@ enum EUserLoginType: int
 {
     use EnumWithValues;
 
+    case LOGIN_UNKNOWN = 0;
     case LOGIN_NORMAL = 1;
     case LOGIN_FACEBOOK = 2;
     case LOGIN_GMAIL = 3;
