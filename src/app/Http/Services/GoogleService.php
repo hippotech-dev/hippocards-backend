@@ -38,7 +38,7 @@ class GoogleService
 
     public function setState(array $params)
     {
-        $this->client->setState("dwq");
+        $this->client->setState(base64_encode(json_encode($params)));
     }
 
     public function verifyIdToken(string $token)

@@ -299,7 +299,7 @@ class SSOController extends Controller
      */
     public function callbackGmail(Request $request, GoogleService $googleService)
     {
-        $data = json_decode($request->get("state", "[]"), true);
+        $data = json_decode(base64_decode($request->get("state", "[]")), true);
         $validatedData = Validator::make(
             $data,
             [
