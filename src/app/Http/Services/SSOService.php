@@ -195,7 +195,7 @@ class SSOService
         $userData = [
             "login_type" => EUserLoginType::LOGIN_GMAIL,
             "name" => $googleUserData->getFamilyName() . " " . $googleUserData->getGivenName(),
-            "email" => $googleUserData->getVerifiedEmail(),
+            "email" => $googleUserData->getEmail(),
             "fid" => $googleUserData->getId(),
             "image" => $googleUserData->getPicture()
         ];
