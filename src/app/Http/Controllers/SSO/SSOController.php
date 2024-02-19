@@ -285,8 +285,6 @@ class SSOController extends Controller
         )
             ->validate();
 
-        $validatedData["uri"] = $validatedData["redirect_uri"];
-        unset($validatedData["redirect_uri"]);
         $googleService->setState($validatedData);
         $authURL = $googleService->createAuthUrl();
 
@@ -307,7 +305,7 @@ class SSOController extends Controller
             [
                 "response_type" => "required|string|max:24",
                 "client_id" => "required|string|max:128",
-                "uri" => "required|string|max:256",
+                "redirect_uri" => "required|string|max:256",
                 "scopes" => "required|array",
                 "state" => "required|string|max:128",
                 "challenge" => "required|string|max:128",
