@@ -23,7 +23,9 @@ class CourseService
 
     ];
 
-    public function __construct(private AssetService $assetService, private PackageService $packageService) {}
+    public function __construct(private AssetService $assetService, private PackageService $packageService)
+    {
+    }
 
     /**
      * Course
@@ -35,10 +37,10 @@ class CourseService
         return filter_query_with_model(Course::with($with), $this->filterModel, $filter)->get();
     }
 
-    public function getCourseWithPage(array $filter = [], array $with = [], int $size = 20)
+    public function getCourseWithPage(array $filter = [], array $with = [ "language", "detail" ], int $size = 20)
     {
 
-        return filter_query_with_model(Course::with("language")->latest(), $this->filterModel, $filter)->paginate($size);
+        return filter_query_with_model(Course::with($with)->latest(), $this->filterModel, $filter)->paginate($size);
     }
 
     public function getCourseById(int $id, array $with = [ "groups", "detail", "packages", "groups" ])
