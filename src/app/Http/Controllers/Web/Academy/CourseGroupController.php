@@ -7,6 +7,7 @@ use App\Http\Resources\System\Academy\CourseGroupResource;
 use App\Http\Services\CourseService;
 use App\Models\Course\Course;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class CourseGroupController extends Controller
 {
@@ -19,39 +20,19 @@ class CourseGroupController extends Controller
      */
     public function index(Course $course)
     {
-        $groups = $this->service->getCourseGroups($course, [ "blocks" ]);
+        $groups = Cache::remember(
+            cache_key("list-group"),
+            3600,
+            fn () => $this->service->getCourseGroups($course, [ "blocks" ])
+        );
 
         return CourseGroupResource::collection($groups);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
     }
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
     {
         //
     }

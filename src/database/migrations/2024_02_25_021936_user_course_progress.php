@@ -13,6 +13,10 @@ return new class () extends Migration {
     {
         Schema::dropIfExists("v3_course_completions");
 
+        Schema::table("v3_assets", function (Blueprint $table) {
+            $table->string("transcoder_job_id")->nullable();
+        });
+
         Schema::create("v3_user_courses", function (Blueprint $table) {
             $table->id();
             $table->date("start");
@@ -85,6 +89,11 @@ return new class () extends Migration {
      */
     public function down(): void
     {
-        //
+        Schema::table("v3_assets", function (Blueprint $table) {
+            $table->dropColumn("transcoder_job_id");
+        });
+        Schema::dropIfExists("v3_course_completion_items");
+        Schema::dropIfExists("v3_course_completions");
+        Schema::dropIfExists("v3_user_courses");
     }
 };

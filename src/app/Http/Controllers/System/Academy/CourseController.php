@@ -17,7 +17,9 @@ use function Aws\boolean_value;
 
 class CourseController extends Controller
 {
-    public function __construct(private CourseService $service) {}
+    public function __construct(private CourseService $service)
+    {
+    }
 
     /**
      * Display a listing of the resource.
@@ -121,10 +123,20 @@ class CourseController extends Controller
     /**
      * Automated groups and block creation
      */
-    public function automatedGroupsAndBlockCreate(Course $course)
+    public function automatedGroupsAndBlockCreate(Request $request, Course $course)
     {
-        DB::transaction(function () use ($course) {
-            $this->service->createGroupsWithBlocks($course);
+        $validatedData = Validator::make(
+            $request->only(
+                "exam"
+            ),
+            [
+                "exam" => [ "required", Rule::in("exam", "non-exam") ]
+            ]
+        )
+            ->validate();
+
+        DB::transaction(function () use ($course, $validatedData) {
+            $this->service->createGroupsWithBlocks($course, $validatedData);
         });
 
         return response()->success();

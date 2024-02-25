@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Exceptions\AppException;
 use App\Models\Utility\Asset;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -72,5 +73,28 @@ class AssetService
     public function generateRandomFilename(string $ext)
     {
         return bin2hex(random_bytes(16)) . "." . $ext;
+    }
+
+    public function setTranscoderJob(Asset $asset, string $jobId)
+    {
+        $asset->update([
+            "transcoder_job_id" => $jobId
+        ]);
+    }
+
+    public function completeTranscoderJob(string $jobId)
+    {
+        $asset = Asset::where("transcoder_job_id", $jobId)->first();
+        if (is_null($asset)) {
+            throw new AppException("Asset is invalid!");
+        }
+        $metadata = $asset->metadata;
+        $pathSplit = explode("/", $asset->path);
+        $filename = $pathSplit[count($pathSplit) - 1];
+        $filenameSplit = explode(".", $filename);
+        $metadata["transcoded_url"] = "v3/transcoded-video/" . ($filenameSplit[0] ?? "none") . ".m3u8";
+        return $asset->update([
+            "metadata" => $metadata
+        ]);
     }
 }

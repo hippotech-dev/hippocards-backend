@@ -16,4 +16,9 @@ class WordImagination extends Model
         'baseklass_id',
         'imagination_id'
     ];
+
+    public function imagination()
+    {
+        return $this->belongsTo(Imagination::class, "imagination_id");
+    }
 }

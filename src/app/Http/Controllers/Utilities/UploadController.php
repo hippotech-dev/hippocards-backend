@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Utilities;
 
+use App\Exceptions\AppException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Utility\AssetResource;
 use App\Http\Services\AssetService;
@@ -10,7 +11,9 @@ use Illuminate\Support\Facades\Validator;
 
 class UploadController extends Controller
 {
-    public function __construct(private AssetService $service) {}
+    public function __construct(private AssetService $service)
+    {
+    }
 
     /**
      * Upload file
@@ -59,5 +62,51 @@ class UploadController extends Controller
             "url" => $url,
             "asset" => new AssetResource($asset)
         ]);
+    }
+
+    /**
+     * Set transcoder job
+     */
+    public function setTranscoderJob(Request $request)
+    {
+        $validatedData = Validator::make(
+            $request->only([
+                "job_id",
+                "asset_id"
+            ]),
+            [
+                "job_id" => "required|string",
+                "asset_id" => "required|integer"
+            ]
+        )
+            ->validate();
+
+        $asset = $this->service->getAssetById($validatedData["asset_id"]);
+        if (is_null($asset)) {
+            throw new AppException("Invalid asset id!");
+        }
+        $this->service->setTranscoderJob($asset, $validatedData["job_id"]);
+
+        return response()->success();
+    }
+
+    /**
+     * Complete transcoder job
+     */
+    public function completeTranscoderJob(Request $request)
+    {
+        $validatedData = Validator::make(
+            $request->only([
+                "job_id",
+            ]),
+            [
+                "job_id" => "required|string",
+            ]
+        )
+            ->validate();
+
+        $this->service->completeTranscoderJob($validatedData["job_id"]);
+
+        return response()->success();
     }
 }

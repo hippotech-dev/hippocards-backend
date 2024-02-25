@@ -14,7 +14,9 @@ use Illuminate\Validation\Rule;
 
 class GroupBlockController extends Controller
 {
-    public function __construct(private CourseService $service) {}
+    public function __construct(private CourseService $service)
+    {
+    }
 
     /**
      * Display a listing of the resource.
@@ -37,7 +39,7 @@ class GroupBlockController extends Controller
                 "type",
             ),
             [
-                "sort_id" => "required|exists:sort,id",
+                "sort_id" => "sometimes|exists:sort,id",
                 "type" => ["required", Rule::in([ ECourseBlockType::EXAM->value, ECourseBlockType::FINAL_EXAM->value, ECourseBlockType::LESSON->value ])]
             ]
         )

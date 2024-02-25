@@ -307,3 +307,10 @@ if (!function_exists("get_object_by_id")) {
         return ($class)::find($id);
     }
 }
+
+if (!function_exists("cache_key")) {
+    function cache_key(string $key, array $values = [])
+    {
+        return $key . "-" . implode("-", $values);
+    }
+}

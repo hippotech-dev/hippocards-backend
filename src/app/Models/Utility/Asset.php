@@ -17,7 +17,7 @@ class Asset extends Model
         "size",
         "mime_type",
         "metadata",
-        "is_uploaded"
+        "transcoder_job_id",
     ];
 
     public $casts = [

@@ -250,6 +250,10 @@ class CourseService
             $data["name"] = $sort->word->word;
         }
 
+        if (array_key_exists("type", $data) && $data["type"] === ECourseBlockType::EXAM->value) {
+            $data["name"] = "Exam";
+        }
+
         $data["order"] = $count;
         $data["v3_course_id"] = $group->v3_course_id;
         return $group->blocks()->create($data);
@@ -271,6 +275,10 @@ class CourseService
                 $metadata,
                 $data["metadata"]
             );
+        }
+
+        if (array_key_exists("type", $data) && $data["type"] === ECourseBlockType::EXAM->value) {
+            $data["name"] = "Exam";
         }
 
         return $block->update($data);
@@ -304,7 +312,7 @@ class CourseService
         });
     }
 
-    public function createManyGroupBlocks(CourseGroup $group, Collection $packageSorts)
+    public function createManyGroupBlocks(CourseGroup $group, Collection $packageSorts, array &$config = [])
     {
         $blockData = [];
 
@@ -313,6 +321,7 @@ class CourseService
             if (is_null($sort->word)) {
                 continue;
             }
+
             array_push($blockData, [
                 "sort_id" => $sort->id,
                 "name" => $sort->word->word,
@@ -321,13 +330,23 @@ class CourseService
                 "v3_course_id" => $group->v3_course_id
             ]);
 
+            if (array_key_exists("exam", $config) && $config["exam"] === "exam" && $sortIndex !== 0 && $sortIndex % 10 === 0) {
+                array_push($blockData, [
+                    "sort_id" => null,
+                    "name" => "Exam",
+                    "type" => ECourseBlockType::EXAM,
+                    "order" => $sortIndex + 1,
+                    "v3_course_id" => $group->v3_course_id
+                ]);
+                $sortIndex++;
+            }
             $sortIndex++;
         }
 
-        $group->blocks()->createMany($blockData);
+        return $group->blocks()->createMany($blockData);
     }
 
-    public function createBlocksMultipleGroup(Collection $groups, Collection $packageSorts)
+    public function createBlocksMultipleGroup(Collection $groups, Collection $packageSorts, array &$config = [])
     {
         $totalGroupCount = $groups->count();
         $totalPackageCount = $packageSorts->count();
@@ -336,7 +355,7 @@ class CourseService
         $groupIndex = 0;
         foreach ($groups as &$group) {
             $slicedPackageSorts = $packageSorts->slice($groupIndex * $totalSortPerGroup, $totalSortPerGroup);
-            $this->createManyGroupBlocks($group, $slicedPackageSorts);
+            $this->createManyGroupBlocks($group, $slicedPackageSorts, $config);
             $groupIndex++;
         }
     }
@@ -345,7 +364,7 @@ class CourseService
      * Automated creation
      */
 
-    public function createGroupsWithBlocks(Course $course)
+    public function createGroupsWithBlocks(Course $course, array $config = [])
     {
         $packages = $this->getCoursePackages($course);
 
@@ -357,7 +376,7 @@ class CourseService
 
         $courseGroups = $this->createManyCourseGroups($course);
 
-        $this->createBlocksMultipleGroup($courseGroups, $packageSorts);
+        $this->createBlocksMultipleGroup($courseGroups, $packageSorts, $config);
     }
 
     /**

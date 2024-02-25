@@ -7,6 +7,7 @@ use App\Http\Resources\System\Academy\CourseResource;
 use App\Http\Services\CourseService;
 use App\Models\Course\Course;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class CourseController extends Controller
 {
@@ -19,7 +20,11 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = $this->service->getCourseWithPage();
+        $courses = Cache::remember(
+            cache_key("list-course"),
+            3600,
+            fn () => $this->service->getCourseWithPage()
+        );
 
         return CourseResource::collection($courses);
     }
@@ -29,7 +34,11 @@ class CourseController extends Controller
      */
     public function show(int $id)
     {
-        $course = $this->service->getCourseById($id);
+        $course = Cache::remember(
+            cache_key("show-course", [ $id ]),
+            3600,
+            fn () => $this->service->getCourseById($id)
+        );
         return new CourseResource($course);
     }
 
