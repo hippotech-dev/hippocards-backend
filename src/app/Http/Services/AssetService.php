@@ -72,7 +72,7 @@ class AssetService
 
     public function generateRandomFilename(string $ext)
     {
-        return bin2hex(random_bytes(16)) . "." . $ext;
+        return bin2hex(random_bytes(16)) . "-" . $ext;
     }
 
     public function setTranscoderJob(Asset $asset, string $jobId)
