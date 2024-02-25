@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Web\Academy;
+namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\System\Auth\UserResource;

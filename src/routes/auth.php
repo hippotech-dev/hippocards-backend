@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\System\AuthController;
-use App\Http\Controllers\Web\Academy\AuthController as WebAuthController;
+use App\Http\Controllers\Web\AuthController as WebAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

@@ -19,6 +19,8 @@ class CourseGroupResource extends JsonResource
             "name" => $this->name,
             "order" => $this->order,
             "type" => $this->type,
+            "v3_course_id" => $this->v3_course_id,
+            "blocks" => GroupBlockResource::collection($this->whenLoaded("blocks")),
             "cardIds" => $this->when(!is_null($this->cardIds), $this->cardIds)
         ];
     }

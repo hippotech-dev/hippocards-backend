@@ -101,6 +101,21 @@ class CourseService
         ];
     }
 
+    public function getCourseLearnData(Course $course)
+    {
+        $blocks = $this->getCourseBlocks($course);
+        $columns = $this->getCourseGroups($course);
+
+        foreach ($columns as $column) {
+            $column->cardIds = $blocks->where("v3_course_group_id", $column->id)->sortBy("order")->pluck("id");
+        }
+
+        return [
+            "blocks" => BlockKanbanCardResource::collection($blocks),
+            "groups" => CourseGroupResource::collection($columns),
+        ];
+    }
+
     /**
      * Detail
      */
@@ -134,9 +149,9 @@ class CourseService
      * Course Group
      */
 
-    public function getCourseGroups(Course $course)
+    public function getCourseGroups(Course $course, array $with = [])
     {
-        return $course->groups()->orderBy("order", "asc")->get();
+        return $course->groups()->with($with)->orderBy("order", "asc")->get();
     }
 
     public function getCourseGroupById(Course $course, int $id, array $with = [])
@@ -203,6 +218,7 @@ class CourseService
     /**
      * Group Block
      */
+
     public function getGroupBlocks(CourseGroup $group)
     {
         return $group->blocks()->get();
@@ -216,6 +232,11 @@ class CourseService
     public function getGroupBlockById(CourseGroup $group, int $id, array $with = ["wordSort", "videos.asset"])
     {
         return $group->blocks()->with($with)->where("id", $id)->first();
+    }
+
+    public function getCourseBlockById(Course $course, int $id, array $with = ["wordSort", "videos.asset"])
+    {
+        return $course->blocks()->with($with)->where("id", $id)->first();
     }
 
     public function createGroupBlock(CourseGroup $group, array $data)

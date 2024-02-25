@@ -3,17 +3,21 @@
 namespace App\Models\Course;
 
 use App\Enums\EStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CourseCompletion extends Model
 {
+    use HasFactory;
     public $table = "v3_course_completions";
 
     protected $fillable = [
-        "status",
-        "user_id",
+        "v3_user_course_id",
         "v3_course_id",
-        "v3_course_group_block_id"
+        "current_group_id",
+        "current_block_id",
+        "progress",
+        "is_final_exam_finished"
     ];
 
     protected $casts = [
