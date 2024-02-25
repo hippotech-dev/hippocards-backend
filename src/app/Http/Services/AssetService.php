@@ -88,7 +88,7 @@ class AssetService
         if (is_null($asset)) {
             throw new AppException("Asset is invalid!");
         }
-        $metadata = $asset->metadata;
+        $metadata = $asset->metadata ?? [];
         $pathSplit = explode("/", $asset->path);
         $filename = $pathSplit[count($pathSplit) - 1];
         $filenameSplit = explode(".", $filename);
