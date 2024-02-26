@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers\Web\Academy;
 
+use App\Enums\ECourseExamType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\System\Academy\GroupBlockResource;
 use App\Http\Services\CourseService;
 use App\Models\Course\Course;
+use App\Models\Course\CourseGroupBlock;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class CourseBlockController extends Controller
 {
@@ -46,5 +51,37 @@ class CourseBlockController extends Controller
         );
 
         return new GroupBlockResource($block);
+    }
+
+    /**
+     * Get exam questions
+     */
+    public function getCourseExamData(Request $request, CourseGroupBlock $block)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "type"
+            ),
+            [
+                "type" => ["required", Rule::in(ECourseExamType::CHOOSE->value)]
+            ]
+        )
+            ->validate();
+
+        $random = rand(15, 20);
+
+        $questions = Cache::remember(
+            cache_key("course-exam-questions", [ $validatedData["type"], $block->id, $random ]),
+            3600,
+            fn () => $this->service->getCourseExamQuestions($block)
+        );
+
+        shuffle($questions);
+
+        return response()->success([
+            "type" => ECourseExamType::CHOOSE,
+            "start_date" => date("Y-m-d H:i:s"),
+            "questions" => $questions,
+        ]);
     }
 }

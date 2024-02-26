@@ -8,6 +8,7 @@ use App\Http\Services\CourseService;
 use App\Models\Course\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 
 class CourseController extends Controller
 {

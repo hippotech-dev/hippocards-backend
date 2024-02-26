@@ -445,4 +445,39 @@ class CourseService
     {
         return $timestamp->delete();
     }
+
+    /**
+     * Exam
+     */
+
+    public function getCourseExamQuestions(CourseGroupBlock $examBlock)
+    {
+        $previousBlocks = CourseGroupBlock::with("wordSort.word", "wordSort.word.translation")
+            ->where("v3_course_group_id", $examBlock->v3_course_group_id)
+            ->where("order", "<=", $examBlock->order)->limit(10)
+            ->orderBy("order", "desc")
+            ->get();
+
+        $generatedData = array();
+
+        foreach ($previousBlocks as $block) {
+            $randomElements = count($previousBlocks) <= 3 ? $previousBlocks->where("id", "!=", $block->id) : $previousBlocks->where("id", "!=", $block->id)->random(3)->push($block);
+            $answers = $randomElements->pluck("wordSort.word");
+            $word = $block->wordSort->word ?? null;
+            if (is_null($word)) {
+                continue;
+            }
+            $isWord = rand(0, 1);
+            array_push(
+                $generatedData,
+                [
+                    "id" => $block->id,
+                    "question" => $isWord ? $word->translation->name ?? "NONE" : $word->word,
+                    "answers" => $answers->map(fn ($item) => ["id" => $item->id ?? "NONE", "answer" => $isWord ? $item->word ?? "NONE" : $item->translation->name ?? "NONE",])
+                ]
+            );
+        }
+
+        return $generatedData;
+    }
 }
