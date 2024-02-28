@@ -27,4 +27,5 @@ Route::prefix("course")->group(function () {
         Route::get("learn", [ CourseController::class, "getLearnData" ]);
     });
     Route::get("exam/{block}", [ CourseBlockController::class, "getCourseExamData" ]);
+    Route::post("exam/{block}/submit", [ CourseBlockController::class, "submitExamAnswers" ]);
 });

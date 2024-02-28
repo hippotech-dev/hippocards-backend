@@ -8,7 +8,7 @@ use App\Exceptions\AppException;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Resources\System\Academy\BlockKanbanCardResource;
 use App\Http\Resources\System\Academy\CourseGroupResource;
-use App\Http\Resources\System\Academy\GroupBlockResource;
+use App\Http\Resources\System\Academy\WordResource;
 use App\Models\Course\Course;
 use App\Models\Course\CourseBlockVideo;
 use App\Models\Course\CourseBlockVideoTimestamp;
@@ -473,9 +473,32 @@ class CourseService
                 [
                     "id" => $block->id,
                     "question" => $isWord ? $word->translation->name ?? "NONE" : $word->word,
-                    "answers" => $answers->map(fn ($item) => ["id" => $item->id ?? "NONE", "answer" => $isWord ? $item->word ?? "NONE" : $item->translation->name ?? "NONE",])
+                    "answers" => $answers->map(fn ($item) => ["id" => $item->id ?? 0, "answer" => $isWord ? $item->word ?? "NONE" : $item->translation->name ?? "NONE",]),
+                    "is_word" => $isWord,
                 ]
             );
+        }
+
+        return $generatedData;
+    }
+
+    public function submitExamAnswers(CourseGroupBlock $examBlock, array $answers)
+    {
+        $answerConvertedArr = array_column($answers, "answer_id", "question_id");
+
+        $blocks = CourseGroupBlock::with("wordSort.word.translation")->whereIn("id", array_keys($answerConvertedArr))->get();
+
+        $generatedData = array();
+
+        foreach ($blocks as $block) {
+            if (!is_null($block->wordSort) && !is_null($block->wordSort->word) && array_key_exists($block->id, $answerConvertedArr)) {
+                $answer = $answerConvertedArr[$block->id];
+                $word = $block->wordSort->word;
+                array_push($generatedData, [
+                    "is_correct" => $answer === $word->id,
+                    "word" => new WordResource($block->wordSort->word),
+                ]);
+            }
         }
 
         return $generatedData;

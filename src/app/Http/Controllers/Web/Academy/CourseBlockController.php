@@ -72,7 +72,7 @@ class CourseBlockController extends Controller
 
         $questions = Cache::remember(
             cache_key("course-exam-questions", [ $validatedData["type"], $block->id, $random ]),
-            3600,
+            60,
             fn () => $this->service->getCourseExamQuestions($block)
         );
 
@@ -83,5 +83,27 @@ class CourseBlockController extends Controller
             "start_date" => date("Y-m-d H:i:s"),
             "questions" => $questions,
         ]);
+    }
+
+    /**
+     * Submit exam answers
+     */
+    public function submitExamAnswers(Request $request, CourseGroupBlock $block)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "answers"
+            ),
+            [
+                "answers" => "required|array",
+                "answers.*.question_id" => "required|integer",
+                "answers.*.answer_id" => "required|integer",
+            ]
+        )
+            ->validate();
+
+        $result = $this->service->submitExamAnswers($block, $validatedData["answers"]);
+
+        return response()->success($result);
     }
 }
