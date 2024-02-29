@@ -62,4 +62,9 @@ class Course extends Model
     {
         return $this->hasMany(CoursePackage::class, "v3_course_id");
     }
+
+    public function completions()
+    {
+        return $this->hasMany(CourseCompletion::class, "v3_course_id");
+    }
 }

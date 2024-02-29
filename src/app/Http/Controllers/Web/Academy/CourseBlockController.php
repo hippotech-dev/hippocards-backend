@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web\Academy;
 
 use App\Enums\ECourseExamType;
+use App\Exceptions\AppException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\System\Academy\GroupBlockResource;
 use App\Http\Services\CourseService;
@@ -17,6 +18,9 @@ class CourseBlockController extends Controller
 {
     public function __construct(private CourseService $service)
     {
+        $this->middleware("jwt.auth", [
+            "only" => [ "show" ]
+        ]);
     }
 
     /**
@@ -49,6 +53,12 @@ class CourseBlockController extends Controller
                 "videos.videoTimestamps"
             ])
         );
+
+        $requestUser = auth()->user();
+        if (is_null($block)) {
+            throw new AppException("Not found!");
+        }
+        $this->service->setCurrentBlockCompletion($course, $requestUser, $block);
 
         return new GroupBlockResource($block);
     }

@@ -47,10 +47,12 @@ return new class () extends Migration {
                 ->on("v3_courses")
                 ->cascadeOnDelete();
             $table->foreignId("current_group_id")
+                ->nullable()
                 ->references("id")
                 ->on("v3_course_groups")
                 ->cascadeOnDelete();
             $table->foreignId("current_block_id")
+                ->nullable()
                 ->references("id")
                 ->on("v3_course_group_blocks")
                 ->cascadeOnDelete();

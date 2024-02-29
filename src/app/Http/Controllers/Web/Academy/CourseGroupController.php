@@ -21,7 +21,7 @@ class CourseGroupController extends Controller
     public function index(Course $course)
     {
         $groups = Cache::remember(
-            cache_key("list-group"),
+            cache_key("list-group", [ $course->id ]),
             3600,
             fn () => $this->service->getCourseGroups($course, [ "blocks" ])
         );

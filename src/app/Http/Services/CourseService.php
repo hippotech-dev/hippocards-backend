@@ -12,8 +12,11 @@ use App\Http\Resources\System\Academy\WordResource;
 use App\Models\Course\Course;
 use App\Models\Course\CourseBlockVideo;
 use App\Models\Course\CourseBlockVideoTimestamp;
+use App\Models\Course\CourseCompletion;
 use App\Models\Course\CourseGroup;
 use App\Models\Course\CourseGroupBlock;
+use App\Models\Course\UserCourse;
+use App\Models\User\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -454,8 +457,9 @@ class CourseService
     {
         $previousBlocks = CourseGroupBlock::with("wordSort.word", "wordSort.word.translation")
             ->where("v3_course_group_id", $examBlock->v3_course_group_id)
-            ->where("order", "<=", $examBlock->order)->limit(10)
+            ->where("order", "<=", $examBlock->order)
             ->orderBy("order", "desc")
+            ->limit(10)
             ->get();
 
         $generatedData = array();
@@ -502,5 +506,106 @@ class CourseService
         }
 
         return $generatedData;
+    }
+
+    /**
+     * User course
+     */
+
+    public function getActiveUserCourse(Course $course, User $user)
+    {
+        return UserCourse::where("v3_course_id", $course->id)
+            ->where("user_id", $user->id)
+            ->where("end", ">=", date("Y-m-d"))
+            ->first();
+    }
+
+    /**
+     * Completion
+     */
+
+    public function getUserCourseCompletion(UserCourse $userCourse, array $with = [])
+    {
+        $completion = CourseCompletion::with($with)->where("v3_user_course_id", $userCourse->id)->first();
+
+        if (is_null($completion)) {
+            $completion = CourseCompletion::create([
+                "v3_user_course_id" => $userCourse->id,
+                "v3_course_id" => $userCourse->v3_course_id,
+            ]);
+
+            $completion->setRelation("items", []);
+        }
+
+        return $completion;
+    }
+
+    public function getCourseCompletion(Course $course, User $user)
+    {
+        $userCourse = $this->getActiveUserCourse($course, $user);
+
+        if (is_null($userCourse)) {
+            throw new AppException("Course is not avaialble!");
+        }
+
+        $userCompletion = $this->getUserCourseCompletion($userCourse, [ "items" ]);
+
+        if (is_null($userCompletion)) {
+            throw new AppException("Course is not available!");
+        }
+
+        return $userCompletion;
+    }
+
+    public function submitCourseCompletionProgress(Course $course, User $user, array $data)
+    {
+        $userCourse = $this->getActiveUserCourse($course, $user);
+        $block = $this->getCourseBlockById($course, $data["block_id"]);
+
+        if (is_null($userCourse) || is_null($block)) {
+            throw new AppException("Course is not avaialble!");
+        }
+
+        $userCompletion = $this->getUserCourseCompletion($userCourse);
+
+        if (is_null($userCompletion)) {
+            throw new AppException("Course is not available!");
+        }
+
+        $blockCompletionItem = $userCompletion->items()->where("v3_course_block_id", $block->id)->first();
+
+        if (is_null($blockCompletionItem)) {
+            $blockCompletionItem = $userCompletion->items()->create([
+                "v3_user_course_id" => $userCourse->id,
+                "v3_course_group_id" => $block->v3_course_group_id,
+                "v3_course_block_id" => $block->id,
+                "status" => $data["status"]
+            ]);
+        } else {
+            $blockCompletionItem->status = $data["status"];
+            $blockCompletionItem->save();
+        }
+
+        return $blockCompletionItem;
+    }
+
+    public function setCurrentBlockCompletion(Course $course, User $user, CourseGroupBlock $block)
+    {
+        $userCourse = $this->getActiveUserCourse($course, $user);
+
+        if (is_null($userCourse)) {
+            throw new AppException("Course is not avaialble!");
+        }
+
+        $userCompletion = $this->getUserCourseCompletion($userCourse);
+
+        if (is_null($userCompletion)) {
+            throw new AppException("Course is not available!");
+        }
+
+        $userCompletion->update([
+            "current_group_id" => $block->v3_course_group_id,
+            "current_block_id" => $block->id
+        ]);
     }
 }

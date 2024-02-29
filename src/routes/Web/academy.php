@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Web\Academy\CourseBlockController;
+use App\Http\Controllers\Web\Academy\CourseCompletionController;
 use App\Http\Controllers\Web\Academy\CourseController;
 use App\Http\Controllers\Web\Academy\CourseGroupController;
 use Illuminate\Support\Facades\Route;
@@ -19,7 +20,8 @@ use Illuminate\Support\Facades\Route;
 Route::apiResources([
     "course" => CourseController::class,
     "course.group" => CourseGroupController::class,
-    "course.block" => CourseBlockController::class
+    "course.block" => CourseBlockController::class,
+    "course.completion" => CourseCompletionController::class,
 ]);
 
 Route::prefix("course")->group(function () {

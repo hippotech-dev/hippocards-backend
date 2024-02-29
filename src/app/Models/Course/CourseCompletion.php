@@ -38,4 +38,9 @@ class CourseCompletion extends Model
     {
         return $this->belongsTo(CourseGroupBlock::class, "currenct_block_id");
     }
+
+    public function items()
+    {
+        return $this->hasMany(CourseCompletionItem::class, "v3_course_completion_id");
+    }
 }
