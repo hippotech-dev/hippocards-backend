@@ -4,6 +4,8 @@ namespace App\Models\User;
 
 use App\Enums\EUserLoginType;
 use App\Enums\EUserRole;
+use App\Models\Payment\PaymentInvoice;
+use App\Models\Payment\PaymentOrder;
 use App\Models\SSO\OAuthAuthenticationAttempt;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -76,5 +78,15 @@ class User extends Authenticatable implements JWTSubject
     public function authenticationAttempts()
     {
         return $this->hasMany(OAuthAuthenticationAttempt::class);
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(PaymentInvoice::class);
+    }
+
+    public function paymentOrders()
+    {
+        return $this->hasMany(PaymentOrder::class);
     }
 }

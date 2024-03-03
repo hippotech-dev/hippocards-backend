@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -23,7 +24,14 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->reportable(function (Throwable $e) {});
+        $this->reportable(function (Throwable $e) {
+
+        });
+
+        $this->reportable(function (PaymentException $e) {
+            $invoice = $e->getInvoice();
+            Log::channel("payment")->error(print_r($e->getBody(), true), [ $invoice->id, $invoice->user_id ]);
+        })->stop();
     }
 
     public function render($request, Throwable $exception)
@@ -34,6 +42,10 @@ class Handler extends ExceptionHandler
 
         if ($exception instanceof UnauthorizedException) {
             return response()->fail($exception->getMessage());
+        }
+
+        if ($exception instanceof PaymentException) {
+            return response()->fail($exception->getBody());
         }
 
         return parent::render($request, $exception);

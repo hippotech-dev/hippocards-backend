@@ -314,3 +314,10 @@ if (!function_exists("cache_key")) {
         return $key . "-" . implode("-", $values);
     }
 }
+
+if (!function_exists("gen_uuid")) {
+    function gen_uuid()
+    {
+        return Str::uuid();
+    }
+}

@@ -43,3 +43,4 @@ RUN composer install
 RUN php artisan optimize
 RUN php artisan config:clear
 RUN php artisan route:cache
+RUN nohup php artisan queue:work --daemon &

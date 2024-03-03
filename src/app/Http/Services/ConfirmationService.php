@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Mail;
 
 class ConfirmationService
 {
-    public function __construct(private MessageService $messageService) {}
+    public function __construct(private MessageService $messageService)
+    {
+    }
 
     public function getConfirmationByFilter($filters)
     {
@@ -22,6 +24,7 @@ class ConfirmationService
             "code" => [ "where", "code" ],
             "value" => [ "where", "email" ],
             "status" => [ "where", "status" ],
+            "email" => [ "where", "email" ],
             "created_at_lte" => [ "where", ">=", "created_at" ],
         ];
 
