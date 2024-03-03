@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Enums\ECourseBlockType;
 use App\Enums\ECourseBlockVideoType;
+use App\Enums\EStatus;
 use App\Exceptions\AppException;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Resources\System\Academy\BlockKanbanCardResource;
@@ -512,6 +513,16 @@ class CourseService
      * User course
      */
 
+    public function getUserActiveCourses(User $user)
+    {
+        $userCourses =  UserCourse::with("course.detail")
+            ->where("user_id", $user->id)
+            ->where("end", ">=", date("Y-m-d"))
+            ->get();
+
+        return $userCourses->pluck("course");
+    }
+
     public function getActiveUserCourse(Course $course, User $user)
     {
         return UserCourse::where("v3_course_id", $course->id)
@@ -545,7 +556,7 @@ class CourseService
         $userCourse = $this->getActiveUserCourse($course, $user);
 
         if (is_null($userCourse)) {
-            throw new AppException("Course is not avaialble!");
+            throw new AppException("Course is not available!");
         }
 
         $userCompletion = $this->getUserCourseCompletion($userCourse, [ "items" ]);
@@ -585,6 +596,12 @@ class CourseService
             $blockCompletionItem->status = $data["status"];
             $blockCompletionItem->save();
         }
+
+        if($data["status"] === EStatus::SUCCESS) {
+            $userCompletion->progress = $userCompletion->progress + 1;
+        }
+
+
 
         return $blockCompletionItem;
     }

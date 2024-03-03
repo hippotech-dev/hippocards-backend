@@ -8,6 +8,11 @@ use App\Models\User\User;
 
 class UserService
 {
+    public function getUserById(int $id, array $with = [])
+    {
+        return User::with($with)->find($id);
+    }
+
     public function getUserByFilter(array $filters)
     {
         $filterModel = [
