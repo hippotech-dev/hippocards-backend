@@ -36,11 +36,14 @@ RUN useradd -u 1000 -ms /bin/bash -g www www
 # Copy existing application directory permissions
 COPY --chown=www:www ./src /var/www/html
 
+COPY --chown=www:www entrypoints/app.entrypoint.sh /usr/local/bin/app.entrypoint
+RUN chmod u+x /usr/local/bin/app.entrypoint
+
 # Change current user to www
 USER www
 
 RUN composer install
 RUN php artisan optimize
-RUN php artisan config:clear
-RUN php artisan route:cache
-RUN nohup php artisan queue:work --daemon &
+
+# USER $user
+CMD ["/usr/local/bin/app.entrypoint"]

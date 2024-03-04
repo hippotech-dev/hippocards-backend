@@ -26,6 +26,22 @@ services:
     env_file: ./src/.env.production
     deploy:
       replicas: 3
+    environment:
+      - CONTAINER_ROLE=app
+  queue:
+    build:
+      context: .
+      dockerfile: ./src/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./src:/var/www/html:cached
+      - hippo-api-vendor:/var/www/html/vendor:cached
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+    env_file: ./src/.env.production
+    environment:
+      - CONTAINER_ROLE=queue
   nginx:
     image: nginx:latest
     ports:
