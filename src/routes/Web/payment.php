@@ -22,4 +22,4 @@ Route::get("invoice/{invoice}", [ PaymentController::class, "getInvoice" ]);
 Route::post("invoice", [ PaymentController::class, "createInvoice" ]);
 
 Route::post("qpay/invoice/{invoice}", [ PaymentController::class, "createQpayInvoice" ]);
-Route::post("qpay/callback/{invoice}/", [ PaymentController::class, "qpayCallback" ]);
+Route::get("qpay/callback/{invoice}/", [ PaymentController::class, "qpayCallback" ]);
