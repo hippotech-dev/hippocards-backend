@@ -28,6 +28,8 @@ services:
       replicas: 3
     environment:
       - CONTAINER_ROLE=app
+    depends_on:
+      - redis
   queue:
     build:
       context: .
@@ -42,6 +44,9 @@ services:
     env_file: ./src/.env.production
     environment:
       - CONTAINER_ROLE=queue
+    depends_on:
+      - redis
+      - hippo-api
   nginx:
     image: nginx:latest
     ports:

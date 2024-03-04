@@ -9,7 +9,6 @@ if [ -z "$1" ]; then
 
     if [ "$env" != "local" ]; then
         echo "Caching configuration..."
-        (cd /var/www/html && php artisan cache:clear && php artisan config:clear && php artisan route:clear && php artisan view:clear)
         (cd /var/www/html && php artisan config:cache && php artisan event:cache && php artisan route:cache && php artisan view:cache)
     fi
 
