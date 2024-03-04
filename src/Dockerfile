@@ -36,7 +36,7 @@ RUN useradd -u 1000 -ms /bin/bash -g www www
 # Copy existing application directory permissions
 COPY --chown=www:www ./src /var/www/html
 
-COPY --chown=www:www entrypoints/app.entrypoint.sh /usr/local/bin/app.entrypoint
+COPY --chown=www:www ./entrypoints/app.entrypoint.sh /usr/local/bin/app.entrypoint
 RUN chmod u+x /usr/local/bin/app.entrypoint
 
 # Change current user to www
