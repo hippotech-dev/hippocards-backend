@@ -16,6 +16,11 @@ class PaymentService
     {
     }
 
+    public function getInvoiceById(int $id, array $with = [])
+    {
+        return PaymentInvoice::with($with)->find($id);
+    }
+
     public function createInvoice(User $user, array &$data)
     {
         return DB::transaction(function () use ($user, $data) {

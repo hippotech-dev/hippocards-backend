@@ -17,11 +17,13 @@ class PaymentInvoiceResource extends JsonResource
         return [
             "id" => $this->id,
             "identifier" => $this->identifier,
+            "user_id" => $this->user_id,
             "total_amount" => $this->total_amount,
             "total_pending_amount" => $this->total_pending_amount,
             "total_paid_amount" => $this->total_paid_amount,
             "merchant_invoice_id" => $this->merchant_invoice_id,
             "merchant_payment_id" => $this->merchant_payment_id,
+            "status" => $this->status,
             "order" => new PaymentOrderResource($this->whenLoaded("paymentOrder"))
         ];
     }

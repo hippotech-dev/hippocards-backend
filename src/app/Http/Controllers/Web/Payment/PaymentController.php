@@ -12,12 +12,28 @@ use App\Models\Payment\PaymentInvoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class PaymentController extends Controller
 {
     public function __construct(private PaymentService $service)
     {
-        $this->middleware("jwt.auth");
+        $this->middleware("jwt.auth", [
+            "except" => "qpayCallback"
+        ]);
+    }
+
+    /**
+     * Get invoice
+     */
+    public function getInvoice(int $invoice)
+    {
+        $requestUser = auth()->user();
+        $invoice = $this->service->getInvoiceById($invoice, ["paymentOrder"]);
+        if (is_null($invoice) || $requestUser->id !== $invoice->user_id) {
+            throw new NotFoundResourceException("Invoice not found!");
+        }
+        return new PaymentInvoiceResource($invoice);
     }
 
     /**
@@ -64,10 +80,9 @@ class PaymentController extends Controller
     /**
      * QPay callback
      */
-
     public function qpayCallback(Request $request, PaymentInvoice $invoice)
     {
-        $result = $this->service->handleQPayCallback($invoice);
+        $this->service->handleQPayCallback($invoice);
 
         return response()->success();
     }

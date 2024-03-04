@@ -18,7 +18,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get("invoice/{invoice}", [ PaymentController::class, "getInvoice" ]);
 Route::post("invoice", [ PaymentController::class, "createInvoice" ]);
 
-Route::post("qpay/invoice/{invoice}/", [ PaymentController::class, "createQpayInvoice" ]);
+Route::post("qpay/invoice/{invoice}", [ PaymentController::class, "createQpayInvoice" ]);
 Route::post("qpay/callback/{invoice}/", [ PaymentController::class, "qpayCallback" ]);
