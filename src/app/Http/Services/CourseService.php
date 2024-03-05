@@ -49,7 +49,7 @@ class CourseService
 
     public function getCourseById(int $id, array $with = [ "groups", "detail", "packages", "groups" ])
     {
-        return Course::with($with)->find($id);
+        return Course::with($with)->withCount("blocks")->find($id);
     }
 
     public function createCourse(array $data)
@@ -363,7 +363,9 @@ class CourseService
             $sortIndex++;
         }
 
-        return $group->blocks()->createMany($blockData);
+        $group->blocks()->createMany($blockData);
+
+        return $sortIndex;
     }
 
     public function createBlocksMultipleGroup(Collection $groups, Collection $packageSorts, array &$config = [])
@@ -373,11 +375,14 @@ class CourseService
         $totalSortPerGroup = $totalPackageCount / $totalGroupCount;
 
         $groupIndex = 0;
+        $totalBlocks = 0;
         foreach ($groups as &$group) {
             $slicedPackageSorts = $packageSorts->slice($groupIndex * $totalSortPerGroup, $totalSortPerGroup);
-            $this->createManyGroupBlocks($group, $slicedPackageSorts, $config);
+            $totalBlocks += $this->createManyGroupBlocks($group, $slicedPackageSorts, $config);
             $groupIndex++;
         }
+
+        return $totalBlocks;
     }
 
     /**
@@ -396,7 +401,11 @@ class CourseService
 
         $courseGroups = $this->createManyCourseGroups($course);
 
-        $this->createBlocksMultipleGroup($courseGroups, $packageSorts, $config);
+        $totalBlocks = $this->createBlocksMultipleGroup($courseGroups, $packageSorts, $config);
+
+        $this->createOrUpdateDetail($course, [
+            "total_blocks" => $totalBlocks
+        ]);
     }
 
     /**

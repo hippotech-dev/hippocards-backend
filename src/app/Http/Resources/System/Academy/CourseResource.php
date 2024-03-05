@@ -24,6 +24,7 @@ class CourseResource extends JsonResource
             "level" => $this->level,
             "additional" => $this->additional,
             "status" => $this->status ?? EStatus::PENDING,
+            "total_block" => $this->blocks_count,
             "detail" => new CourseDetailResource($this->whenLoaded("detail")),
             "language" => new LanguageResource($this->whenLoaded("language")),
             "groups" => CourseGroupResource::collection($this->whenLoaded("groups")),
