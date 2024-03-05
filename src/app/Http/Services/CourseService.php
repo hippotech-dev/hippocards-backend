@@ -243,6 +243,18 @@ class CourseService
         return $course->blocks()->with($with)->where("id", $id)->first();
     }
 
+    public function getCourseBlockByIdLoaded(Course $course, int $id)
+    {
+        $block = $this->getCourseBlockById($course, $id, [ "videos.asset", "videos.videoTimestamps" ]);
+
+        $block->setRelation(
+            "wordSort",
+            $this->packageService->getSortByIdLoaded($block->sort_id)
+        );
+
+        return $block;
+    }
+
     public function createGroupBlock(CourseGroup $group, array $data)
     {
         $count = $group->blocks()->count();
