@@ -608,13 +608,12 @@ class CourseService
                 "v3_course_block_id" => $block->id,
                 "status" => $data["status"]
             ]);
+            $userCompletion->update([
+                "progress" => $userCompletion->progress + 1
+            ]);
         } else {
             $blockCompletionItem->status = $data["status"];
             $blockCompletionItem->save();
-        }
-
-        if($data["status"] === EStatus::SUCCESS) {
-            $userCompletion->progress = $userCompletion->progress + 1;
         }
 
 
