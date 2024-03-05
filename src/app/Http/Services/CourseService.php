@@ -247,6 +247,10 @@ class CourseService
     {
         $block = $this->getCourseBlockById($course, $id, [ "videos.asset", "videos.videoTimestamps" ]);
 
+        if ($block->type === ECourseBlockType::EXAM) {
+            return $block;
+        }
+
         $block->setRelation(
             "wordSort",
             $this->packageService->getSortByIdLoaded($block->sort_id)
