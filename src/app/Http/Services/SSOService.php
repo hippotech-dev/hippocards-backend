@@ -19,7 +19,9 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class SSOService
 {
-    public function __construct(private UserService $userService) {}
+    public function __construct(private UserService $userService)
+    {
+    }
 
     public const SSO_SCOPES = [
         "openid",
@@ -226,7 +228,7 @@ class SSOService
 
         switch ($type) {
             case "register":
-                if (is_null($user)) {
+                if (!is_null($user)) {
                     throw new UnauthorizedException("User with such email or phone number is already registered!");
                 }
                 break;
@@ -240,9 +242,9 @@ class SSOService
                     throw new UnauthorizedException("Email or phone number does not exists!");
                 }
 
-                if (array_key_exists("email", $credentials) && $user->login_type !== EUserLoginType::LOGIN_NORMAL) {
-                    throw new UnauthorizedException("This account is signed up using Gmail!");
-                }
+                // if (array_key_exists("email", $credentials) && $user->login_type !== EUserLoginType::LOGIN_NORMAL) {
+                //     throw new UnauthorizedException("This account is signed up using Gmail!");
+                // }
 
                 if (!auth()->validate($credentials)) {
                     throw new UnauthorizedException("Incorrect password!");
