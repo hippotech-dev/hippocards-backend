@@ -39,19 +39,9 @@ class CourseBlockController extends Controller
     public function show(Course $course, int $id)
     {
         $block = Cache::remember(
-            cache_key("show-block", [ $id ]),
+            cache_key("show-block-detail", [ $id ]),
             3600,
-            fn () => $this->service->getCourseBlockById($course, $id, [
-                "wordSort",
-                "wordSort.word.translation",
-                "wordSort.word.pronunciation",
-                "wordSort.word.wordImaginations.imagination",
-                "wordSort.word.exampleSentences.example",
-                "wordSort.word.pos",
-                "wordSort.word.synonyms",
-                "videos.asset",
-                "videos.videoTimestamps"
-            ])
+            fn () => $this->service->getCourseBlockByIdLoaded($course, $id)
         );
 
         $requestUser = auth()->user();
