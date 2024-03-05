@@ -73,7 +73,7 @@ class QPayService
                     "invoice_description" => "Нэхэмжлэл",
                     "sender_branch_code" => "HIPPOCARDS_QPAY01",
                     "amount" => $invoice->total_pending_amount,
-                    "callback_url" => url("/v1/payment/qpay/callback/" . $invoice->id)
+                    "callback_url" => url("/v1/web/payment/qpay/callback/" . $invoice->id)
                 ]
             );
 

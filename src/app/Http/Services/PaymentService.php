@@ -63,9 +63,9 @@ class PaymentService
         $this->createInvoiceResponse($invoice, $data);
         $this->setInvoiceStatus($invoice);
 
-        // if (!$this->isInvoicePaid($invoice)) {
-        //     throw new PaymentException($invoice, [ "status" => "Payment not paid!" ]);
-        // }
+        if (!$this->isInvoicePaid($invoice)) {
+            throw new PaymentException($invoice, [ "status" => "Payment not paid!" ]);
+        }
     }
 
     public function handleSuccessfulInvoice(PaymentInvoice $invoice)
