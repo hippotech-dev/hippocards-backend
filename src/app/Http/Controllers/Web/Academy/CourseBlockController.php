@@ -18,9 +18,7 @@ class CourseBlockController extends Controller
 {
     public function __construct(private CourseService $service)
     {
-        $this->middleware("jwt.auth", [
-            "only" => [ "show" ]
-        ]);
+        $this->middleware("jwt.auth");
     }
 
     /**
@@ -39,18 +37,24 @@ class CourseBlockController extends Controller
     public function show(Course $course, int $id)
     {
         $block = Cache::remember(
-            cache_key("show-block-detail", [ $id ]),
+            cache_key("show-block-detail-v2", [ $id ]),
             3600,
-            fn () => $this->service->getCourseBlockByIdLoaded($course, $id)
+            fn () => new GroupBlockResource($this->service->getCourseBlockByIdLoaded($course, $id))
         );
 
+        return $block;
+    }
+
+    /**
+     * Set course completion
+     */
+    public function setCourseCompletion(Course $course, CourseGroupBlock $block)
+    {
         $requestUser = auth()->user();
-        if (is_null($block)) {
-            throw new AppException("Not found!");
-        }
+
         $this->service->setCurrentBlockCompletion($course, $requestUser, $block);
 
-        return new GroupBlockResource($block);
+        return response()->success();
     }
 
     /**
@@ -72,7 +76,7 @@ class CourseBlockController extends Controller
 
         $questions = Cache::remember(
             cache_key("course-exam-questions", [ $validatedData["type"], $block->id, $random ]),
-            60,
+            600,
             fn () => $this->service->getCourseExamQuestions($block)
         );
 
