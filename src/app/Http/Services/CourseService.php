@@ -342,6 +342,17 @@ class CourseService
                 continue;
             }
 
+            if (array_key_exists("exam", $config) && $config["exam"] === "exam" && $sortIndex !== 0 && $sortIndex % 10 === 0) {
+                array_push($blockData, [
+                    "sort_id" => null,
+                    "name" => "Exam",
+                    "type" => ECourseBlockType::EXAM,
+                    "order" => $sortIndex,
+                    "v3_course_id" => $group->v3_course_id
+                ]);
+                $sortIndex++;
+            }
+
             array_push($blockData, [
                 "sort_id" => $sort->id,
                 "name" => $sort->word->word,
@@ -349,17 +360,6 @@ class CourseService
                 "order" => $sortIndex,
                 "v3_course_id" => $group->v3_course_id
             ]);
-
-            if (array_key_exists("exam", $config) && $config["exam"] === "exam" && $sortIndex !== 0 && $sortIndex % 10 === 0) {
-                array_push($blockData, [
-                    "sort_id" => null,
-                    "name" => "Exam",
-                    "type" => ECourseBlockType::EXAM,
-                    "order" => $sortIndex + 1,
-                    "v3_course_id" => $group->v3_course_id
-                ]);
-                $sortIndex++;
-            }
             $sortIndex++;
         }
 
