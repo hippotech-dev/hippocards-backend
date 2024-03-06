@@ -27,6 +27,8 @@ Route::apiResources([
 Route::prefix("course")->group(function () {
     Route::prefix("{course}")->group(function () {
         Route::get("learn", [ CourseController::class, "getLearnData" ]);
+        Route::get("final-exam", [ CourseController::class, "getFinalExamData" ]);
+        Route::post("final-exam", [ CourseController::class, "submitFinalExamData" ]);
         Route::post("block/{block}/progress", [ CourseBlockController::class, "setCourseCompletion" ]);
     });
     Route::get("exam/{block}", [ CourseBlockController::class, "getCourseExamData" ]);

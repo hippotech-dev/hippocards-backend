@@ -2,6 +2,7 @@
 
 namespace App\Models\Course;
 
+use App\Enums\ECourseBlockType;
 use Illuminate\Database\Eloquent\Model;
 
 class CourseExamInstance extends Model
@@ -11,14 +12,31 @@ class CourseExamInstance extends Model
     protected $fillable = [
         "type",
         "questions",
-        "v3_course_group_block_id"
+        "answers",
+        "v3_course_block_id",
+        "v3_course_group_id",
+        "v3_course_id",
+        "user_id",
+        "start_time",
+        "end_time",
+        "current_question_number",
+        "total_questions"
     ];
 
     public $casts = [
-        "questions" => "array"
+        "type" => ECourseBlockType::class,
+        "questions" => "array",
+        "answers" => "array",
+        "start_time" => "datetime",
+        "end_time" => "datetime"
     ];
 
-    public function courseGroupBlock()
+    public function courseBlock()
+    {
+        return $this->belongsTo(CourseGroupBlock::class);
+    }
+
+    public function course()
     {
         return $this->belongsTo(CourseGroupBlock::class);
     }

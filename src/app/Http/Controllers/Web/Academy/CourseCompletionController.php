@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Web\Academy\CourseCompletionResource;
 use App\Http\Services\CourseService;
 use App\Models\Course\Course;
+use App\Models\Course\CourseExamResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -25,7 +26,11 @@ class CourseCompletionController extends Controller
     {
         $requestUser =  auth()->user();
         $completion = $this->service->getCourseCompletion($course, $requestUser);
-        return new CourseCompletionResource($completion);
+        $finalExamResult = $this->service->getCourseFinalExamResult($course, $requestUser);
+        return response()->success([
+            "completion" => new CourseCompletionResource($completion),
+            "final_exam_result" => is_null($finalExamResult) ? null : new CourseExamResult($finalExamResult)
+        ]);
     }
 
     /**

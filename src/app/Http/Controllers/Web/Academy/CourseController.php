@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web\Academy;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\System\Academy\CourseResource;
+use App\Http\Resources\Web\Academy\CourseExamInstanceResource;
 use App\Http\Services\CourseService;
 use App\Models\Course\Course;
 use Illuminate\Http\Request;
@@ -14,6 +15,12 @@ class CourseController extends Controller
 {
     public function __construct(private CourseService $service)
     {
+        $this->middleware("jwt.auth", [
+            "except" => [
+                "index",
+                "show",
+            ]
+        ]);
     }
 
     /**
@@ -48,8 +55,51 @@ class CourseController extends Controller
      */
     public function getLearnData(Course $course)
     {
-        $kanbanData = $this->service->getCourseLearnData($course);
+        $kanbanData = Cache::remember(
+            cache_key("get-learn-data", [$course->id]),
+            3600,
+            fn () => $this->service->getCourseLearnData($course)
+        );
+
+        $requestUser = auth()->user();
+        $finalExamResult = $this->service->getCourseFinalExamResult($course, $requestUser);
+
+        $kanbanData["final_exam_result"] = $finalExamResult;
 
         return response()->success($kanbanData);
+    }
+
+    /**
+     * Get final exam data
+     */
+    public function getFinalExamData(Course $course)
+    {
+        $requestUser = auth()->user();
+        $examInstance = $this->service->getCourseFinalExamQuestions($course, $requestUser);
+
+        return new CourseExamInstanceResource($examInstance);
+    }
+
+    /**
+     * Submit final exam data
+     */
+    public function submitFinalExamData(Request $request, Course $course)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "questions_id",
+                "answer_id"
+            ),
+            [
+                "questions_id",
+                "answer_id"
+            ]
+        )
+            ->validate();
+
+        $requestUser = auth()->user();
+        $this->service->submitCourseFinalExamQuestions($course, $requestUser, $validatedData);
+
+        return response()->success();
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Models\Course;
 
+use App\Enums\ECourseBlockType;
+use App\Enums\EStatus;
 use Illuminate\Database\Eloquent\Model;
 
 class CourseExamResult extends Model
@@ -9,17 +11,29 @@ class CourseExamResult extends Model
     public $table = "v3_course_exam_results";
 
     protected $fillable = [
-        "answers",
+        "type",
+        "status",
+        "total_points",
+        "total_received_points",
+        "v3_course_block_id",
+        "v3_course_group_id",
+        "v3_course_id",
+        "user_id",
         "v3_course_exam_instance_id",
-        "user_id"
     ];
 
     public $casts = [
-        "answers" => "array"
+        "type" => ECourseBlockType::class,
+        "status" => EStatus::class
     ];
 
-    public function courseExamInstance()
+    public function courseBlock()
     {
-        return $this->belongsTo(CourseExamInstance::class);
+        return $this->belongsTo(CourseGroupBlock::class);
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(CourseGroupBlock::class);
     }
 }

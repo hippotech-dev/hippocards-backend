@@ -15,6 +15,8 @@ class CourseGroupBlock extends Model
         "v3_course_id",
         "v3_course_group_id",
         "sort_id",
+        "word_id",
+        "package_id",
         "name",
         "type",
         "order",

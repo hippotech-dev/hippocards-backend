@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Enums\ECourseBlockType;
 use App\Enums\ECourseBlockVideoType;
+use App\Enums\ECourseExamType;
 use App\Enums\EStatus;
 use App\Exceptions\AppException;
 use App\Exceptions\UnauthorizedException;
@@ -14,6 +15,8 @@ use App\Models\Course\Course;
 use App\Models\Course\CourseBlockVideo;
 use App\Models\Course\CourseBlockVideoTimestamp;
 use App\Models\Course\CourseCompletion;
+use App\Models\Course\CourseExamInstance;
+use App\Models\Course\CourseExamResult;
 use App\Models\Course\CourseGroup;
 use App\Models\Course\CourseGroupBlock;
 use App\Models\Course\UserCourse;
@@ -268,6 +271,8 @@ class CourseService
                 throw new AppException("Invalid sort!");
             }
             $data["name"] = $sort->word->word;
+            $data["word_id"] = $sort->word_id;
+            $data["package_id"] = $sort->baseklass_id;
         }
 
         if (array_key_exists("type", $data) && $data["type"] === ECourseBlockType::EXAM->value) {
@@ -287,6 +292,8 @@ class CourseService
                 throw new AppException("Invalid sort!");
             }
             $data["name"] = $sort->word->word;
+            $data["word_id"] = $sort->word_id;
+            $data["package_id"] = $sort->baseklass_id;
         }
 
         if (array_key_exists("metadata", $data)) {
@@ -358,7 +365,9 @@ class CourseService
                 "name" => $sort->word->word,
                 "type" => ECourseBlockType::LESSON,
                 "order" => $sortIndex,
-                "v3_course_id" => $group->v3_course_id
+                "v3_course_id" => $group->v3_course_id,
+                "word_id" => $sort->word_id,
+                "package_id" => $sort->baseklass_id,
             ]);
             $sortIndex++;
         }
@@ -479,6 +488,116 @@ class CourseService
      * Exam
      */
 
+    public function generateCourseExamQuestions(Course $course, int $total)
+    {
+        $blocks = $course->blocks()
+            ->with([ "wordSort", "wordSort.word.translation" ])
+            ->where("type", ECourseBlockType::LESSON)
+            ->inRandomOrder()
+            ->limit($total)
+            ->get();
+        $generatedData = array();
+        foreach ($blocks as $block) {
+            $randomElements = count($blocks) <= 3 ? $blocks->where("id", "!=", $block->id) : $blocks->where("id", "!=", $block->id)->random(3)->push($block);
+            $answers = $randomElements->pluck("wordSort.word");
+            $word = $block->wordSort->word ?? null;
+            if (is_null($word)) {
+                continue;
+            }
+            $isWord = rand(0, 1);
+            array_push(
+                $generatedData,
+                [
+                    "id" => $block->id,
+                    "question" => $isWord ? $word->translation->name ?? "NONE" : $word->word,
+                    "answers" => $answers->map(fn ($item) => ["id" => $item->id ?? 0, "answer" => $isWord ? $item->word ?? "NONE" : $item->translation->name ?? "NONE",]),
+                    "is_word" => $isWord,
+                ]
+            );
+        }
+
+        return $generatedData;
+    }
+
+    public function getCourseExamInstance(Course $course, User $user, ECourseBlockType $type)
+    {
+        return CourseExamInstance::where("v3_course_id", $course->id)
+            ->where("user_id", $user->id)
+            ->where("type", $type)
+            ->first();
+    }
+
+    public function getCourseExamResult(Course $course, User $user, ECourseBlockType $type)
+    {
+        return CourseExamResult::where("v3_course_id", $course->id)
+            ->where("user_id", $user->id)
+            ->where("type", $type)
+            ->first();
+    }
+
+    public function getCourseExamInstaceResult(CourseExamInstance $examInstance)
+    {
+        $currentDate = date("Y-m-d H:i:s");
+        $examResult = CourseExamResult::where("v3_course_exam_instance_id", $examInstance->id)->first();
+
+        if (!is_null($examResult) && $examResult->status === EStatus::PENDING && $examInstance->end_time < $currentDate) {
+            $this->setCourseExamResultStatus($examResult, EStatus::FAILURE);
+        }
+
+        return $examResult;
+    }
+
+    public function sumitCourseExamAnswer(CourseExamInstance $instance, array $answer)
+    {
+        $answers = $instance->answers ?? [];
+        $questionId = $answer["question_id"] ?? 0;
+        $answerId = $answer["question_id"] ?? 0;
+        $answers[$questionId] = $answerId;
+
+        return $instance->update([
+            "answers" => $answers
+        ]);
+    }
+
+    public function createCourseExamInstance(Course $course, User $user, ECourseBlockType $type, int $totalQuestions)
+    {
+        $questions = $this->generateCourseExamQuestions($course, $totalQuestions);
+        $totalQuestions = count($questions);
+        return CourseExamInstance::create([
+            "v3_course_id" => $course->id,
+            "user_id" => $user->id,
+            "questions" => $questions,
+            "total_questions" => $totalQuestions,
+            "start_time" => date("Y-m-d H:i:s"),
+            "end_time" => date("Y-m-d H:i:s", strtotime("+$totalQuestions minutes")),
+            "type" => $type
+        ]);
+    }
+
+    public function createCourseExamResultInstance(CourseExamInstance $instance)
+    {
+        return CourseExamResult::create([
+            "v3_course_id" => $instance->v3_course_id,
+            "v3_course_group_id" => $instance->v3_course_group_id,
+            "v3_course_block_id" => $instance->v3_course_block_id,
+            "user_id" => $instance->user_id,
+            "type" => $instance->type,
+            "total_points" => $instance->total_questions,
+            "v3_course_exam_instance_id" => $instance->id,
+        ]);
+    }
+
+    public function updateCourseExamResultInstance(CourseExamResult $result, $data)
+    {
+        return $result->update($data);
+    }
+
+    public function setCourseExamResultStatus(CourseExamResult $result, EStatus $status)
+    {
+        $result->status = $status;
+        return $result->save();
+    }
+
     public function getCourseExamQuestions(CourseGroupBlock $examBlock)
     {
         $previousBlocks = CourseGroupBlock::with("wordSort.word", "wordSort.word.translation")
@@ -532,6 +651,39 @@ class CourseService
         }
 
         return $generatedData;
+    }
+
+    /**
+     * Final exam
+     */
+
+    public function getCourseFinalExamQuestions(Course $course, User $user)
+    {
+        $examInstance = $this->getCourseExamInstance($course, $user, ECourseBlockType::FINAL_EXAM);
+
+        if (is_null($examInstance)) {
+            $examInstance = $this->createCourseExamInstance($course, $user, ECourseBlockType::FINAL_EXAM, 100);
+        }
+
+        return $examInstance;
+    }
+
+    public function submitCourseFinalExamQuestions(Course $course, User $user, array $answer)
+    {
+        $examInstance = $this->getCourseExamInstance($course, $user, ECourseBlockType::FINAL_EXAM);
+
+        if (is_null($examInstance)) {
+            throw new AppException("Invalid request!");
+        }
+
+        $this->sumitCourseExamAnswer($examInstance, $answer);
+    }
+
+    public function getCourseFinalExamResult(Course $course, User $user)
+    {
+        $examInstance = $this->getCourseExamInstance($course, $user, ECourseBlockType::FINAL_EXAM);
+
+        return is_null($examInstance) ? null : $this->getCourseExamInstaceResult($examInstance);
     }
 
     /**
