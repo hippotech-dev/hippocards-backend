@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class CourseExamResult extends Model
 {
     public $table = "v3_course_exam_results";
+    public $timestamps = false;
 
     protected $fillable = [
         "type",

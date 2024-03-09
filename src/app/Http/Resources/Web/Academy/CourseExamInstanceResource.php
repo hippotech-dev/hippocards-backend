@@ -12,6 +12,9 @@ class CourseExamInstanceResource extends JsonResource
      *
      * @return array<string, mixed>
      */
+
+    public $preserveKeys = true;
+
     public function toArray(Request $request): array
     {
         return [
@@ -25,7 +28,7 @@ class CourseExamInstanceResource extends JsonResource
             "user_id" => $this->user_id,
             "start_time" => $this->start_time,
             "end_time" => $this->end_time,
-            "current_question_number" => $this->current_question_number,
+            "current_question_number" => $this->current_question_number ?? 0,
             "total_questions" => $this->total_questions,
         ];
     }

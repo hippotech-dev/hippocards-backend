@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web\Academy;
 use App\Enums\EStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Web\Academy\CourseCompletionResource;
+use App\Http\Resources\Web\Academy\CourseExamResultResource;
 use App\Http\Services\CourseService;
 use App\Models\Course\Course;
 use App\Models\Course\CourseExamResult;
@@ -29,7 +30,7 @@ class CourseCompletionController extends Controller
         $finalExamResult = $this->service->getCourseFinalExamResult($course, $requestUser);
         return response()->success([
             "completion" => new CourseCompletionResource($completion),
-            "final_exam_result" => is_null($finalExamResult) ? null : new CourseExamResult($finalExamResult)
+            "final_exam_result" => is_null($finalExamResult) ? null : new CourseExamResultResource($finalExamResult)
         ]);
     }
 

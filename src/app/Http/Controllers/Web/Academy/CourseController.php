@@ -7,6 +7,7 @@ use App\Http\Resources\System\Academy\CourseResource;
 use App\Http\Resources\Web\Academy\CourseExamInstanceResource;
 use App\Http\Services\CourseService;
 use App\Models\Course\Course;
+use App\Models\Course\CourseExamInstance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
@@ -83,23 +84,38 @@ class CourseController extends Controller
     /**
      * Submit final exam data
      */
-    public function submitFinalExamData(Request $request, Course $course)
+    public function submitFinalExamData(Request $request, Course $course, CourseExamInstance $examInstance)
     {
         $validatedData = Validator::make(
             $request->only(
-                "questions_id",
+                "index",
+                "question_id",
                 "answer_id"
             ),
             [
-                "questions_id",
-                "answer_id"
+                "index" => "required|integer",
+                "question_id" => "required|integer",
+                "answer_id" => "required|integer"
             ]
         )
             ->validate();
 
         $requestUser = auth()->user();
-        $this->service->submitCourseFinalExamQuestions($course, $requestUser, $validatedData);
+        $this->service->submitCourseFinalExamQuestions($course, $requestUser, $examInstance, $validatedData);
 
         return response()->success();
     }
+
+    /**
+     * Finish final exam data
+     */
+    public function finishFinalExamData(Course $course, CourseExamInstance $examInstance)
+    {
+        $requestUser = auth()->user();
+        $this->service->finishCourseFinalExamQuestions($course, $requestUser, $examInstance);
+
+        return response()->success();
+    }
+
+
 }

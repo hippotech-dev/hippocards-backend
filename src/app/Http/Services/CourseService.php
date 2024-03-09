@@ -510,6 +510,7 @@ class CourseService
                 [
                     "id" => $block->id,
                     "question" => $isWord ? $word->translation->name ?? "NONE" : $word->word,
+                    "correct_answer" => $word->id,
                     "answers" => $answers->map(fn ($item) => ["id" => $item->id ?? 0, "answer" => $isWord ? $item->word ?? "NONE" : $item->translation->name ?? "NONE",]),
                     "is_word" => $isWord,
                 ]
@@ -547,23 +548,52 @@ class CourseService
         return $examResult;
     }
 
-    public function sumitCourseExamAnswer(CourseExamInstance $instance, array $answer)
+    public function submitCourseExamAnswer(CourseExamInstance $instance, array $answer)
     {
         $answers = $instance->answers ?? [];
         $questionId = $answer["question_id"] ?? 0;
-        $answerId = $answer["question_id"] ?? 0;
+        $answerId = $answer["answer_id"] ?? 0;
         $answers[$questionId] = $answerId;
-
+        $index = $answer["index"] + 1;
         return $instance->update([
-            "answers" => $answers
+            "answers" => $answers,
+            "current_question_number" => $index >= $instance->total_questions
+                ? $instance->total_questions - 1
+                : ($index < $instance->current_question_number
+                    ? $instance->current_question_number
+                    : $index)
         ]);
+    }
+
+    public function finishCourseExam(CourseExamInstance $instance)
+    {
+        $totalPoints = 0;
+        $questions = $instance->questions ?? [];
+        $answers = $instance->answers ?? [];
+        foreach ($questions as $question) {
+            if (array_key_exists("correct_answer", $question)
+                && array_key_exists($question["id"], $answers)
+                && $question["correct_answer"] === $answers[$question["id"]]) {
+                $totalPoints++;
+            }
+        }
+
+        $result = $this->getCourseExamInstaceResult($instance);
+
+        $this->updateCourseExamResultInstance(
+            $result,
+            [
+                "status" => EStatus::SUCCESS,
+                "total_received_points" => $totalPoints
+            ]
+        );
     }
 
     public function createCourseExamInstance(Course $course, User $user, ECourseBlockType $type, int $totalQuestions)
     {
         $questions = $this->generateCourseExamQuestions($course, $totalQuestions);
         $totalQuestions = count($questions);
-        return CourseExamInstance::create([
+        $examInstance = CourseExamInstance::create([
             "v3_course_id" => $course->id,
             "user_id" => $user->id,
             "questions" => $questions,
@@ -572,6 +602,10 @@ class CourseService
             "end_time" => date("Y-m-d H:i:s", strtotime("+$totalQuestions minutes")),
             "type" => $type
         ]);
+
+        $this->createCourseExamResultInstance($examInstance);
+
+        return $examInstance;
     }
 
     public function createCourseExamResultInstance(CourseExamInstance $instance)
@@ -668,15 +702,31 @@ class CourseService
         return $examInstance;
     }
 
-    public function submitCourseFinalExamQuestions(Course $course, User $user, array $answer)
+    public function submitCourseFinalExamQuestions(Course $course, User $user, CourseExamInstance $examInstance, array $answer)
     {
-        $examInstance = $this->getCourseExamInstance($course, $user, ECourseBlockType::FINAL_EXAM);
-
-        if (is_null($examInstance)) {
+        $currentDate = date("Y-m-d H:i:s");
+        if ($examInstance->user_id !== $user->id && $examInstance->v3_course_id !== $course->id) {
+            throw new AppException("Invalid request!");
+        }
+        if (is_null($examInstance) || ($examInstance->status === EStatus::PENDING && $examInstance->end_time < $currentDate)) {
             throw new AppException("Invalid request!");
         }
 
-        $this->sumitCourseExamAnswer($examInstance, $answer);
+        $this->submitCourseExamAnswer($examInstance, $answer);
+    }
+
+    public function finishCourseFinalExamQuestions(Course $course, User $user, CourseExamInstance $examInstance)
+    {
+        $currentDate = date("Y-m-d H:i:s");
+        if ($examInstance->user_id !== $user->id && $examInstance->v3_course_id !== $course->id) {
+            throw new AppException("Invalid request!");
+        }
+
+        if (is_null($examInstance) || ($examInstance->status === EStatus::PENDING && $examInstance->end_time < $currentDate)) {
+            throw new AppException("Invalid request!");
+        }
+
+        $this->finishCourseExam($examInstance);
     }
 
     public function getCourseFinalExamResult(Course $course, User $user)
