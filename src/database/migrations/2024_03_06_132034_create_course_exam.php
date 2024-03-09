@@ -11,6 +11,9 @@ return new class () extends Migration {
      */
     public function up(): void
     {
+        Schema::dropIfExists("v3_course_exam_results");
+        Schema::dropIfExists("v3_course_exam_instances");
+
         Schema::create('v3_course_exam_instances', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger("user_id")->index();
@@ -99,6 +102,7 @@ return new class () extends Migration {
      */
     public function down(): void
     {
+        Schema::dropIfExists("v3_course_exam_results");
         Schema::dropIfExists("v3_course_exam_instances");
 
         Schema::table("v3_course_group_blocks", function (Blueprint $table) {
