@@ -360,8 +360,6 @@ class CourseService
                 ]);
                 $sortIndex++;
                 $examIndex = 0;
-            } else {
-                $examIndex++;
             }
 
             array_push($blockData, [
@@ -374,6 +372,7 @@ class CourseService
                 "package_id" => $sort->baseklass_id,
             ]);
             $sortIndex++;
+            $examIndex++;
         }
 
         $group->blocks()->createMany($blockData);
