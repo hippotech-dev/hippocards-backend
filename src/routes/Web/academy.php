@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\Academy\CertificateController;
 use App\Http\Controllers\Web\Academy\CourseBlockController;
 use App\Http\Controllers\Web\Academy\CourseCompletionController;
 use App\Http\Controllers\Web\Academy\CourseController;
@@ -35,3 +36,5 @@ Route::prefix("course")->group(function () {
     Route::get("exam/{block}", [ CourseBlockController::class, "getCourseExamData" ]);
     Route::post("exam/{block}/submit", [ CourseBlockController::class, "submitExamAnswers" ]);
 });
+
+Route::post("certificate", [ CertificateController::class, "generate" ]);

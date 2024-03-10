@@ -6,6 +6,8 @@ use App\Exceptions\AppException;
 use App\Models\Utility\Asset;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Interfaces\EncodedImageInterface;
+use Intervention\Image\Interfaces\ImageInterface;
 
 class AssetService
 {
@@ -35,6 +37,21 @@ class AssetService
             "path" => $path,
             "size" => $file->getSize(),
             "mime_type" => $file->getMimeType(),
+        ]);
+    }
+
+    public function createImageAsset(EncodedImageInterface $file)
+    {
+        $folder = "v3/assets/" . date("Y-m");
+        $filename = $this->generateRandomFilename("image.jpg");
+        $path = $folder . "/" . $filename;
+
+        Storage::disk("s3-tokyo")->put($path, (string) $file);
+
+        return Asset::create([
+            "path" => $path,
+            "size" => $file->size(),
+            "mime_type" => "image/jpeg",
         ]);
     }
 

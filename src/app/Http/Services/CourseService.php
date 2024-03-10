@@ -11,9 +11,11 @@ use App\Exceptions\UnauthorizedException;
 use App\Http\Resources\System\Academy\BlockKanbanCardResource;
 use App\Http\Resources\System\Academy\CourseGroupResource;
 use App\Http\Resources\System\Academy\WordResource;
+use App\Jobs\CourseCertificateJob;
 use App\Models\Course\Course;
 use App\Models\Course\CourseBlockVideo;
 use App\Models\Course\CourseBlockVideoTimestamp;
+use App\Models\Course\CourseCertificate;
 use App\Models\Course\CourseCompletion;
 use App\Models\Course\CourseExamInstance;
 use App\Models\Course\CourseExamResult;
@@ -21,6 +23,7 @@ use App\Models\Course\CourseGroup;
 use App\Models\Course\CourseGroupBlock;
 use App\Models\Course\UserCourse;
 use App\Models\User\User;
+use App\Models\Utility\Asset;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -571,26 +574,30 @@ class CourseService
 
     public function finishCourseExam(CourseExamInstance $instance)
     {
-        $totalPoints = 0;
+        $result = $this->getCourseExamInstaceResult($instance);
+        $totalReceivedPoints = 0;
         $questions = $instance->questions ?? [];
         $answers = $instance->answers ?? [];
         foreach ($questions as $question) {
             if (array_key_exists("correct_answer", $question)
                 && array_key_exists($question["id"], $answers)
                 && $question["correct_answer"] === $answers[$question["id"]]) {
-                $totalPoints++;
+                $totalReceivedPoints++;
             }
         }
-
-        $result = $this->getCourseExamInstaceResult($instance);
 
         $this->updateCourseExamResultInstance(
             $result,
             [
                 "status" => EStatus::SUCCESS,
-                "total_received_points" => $totalPoints
+                "total_received_points" => $totalReceivedPoints
             ]
         );
+
+        return [
+            "total_points" => $result->total_points,
+            "total_received_points" => $totalReceivedPoints
+        ];
     }
 
     public function createCourseExamInstance(Course $course, User $user, ECourseBlockType $type, int $totalQuestions)
@@ -730,7 +737,11 @@ class CourseService
             throw new AppException("Invalid request!");
         }
 
-        $this->finishCourseExam($examInstance);
+        [ "total_points" => $totalPoints, "total_received_points" => $totalReceivedPoints ] = $this->finishCourseExam($examInstance);
+
+        if ($totalReceivedPoints > $totalPoints / 2) {
+            dispatch(new CourseCertificateJob($course, $user));
+        }
     }
 
     public function getCourseFinalExamResult(Course $course, User $user)
@@ -853,6 +864,20 @@ class CourseService
         $userCompletion->update([
             "current_group_id" => $block->v3_course_group_id,
             "current_block_id" => $block->id
+        ]);
+    }
+
+    /**
+     * Course certificate
+     */
+
+    public function createCourseCertificate(Course $course, User $user, Asset $asset)
+    {
+        return CourseCertificate::create([
+            "issue_date" => date("Y-m-d"),
+            "user_id" => $user->id,
+            "v3_asset_id" => $asset->id,
+            "v3_course_id" => $course->id
         ]);
     }
 }
