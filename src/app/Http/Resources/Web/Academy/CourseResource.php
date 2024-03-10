@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Http\Resources\Web\Academy;
+
+use App\Enums\EStatus;
+use App\Http\Resources\System\Academy\CourseDetailResource;
+use App\Http\Resources\System\Academy\CourseGroupResource;
+use App\Http\Resources\System\Academy\PackageResource;
+use App\Http\Resources\Utility\LanguageResource;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class CourseResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            "id" => $this->id,
+            "name" => $this->name,
+            "description" => $this->description,
+            "thumbnail" => append_s3_path($this->thumbnail),
+            "level" => $this->level,
+            "additional" => $this->additional,
+            "status" => $this->status ?? EStatus::PENDING,
+            "total_block" => $this->blocks_count,
+            "detail" => new CourseDetailResource($this->whenLoaded("detail")),
+            "language" => new LanguageResource($this->whenLoaded("language")),
+            "groups" => CourseGroupResource::collection($this->whenLoaded("groups")),
+            "packages" => PackageResource::collection($this->whenLoaded("packages")),
+            "is_best_seller" => $this->id === 3,
+        ];
+    }
+}
