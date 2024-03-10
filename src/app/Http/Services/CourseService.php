@@ -350,6 +350,19 @@ class CourseService
                 continue;
             }
 
+            array_push($blockData, [
+                "sort_id" => $sort->id,
+                "name" => $sort->word->word,
+                "type" => ECourseBlockType::LESSON,
+                "order" => $sortIndex,
+                "v3_course_id" => $group->v3_course_id,
+                "word_id" => $sort->word_id,
+                "package_id" => $sort->baseklass_id,
+            ]);
+
+            $sortIndex++;
+            $examIndex++;
+
             if (array_key_exists("exam", $config) && $config["exam"] === "exam" && $examIndex === 10) {
                 array_push($blockData, [
                     "sort_id" => null,
@@ -361,18 +374,6 @@ class CourseService
                 $sortIndex++;
                 $examIndex = 0;
             }
-
-            array_push($blockData, [
-                "sort_id" => $sort->id,
-                "name" => $sort->word->word,
-                "type" => ECourseBlockType::LESSON,
-                "order" => $sortIndex,
-                "v3_course_id" => $group->v3_course_id,
-                "word_id" => $sort->word_id,
-                "package_id" => $sort->baseklass_id,
-            ]);
-            $sortIndex++;
-            $examIndex++;
         }
 
         $group->blocks()->createMany($blockData);
