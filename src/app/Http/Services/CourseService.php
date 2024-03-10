@@ -344,12 +344,13 @@ class CourseService
         $blockData = [];
 
         $sortIndex = 0;
+        $examIndex = 0;
         foreach ($packageSorts as &$sort) {
             if (is_null($sort->word)) {
                 continue;
             }
 
-            if (array_key_exists("exam", $config) && $config["exam"] === "exam" && $sortIndex !== 0 && $sortIndex % 10 === 0) {
+            if (array_key_exists("exam", $config) && $config["exam"] === "exam" && $examIndex === 10) {
                 array_push($blockData, [
                     "sort_id" => null,
                     "name" => "Exam",
@@ -358,6 +359,9 @@ class CourseService
                     "v3_course_id" => $group->v3_course_id
                 ]);
                 $sortIndex++;
+                $examIndex = 0;
+            } else {
+                $examIndex++;
             }
 
             array_push($blockData, [
