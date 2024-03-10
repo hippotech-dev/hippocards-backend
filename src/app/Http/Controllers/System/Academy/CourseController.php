@@ -46,7 +46,7 @@ class CourseController extends Controller
             ),
             [
                 "name" => "required|string|max:64",
-                "description" => "required|string|max:256",
+                "description" => "required|string|max:1024",
                 "v3_thumbnail_asset_id" => "required|integer|exists:v3_assets,id",
                 "language_id" => "required|integer|exists:language,id",
                 "level" => [
