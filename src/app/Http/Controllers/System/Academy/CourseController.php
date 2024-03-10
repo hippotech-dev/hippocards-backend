@@ -90,7 +90,7 @@ class CourseController extends Controller
             ),
             [
                 "name" => "sometimes|string|max:64",
-                "description" => "sometimes|string|max:256",
+                "description" => "sometimes|string|max:1024",
                 "v3_thumbnail_asset_id" => "sometimes|integer|exists:v3_assets,id",
                 "language_id" => "sometimes|integer|exists:language,id",
                 "level" => [
