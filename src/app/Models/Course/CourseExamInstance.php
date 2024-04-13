@@ -15,6 +15,7 @@ class CourseExamInstance extends Model
         "answers",
         "v3_course_block_id",
         "v3_course_group_id",
+        "v3_user_course_id",
         "v3_course_id",
         "user_id",
         "start_time",

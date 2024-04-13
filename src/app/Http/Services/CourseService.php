@@ -24,6 +24,7 @@ use App\Models\Course\CourseGroupBlock;
 use App\Models\Course\UserCourse;
 use App\Models\User\User;
 use App\Models\Utility\Asset;
+use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -527,10 +528,9 @@ class CourseService
         return $generatedData;
     }
 
-    public function getCourseExamInstance(Course $course, User $user, ECourseBlockType $type)
+    public function getCourseExamInstance(UserCourse $userCourse, ECourseBlockType $type)
     {
-        return CourseExamInstance::where("v3_course_id", $course->id)
-            ->where("user_id", $user->id)
+        return CourseExamInstance::where("v3_user_course_id", $userCourse->id)
             ->where("type", $type)
             ->first();
     }
@@ -600,7 +600,7 @@ class CourseService
         ];
     }
 
-    public function createCourseExamInstance(Course $course, User $user, ECourseBlockType $type, int $totalQuestions)
+    public function createCourseExamInstance(UserCourse $userCourse, Course $course, User $user, ECourseBlockType $type, int $totalQuestions)
     {
         $questions = $this->generateCourseExamQuestions($course, $totalQuestions);
         $totalQuestions = count($questions);
@@ -608,6 +608,7 @@ class CourseService
             "v3_course_id" => $course->id,
             "user_id" => $user->id,
             "questions" => $questions,
+            "v3_user_course_id" => $userCourse->id,
             "total_questions" => $totalQuestions,
             "start_time" => date("Y-m-d H:i:s"),
             "end_time" => date("Y-m-d H:i:s", strtotime("+$totalQuestions minutes")),
@@ -704,10 +705,14 @@ class CourseService
 
     public function getCourseFinalExamQuestions(Course $course, User $user)
     {
-        $examInstance = $this->getCourseExamInstance($course, $user, ECourseBlockType::FINAL_EXAM);
+        $userCourse = $this->getActiveUserCourse($course, $user);
+        if (is_null($userCourse)) {
+            throw new Exception("User is not enrolled to the course!");
+        }
+        $examInstance = $this->getCourseExamInstance($userCourse, ECourseBlockType::FINAL_EXAM);
 
         if (is_null($examInstance)) {
-            $examInstance = $this->createCourseExamInstance($course, $user, ECourseBlockType::FINAL_EXAM, 100);
+            $examInstance = $this->createCourseExamInstance($userCourse, $course, $user, ECourseBlockType::FINAL_EXAM, 100);
         }
 
         return $examInstance;
@@ -746,7 +751,11 @@ class CourseService
 
     public function getCourseFinalExamResult(Course $course, User $user)
     {
-        $examInstance = $this->getCourseExamInstance($course, $user, ECourseBlockType::FINAL_EXAM);
+        $userCourse = $this->getActiveUserCourse($course, $user);
+        if (is_null($userCourse)) {
+            throw new Exception("User is not enrolled to the course!");
+        }
+        $examInstance = $this->getCourseExamInstance($userCourse, ECourseBlockType::FINAL_EXAM);
 
         return is_null($examInstance) ? null : $this->getCourseExamInstaceResult($examInstance);
     }

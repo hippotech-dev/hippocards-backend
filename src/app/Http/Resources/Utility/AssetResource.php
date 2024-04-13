@@ -20,7 +20,9 @@ class AssetResource extends JsonResource
             "s3_path" => append_s3_path($this->path),
             "size" => $this->size,
             "mime_type" => $this->mime_type,
-            "metadata" => $this->metadata ?? [],
+            "metadata" => [
+                "transcoded_url" => array_key_exists("transcoded_url", $this->metadata ?? []) ? append_s3_path($this->metadata["transcoded_url"] ?? null) : null
+            ],
         ];
     }
 }
