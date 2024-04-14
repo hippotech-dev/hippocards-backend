@@ -28,7 +28,7 @@ class AssetService
     public function createAsset(UploadedFile $file)
     {
         $folder = "v3/assets/" . date("Y-m");
-        $filename = $this->generateRandomFilename($file->extension());
+        $filename = $this->generateRandomFilename("." . $file->extension());
         $path = $folder . "/" . $filename;
 
         Storage::disk("s3-tokyo")->putFileAs($folder, $file, $filename);
