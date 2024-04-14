@@ -53,7 +53,9 @@ class CourseController extends Controller
                     "required",
                     Rule::in(
                         ELanguageLevel::BEGINNER->value,
+                        ELanguageLevel::UPPER_BEGINNER->value,
                         ELanguageLevel::INTERMIDIATE->value,
+                        ELanguageLevel::UPPER_INTERMIDIATE->value,
                         ELanguageLevel::ADVANCED->value
                     )
                 ]
@@ -97,7 +99,9 @@ class CourseController extends Controller
                     "required",
                     Rule::in(
                         ELanguageLevel::BEGINNER->value,
+                        ELanguageLevel::UPPER_BEGINNER->value,
                         ELanguageLevel::INTERMIDIATE->value,
+                        ELanguageLevel::UPPER_INTERMIDIATE->value,
                         ELanguageLevel::ADVANCED->value
                     )
                 ]

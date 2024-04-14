@@ -101,7 +101,7 @@ class PaymentOrderService
             case Course::class:
                 return UserCourse::create([
                     "start" => date("Y-m-d 00:00:00"),
-                    "end" => date("Y-m-d 00:00:00", strtotime("+1 year")),
+                    "end" => date("Y-m-d 00:00:00", strtotime("+1 month")),
                     "user_id" => $user->id,
                     "v3_course_id" => $item->object_id
                 ]);
