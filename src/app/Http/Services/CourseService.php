@@ -505,6 +505,7 @@ class CourseService
             ->limit($total)
             ->get();
         $generatedData = array();
+        $totalMongolianWords = floor(($total * 75) / 100);
         foreach ($blocks as $block) {
             $randomElements = count($blocks) <= 3 ? $blocks->where("id", "!=", $block->id) : $blocks->where("id", "!=", $block->id)->push($block)->random(3);
             $answers = $randomElements->pluck("wordSort.word");
@@ -512,7 +513,8 @@ class CourseService
             if (is_null($word)) {
                 continue;
             }
-            $isWord = rand(0, 1);
+            $isWord = $totalMongolianWords <= 0 ? false : rand(0, 1);
+            $isWord && $totalMongolianWords > 0 && $totalMongolianWords--;
             array_push(
                 $generatedData,
                 [
