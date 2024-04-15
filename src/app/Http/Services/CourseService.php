@@ -746,7 +746,7 @@ class CourseService
 
         [ "total_points" => $totalPoints, "total_received_points" => $totalReceivedPoints ] = $this->finishCourseExam($examInstance);
 
-        if ($totalReceivedPoints > $totalPoints / 2) {
+        if ($totalReceivedPoints >= floor(($totalPoints * 90) / 100)) {
             dispatch(new CourseCertificateJob($course, $user));
         }
     }
