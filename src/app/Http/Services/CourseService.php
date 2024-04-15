@@ -507,7 +507,7 @@ class CourseService
         $generatedData = array();
         $totalMongolianWords = floor(($total * 75) / 100);
         foreach ($blocks as $block) {
-            $randomElements = count($blocks) <= 3 ? $blocks->where("id", "!=", $block->id) : $blocks->where("id", "!=", $block->id)->push($block)->random(3);
+            $randomElements = count($blocks) <= 3 ? $blocks->where("id", "!=", $block->id) : $blocks->where("id", "!=", $block->id)->push($block)->random(4);
             $answers = $randomElements->pluck("wordSort.word");
             $word = $block->wordSort->word ?? null;
             if (is_null($word)) {
@@ -658,7 +658,7 @@ class CourseService
         $generatedData = array();
 
         foreach ($previousBlocks as $block) {
-            $randomElements = count($previousBlocks) <= 3 ? $previousBlocks->where("id", "!=", $block->id) : $previousBlocks->where("id", "!=", $block->id)->push($block)->random(3);
+            $randomElements = count($previousBlocks) <= 3 ? $previousBlocks->where("id", "!=", $block->id) : $previousBlocks->where("id", "!=", $block->id)->push($block)->random(4);
             $answers = $randomElements->pluck("wordSort.word");
             $word = $block->wordSort->word ?? null;
             if (is_null($word)) {
