@@ -508,7 +508,7 @@ class CourseService
         $totalMongolianWords = floor(($total * 75) / 100);
         $isShort = count($blocks) <= 3;
         foreach ($blocks as $block) {
-            $randomElements = $isShort ? $blocks->random() : $blocks->where("id", "!=", $block->id)->random(3)->push($block)->random(4);
+            $randomElements = $isShort ? $blocks->random() : $blocks->where("id", "!=", $block->id)->random(3)->push($block)->shuffle(4);
             $answers = $randomElements->pluck("wordSort.word");
             $word = $block->wordSort->word ?? null;
             if (is_null($word)) {
@@ -522,7 +522,7 @@ class CourseService
                     "id" => $block->id,
                     "question" => $isWord ? $word->translation->name ?? "NONE" : $word->word,
                     "correct_answer" => $word->id,
-                    "answers" => $answers->map(fn ($item) => ["id" => $item->id ?? 0, "answer" => $isWord ? $item->word ?? "NONE" : $item->translation->name ?? "NONE",]),
+                    "answers" => $answers->map(fn ($item) => ["id" => $item->id ?? 0, "answer" => $isWord ? $item->word ?? "NONE" : $item->translation->name ?? "NONE"]),
                     "is_word" => $isWord,
                 ]
             );
@@ -651,15 +651,17 @@ class CourseService
     {
         $previousBlocks = CourseGroupBlock::with("wordSort.word", "wordSort.word.translation")
             ->where("v3_course_group_id", $examBlock->v3_course_group_id)
-            ->where("order", "<=", $examBlock->order)
-            ->orderBy("order", "desc")
+            ->where("order", "<", $examBlock->order)
+            ->orderBy("order", "asc")
             ->limit(10)
             ->get();
 
         $generatedData = array();
 
         foreach ($previousBlocks as $block) {
-            $randomElements = count($previousBlocks) <= 3 ? $previousBlocks->where("id", "!=", $block->id) : $previousBlocks->where("id", "!=", $block->id)->random(3)->push($block)->random(4);
+            $randomElements = count($previousBlocks) <= 3
+                ? $previousBlocks->where("id", "!=", $block->id)
+                : $previousBlocks->where("id", "!=", $block->id)->random(3)->push($block)->shuffle();
             $answers = $randomElements->pluck("wordSort.word");
             $word = $block->wordSort->word ?? null;
             if (is_null($word)) {
