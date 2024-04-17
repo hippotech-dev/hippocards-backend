@@ -23,6 +23,7 @@ Route::apiResources([
     "course.group" => CourseGroupController::class,
     "course.block" => CourseBlockController::class,
     "course.completion" => CourseCompletionController::class,
+    "user/certificate" => CertificateController::class
 ]);
 
 Route::prefix("course")->group(function () {
@@ -36,5 +37,3 @@ Route::prefix("course")->group(function () {
     Route::get("exam/{block}", [ CourseBlockController::class, "getCourseExamData" ]);
     Route::post("exam/{block}/submit", [ CourseBlockController::class, "submitExamAnswers" ]);
 });
-
-Route::post("certificate", [ CertificateController::class, "generate" ]);

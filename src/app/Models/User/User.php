@@ -4,6 +4,7 @@ namespace App\Models\User;
 
 use App\Enums\EUserLoginType;
 use App\Enums\EUserRole;
+use App\Models\Course\CourseCertificate;
 use App\Models\Payment\PaymentInvoice;
 use App\Models\Payment\PaymentOrder;
 use App\Models\SSO\OAuthAuthenticationAttempt;
@@ -88,5 +89,10 @@ class User extends Authenticatable implements JWTSubject
     public function paymentOrders()
     {
         return $this->hasMany(PaymentOrder::class);
+    }
+
+    public function courseCertificates()
+    {
+        return $this->hasMany(CourseCertificate::class);
     }
 }

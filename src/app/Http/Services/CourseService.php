@@ -894,4 +894,12 @@ class CourseService
             "v3_course_id" => $course->id
         ]);
     }
+
+    public function getUserCertificates(User $user)
+    {
+        return $user
+            ->courseCertificates()
+            ->with([ "course", "asset" ])
+            ->get();
+    }
 }
