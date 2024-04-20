@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Web\Academy;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\System\Academy\CourseGroupResource;
+use App\Http\Resources\Web\Academy\CourseGroupResource;
 use App\Http\Services\CourseService;
 use App\Models\Course\Course;
 use Illuminate\Http\Request;

@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Resources\System\Academy;
+namespace App\Http\Resources\Web\Academy;
 
+use App\Http\Resources\System\Academy\BlockVideoResource;
+use App\Http\Resources\System\Academy\WordSortResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
