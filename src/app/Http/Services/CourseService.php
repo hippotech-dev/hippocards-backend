@@ -508,7 +508,7 @@ class CourseService
         $totalMongolianWords = floor(($total * 75) / 100);
         $isShort = count($blocks) <= 3;
         foreach ($blocks as $block) {
-            $randomElements = $isShort ? $blocks->random() : $blocks->where("id", "!=", $block->id)->random(3)->push($block)->shuffle(4);
+            $randomElements = $isShort ? $blocks->random() : $blocks->where("id", "!=", $block->id)->random(3)->push($block)->shuffle();
             $answers = $randomElements->pluck("wordSort.word");
             $word = $block->wordSort->word ?? null;
             if (is_null($word)) {
