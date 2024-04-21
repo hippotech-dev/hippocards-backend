@@ -34,12 +34,22 @@ class CourseCertificateJob implements ShouldQueue
      */
     public function handle(AssetService $assetService, CourseService $courseService): void
     {
-        $image = ImageManager::gd()->read(public_path('certificate.jpg'));
+        $image = ImageManager::gd()->read(public_path('certificate.png'));
 
-        $image->text($this->user->name, 100, 550, function (FontFactory $font) {
+        $image->text($this->user->name, $image->width() / 2, $image->height() / 2 + 50, function (FontFactory $font) {
             $font->color('#333333');
-            $font->filename(public_path("fonts/Roboto-Regular.ttf"));
-            $font->size(48);
+            $font->filename(public_path("fonts/Montserrat-Regular.ttf"));
+            $font->size(64);
+            $font->align('center');
+            $font->valign('center');
+        });
+
+        $image->text("Огноо: " . date("Y/m/d"), $image->width() / 2, $image->height() / 2 + 520, function (FontFactory $font) {
+            $font->color('#333333');
+            $font->filename(public_path("fonts/Montserrat-Regular.ttf"));
+            $font->size(36);
+            $font->align('center');
+            $font->valign('center');
         });
 
         $asset = $assetService->createImageAsset($image->toJpeg());
