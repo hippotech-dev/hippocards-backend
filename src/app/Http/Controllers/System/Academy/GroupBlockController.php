@@ -112,4 +112,30 @@ class GroupBlockController extends Controller
 
         return response()->success();
     }
+
+    /**
+     * Create or update block details
+     */
+    public function createUpdateBlockDetail(Request $request, CourseGroupBlock $block)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "sentences",
+                "keywords"
+            ),
+            [
+                "sentences" => "present|array",
+                "sentences.*.value" => "required|string",
+                "sentences.*.translation" => "nullable|string",
+                "sentences.*.is_english" => "required|boolean",
+                "keywords" => "present|array",
+                "keywords.*" => "required|string"
+            ],
+        )
+            ->validate();
+
+        $this->service->createUpdateBlockDetail($block, $validatedData);
+
+        return response()->success();
+    }
 }

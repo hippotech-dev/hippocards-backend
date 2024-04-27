@@ -13,6 +13,7 @@ use App\Http\Resources\System\Academy\CourseGroupResource;
 use App\Http\Resources\System\Academy\WordResource;
 use App\Jobs\CourseCertificateJob;
 use App\Models\Course\Course;
+use App\Models\Course\CourseBlockDetail;
 use App\Models\Course\CourseBlockVideo;
 use App\Models\Course\CourseBlockVideoTimestamp;
 use App\Models\Course\CourseCertificate;
@@ -240,7 +241,7 @@ class CourseService
         return $course->blocks()->get();
     }
 
-    public function getGroupBlockById(CourseGroup $group, int $id, array $with = ["wordSort", "videos.asset"])
+    public function getGroupBlockById(CourseGroup $group, int $id, array $with = ["wordSort", "videos.asset", "detail"])
     {
         return $group->blocks()->with($with)->where("id", $id)->first();
     }
@@ -400,6 +401,22 @@ class CourseService
         }
 
         return $totalBlocks;
+    }
+
+    public function createUpdateBlockDetail(CourseGroupBlock $block, array $data)
+    {
+        [ "sentences" => $sentences, "keywords" => $keywords ] = $data;
+
+        return $block->detail()->updateOrCreate(
+            [
+                "v3_course_id" => $block->v3_course_id,
+                "v3_course_block_id" => $block->id
+            ],
+            [
+                "sentences" => $sentences,
+                "keywords" => $keywords
+            ]
+        );
     }
 
     /**

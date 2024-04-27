@@ -47,4 +47,9 @@ class CourseGroupBlock extends Model
     {
         return $this->hasMany(CourseBlockVideo::class, "v3_course_group_block_id");
     }
+
+    public function detail()
+    {
+        return $this->hasOne(CourseBlockDetail::class, "v3_course_block_id");
+    }
 }

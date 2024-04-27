@@ -44,6 +44,10 @@ Route::prefix("group")->group(function () {
     Route::prefix("{group}")->group(function () {
         Route::post("block/{block}/shift", [ GroupBlockController::class, "shiftBlock" ]);
     });
+
+    Route::prefix("block")->group(function () {
+        Route::post("{block}/detail", [ GroupBlockController::class, "createUpdateBlockDetail" ]);
+    });
 });
 
 Route::get("test", [ CourseController::class, "test" ]);
