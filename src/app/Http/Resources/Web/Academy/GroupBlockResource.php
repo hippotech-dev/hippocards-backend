@@ -23,7 +23,13 @@ class GroupBlockResource extends JsonResource
             "order" => $this->order,
             "v3_course_group_id" => $this->v3_course_group_id,
             "word_sort" => new WordSortResource($this->whenLoaded("wordSort")),
-            "videos" => BlockVideoResource::collection($this->whenLoaded("videos"))
+            "videos" => BlockVideoResource::collection($this->whenLoaded("videos")),
+            "detail" => $this->whenLoaded("detail", function () {
+                return [
+                    "sentences" => $this->detail->sentences ?? [],
+                    "keywords" => $this->detail->keywords ?? [],
+                ];
+            })
         ];
     }
 }

@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Web\Academy;
 
 use App\Enums\ECourseExamType;
-use App\Exceptions\AppException;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\System\Academy\GroupBlockResource;
+use App\Http\Resources\Web\Academy\GroupBlockResource;
 use App\Http\Services\CourseService;
 use App\Models\Course\Course;
 use App\Models\Course\CourseGroupBlock;
@@ -109,5 +108,30 @@ class CourseBlockController extends Controller
         $result = $this->service->submitExamAnswers($block, $validatedData["answers"]);
 
         return response()->success($result);
+    }
+
+    /**
+     * Submit sentence and keyword response
+     */
+    public function submitSentenceKeywordResponse(Request $request, CourseGroupBlock $block)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "sentences",
+                "keyword"
+            ),
+            [
+                "sentences" => "sometimes|array",
+                "sentences.*.sentence" => "required|string|max:512",
+                "sentences.*.sentence_translation" => "required|string|max:512",
+                "sentences.*.sentence_hint" => "required|string|max:512",
+                "keyword" => "sometimes|string|128"
+            ]
+        )
+            ->validate();
+
+        $this->service->submitSentenceKeywordResponse($block, $validatedData);
+
+        return response()->success();
     }
 }

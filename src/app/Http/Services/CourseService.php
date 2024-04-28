@@ -246,14 +246,14 @@ class CourseService
         return $group->blocks()->with($with)->where("id", $id)->first();
     }
 
-    public function getCourseBlockById(Course $course, int $id, array $with = ["wordSort", "videos.asset"])
+    public function getCourseBlockById(Course $course, int $id, array $with = ["wordSort", "videos.asset", "detail"])
     {
         return $course->blocks()->with($with)->where("id", $id)->first();
     }
 
     public function getCourseBlockByIdLoaded(Course $course, int $id)
     {
-        $block = $this->getCourseBlockById($course, $id, [ "videos.asset", "videos.videoTimestamps" ]);
+        $block = $this->getCourseBlockById($course, $id, [ "videos.asset", "videos.videoTimestamps", "detail" ]);
 
         if ($block->type === ECourseBlockType::EXAM) {
             return $block;
@@ -417,6 +417,11 @@ class CourseService
                 "keywords" => $keywords
             ]
         );
+    }
+
+    public function submitSentenceKeywordResponse(CourseGroupBlock $block, array $data)
+    {
+
     }
 
     /**

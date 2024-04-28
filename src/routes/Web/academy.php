@@ -34,6 +34,7 @@ Route::prefix("course")->group(function () {
         Route::post("final-exam/{examInstance}/finish", [ CourseController::class, "finishFinalExamData" ]);
         Route::post("block/{block}/progress", [ CourseBlockController::class, "setCourseCompletion" ]);
     });
+    Route::post("block/{block}/sentence-keyword", [ CourseBlockController::class, "submitSentenceKeywordResponse" ]);
     Route::get("exam/{block}", [ CourseBlockController::class, "getCourseExamData" ]);
     Route::post("exam/{block}/submit", [ CourseBlockController::class, "submitExamAnswers" ]);
 });
