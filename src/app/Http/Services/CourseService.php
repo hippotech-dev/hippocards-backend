@@ -14,6 +14,7 @@ use App\Http\Resources\System\Academy\WordResource;
 use App\Jobs\CourseCertificateJob;
 use App\Models\Course\Course;
 use App\Models\Course\CourseBlockDetail;
+use App\Models\Course\CourseBlockResponse;
 use App\Models\Course\CourseBlockVideo;
 use App\Models\Course\CourseBlockVideoTimestamp;
 use App\Models\Course\CourseCertificate;
@@ -419,9 +420,56 @@ class CourseService
         );
     }
 
-    public function submitSentenceKeywordResponse(CourseGroupBlock $block, array $data)
+    public function submitSentenceKeywordResponse(CourseGroupBlock $block, CourseCompletion $completion, User $user, array $data)
     {
+        $type = array_key_exists("sentences", $data) ? "sentence" : "keyword";
+        $sentences = $data["sentences"] ?? [];
+        $keyword = $data["keyword"] ?? [];
 
+        $responses = $this->getSentenceKeywordResponse($block, $completion, $type);
+        if (count($responses) > 10) {
+            throw new AppException("Нийт 10 аас дээш хариулт илгээх боломжгүй!");
+        }
+
+        switch ($type) {
+            case "sentence":
+                return $block->sentenceKeywordResponses()->createMany(array_map(function ($item) use ($type, $block, $completion, $user) {
+                    return array_merge($item, [
+                        "type" => $type,
+                        "v3_course_id" => $block->v3_course_id,
+                        "v3_course_completion_id" => $completion->id,
+                        "v3_course_block_id" => $block->id,
+                        "user_id" => $user->id
+                    ]);
+                }, $sentences));
+                return;
+            case "keyword":
+                $check = $responses->filter(function ($item) use ($keyword) {
+                    return $keyword === $item->keyword;
+                });
+                if (count($check) > 0) {
+                    return null;
+                }
+                return $block->sentenceKeywordResponses()->create([
+                    "keyword" => $keyword,
+                    "v3_course_id" => $block->v3_course_id,
+                    "v3_course_completion_id" => $completion->id,
+                    "v3_course_block_id" => $block->id,
+                    "user_id" => $user->id,
+                    "type" => $type,
+                ]);
+            default:
+                return null;
+        }
+    }
+
+    public function getSentenceKeywordResponse(CourseGroupBlock $block, CourseCompletion $completion, $type)
+    {
+        return $block
+            ->sentenceKeywordResponses()
+            ->where("v3_course_completion_id", $completion->id)
+            ->where("type", $type)
+            ->get();
     }
 
     /**

@@ -52,4 +52,9 @@ class CourseGroupBlock extends Model
     {
         return $this->hasOne(CourseBlockDetail::class, "v3_course_block_id");
     }
+
+    public function sentenceKeywordResponses()
+    {
+        return $this->hasMany(CourseBlockResponse::class, "v3_course_block_id");
+    }
 }

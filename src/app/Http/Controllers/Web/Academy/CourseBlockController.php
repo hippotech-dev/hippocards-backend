@@ -8,10 +8,12 @@ use App\Http\Resources\Web\Academy\GroupBlockResource;
 use App\Http\Services\CourseService;
 use App\Models\Course\Course;
 use App\Models\Course\CourseGroupBlock;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class CourseBlockController extends Controller
 {
@@ -125,13 +127,33 @@ class CourseBlockController extends Controller
                 "sentences.*.sentence" => "required|string|max:512",
                 "sentences.*.sentence_translation" => "required|string|max:512",
                 "sentences.*.sentence_hint" => "required|string|max:512",
-                "keyword" => "sometimes|string|128"
+                "keyword" => "sometimes|string|max:128"
             ]
         )
             ->validate();
 
-        $this->service->submitSentenceKeywordResponse($block, $validatedData);
+        if (count($validatedData) === 0) {
+            throw new Exception("Empty data!");
+        }
+        $requestUser = auth()->user();
+        $course = $this->service->getCourseById($block->v3_course_id);
+        $completion = $this->service->getCourseCompletion($course, $requestUser);
+        $this->service->submitSentenceKeywordResponse($block, $completion, $requestUser, $validatedData);
 
         return response()->success();
+    }
+
+    /**
+     * Get sentence and keywords exam
+     */
+    public function getSentenceKeywordsResponses(Request $request, CourseGroupBlock $block)
+    {
+        $type = $request->get("type", "sentence");
+        $requestUser = auth()->user();
+        $course = $this->service->getCourseById($block->v3_course_id);
+        $completion = $this->service->getCourseCompletion($course, $requestUser);
+        $responses = $this->service->getSentenceKeywordResponse($block, $completion, $type);
+
+        return response()->success($responses);
     }
 }

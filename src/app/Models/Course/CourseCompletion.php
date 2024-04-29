@@ -31,7 +31,7 @@ class CourseCompletion extends Model
 
     public function currentBlock()
     {
-        return $this->belongsTo(CourseGroupBlock::class, "currenct_block_id");
+        return $this->belongsTo(CourseGroupBlock::class, "current_block_id");
     }
 
     public function currentGroup()
