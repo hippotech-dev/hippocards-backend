@@ -835,6 +835,27 @@ class CourseService
         return is_null($examInstance) ? null : $this->getCourseExamInstaceResult($examInstance);
     }
 
+    public function getCourseFinalExamAnswers(Course $course, User $user)
+    {
+        $userCourse = $this->getActiveUserCourse($course, $user);
+        $examInstance = $this->getCourseExamInstance($userCourse, ECourseBlockType::FINAL_EXAM);
+
+        if (is_null($examInstance)) {
+            throw new AppException("Final exam is not submitted!");
+        }
+
+        $answers = $examInstance->answers;
+        $questions = $examInstance->questions;
+        foreach ($questions as &$question) {
+            if (array_key_exists("correct_answer", $question)
+                && array_key_exists($question["id"], $answers)) {
+                $question["user_answer"] = $answers[$question["id"]];
+            }
+        }
+
+        return $questions;
+    }
+
     /**
      * User course
      */

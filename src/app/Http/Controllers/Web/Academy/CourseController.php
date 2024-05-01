@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web\Academy;
 
+use App\Exceptions\AppException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Web\Academy\CourseResource;
 use App\Http\Resources\Web\Academy\CourseExamInstanceResource;
@@ -112,10 +113,25 @@ class CourseController extends Controller
     public function finishFinalExamData(Course $course, CourseExamInstance $examInstance)
     {
         $requestUser = auth()->user();
+        $userCourse = $this->service->getActiveUserCourse($course, $requestUser);
+
+        if ($examInstance->v3_user_course_id !== $userCourse->id) {
+            throw new AppException("Not authorized!");
+        }
+
         $this->service->finishCourseFinalExamQuestions($course, $requestUser, $examInstance);
 
         return response()->success();
     }
 
+    /**
+     * Get final exam answer list with correct answer
+     */
+    public function getFinalExamCorrectAnswers(Course $course)
+    {
+        $requestUser = auth()->user();
+        $questions = $this->service->getCourseFinalExamAnswers($course, $requestUser);
 
+        return response()->success($questions);
+    }
 }

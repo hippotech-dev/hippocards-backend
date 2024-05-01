@@ -30,6 +30,7 @@ Route::prefix("course")->group(function () {
     Route::prefix("{course}")->group(function () {
         Route::get("learn", [ CourseController::class, "getLearnData" ]);
         Route::get("final-exam", [ CourseController::class, "getFinalExamData" ]);
+        Route::get("final-exam/answer", [ CourseController::class, "getFinalExamCorrectAnswers" ]);
         Route::post("final-exam/{examInstance}/submit", [ CourseController::class, "submitFinalExamData" ]);
         Route::post("final-exam/{examInstance}/finish", [ CourseController::class, "finishFinalExamData" ]);
         Route::post("block/{block}/progress", [ CourseBlockController::class, "setCourseCompletion" ]);
