@@ -127,10 +127,16 @@ class CourseController extends Controller
     /**
      * Get final exam answer list with correct answer
      */
-    public function getFinalExamCorrectAnswers(Course $course)
+    public function getFinalExamCorrectAnswers(Course $course, CourseExamInstance $examInstance)
     {
         $requestUser = auth()->user();
-        $questions = $this->service->getCourseFinalExamAnswers($course, $requestUser);
+        $userCourse = $this->service->getActiveUserCourse($course, $requestUser);
+
+        if ($examInstance->v3_user_course_id !== $userCourse->id) {
+            throw new AppException("Not authorized!");
+        }
+
+        $questions = $this->service->getCourseFinalExamAnswers($userCourse);
 
         return response()->success($questions);
     }

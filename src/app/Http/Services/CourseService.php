@@ -835,9 +835,8 @@ class CourseService
         return is_null($examInstance) ? null : $this->getCourseExamInstaceResult($examInstance);
     }
 
-    public function getCourseFinalExamAnswers(Course $course, User $user)
+    public function getCourseFinalExamAnswers(UserCourse $userCourse)
     {
-        $userCourse = $this->getActiveUserCourse($course, $user);
         $examInstance = $this->getCourseExamInstance($userCourse, ECourseBlockType::FINAL_EXAM);
 
         if (is_null($examInstance)) {
