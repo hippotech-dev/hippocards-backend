@@ -4,4 +4,8 @@ namespace App\Util;
 
 use App\Models\Course\CourseBlockVideo;
 
-class Constant {}
+class Constant
+{
+    public const DEFAULT_PAGINATION = 10;
+
+}

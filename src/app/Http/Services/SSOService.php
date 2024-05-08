@@ -202,7 +202,7 @@ class SSOService
             "image" => $googleUserData->getPicture()
         ];
 
-        $checkUser = $this->userService->getUserByFilter([
+        $checkUser = $this->userService->getUser([
             "email" => $userData["email"]
         ]);
 
@@ -222,7 +222,7 @@ class SSOService
         !check_email($value)
             && $credentials["phone"] = $value;
 
-        $user =  $this->userService->getUserByFilter($credentials);
+        $user =  $this->userService->getUser($credentials);
 
         !is_null($password) && $credentials["password"] = $password;
 

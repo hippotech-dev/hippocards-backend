@@ -1,5 +1,6 @@
 <?php
 
+use App\Util\Constant;
 use Illuminate\Support\Str;
 use GuzzleHttp\Client;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -86,8 +87,7 @@ if (!function_exists("error_handler")) {
 if (!function_exists("filter_query_with_model")) {
     function filter_query_with_model($query, array $model, array $params)
     {
-        // echo $model;
-        foreach (array_keys($params) as $param) {
+        foreach (array_keys($params) as &$param) {
             $modelQuery = array_key_exists($param, $model) ? $model[$param] : null;
             if (is_null($modelQuery)) {
                 continue;
@@ -319,5 +319,27 @@ if (!function_exists("gen_uuid")) {
     function gen_uuid()
     {
         return Str::uuid();
+    }
+}
+
+if (!function_exists("generate_filter_schema")) {
+    function generate_filter_schema($filters)
+    {
+        $keys = array_keys($filters);
+
+        foreach ($keys as $key) {
+            $operator = explode("_", $key);
+
+            switch ($key) {
+
+            }
+        }
+    }
+}
+
+if (!function_exists("page_size")) {
+    function page_size()
+    {
+        return min($_GET["pageSize"] ?? Constant::DEFAULT_PAGINATION, 100);
     }
 }

@@ -136,7 +136,11 @@ class CourseController extends Controller
             throw new AppException("Not authorized!");
         }
 
-        $questions = $this->service->getCourseFinalExamAnswers($userCourse);
+        $questions = Cache::remember(
+            cache_key("final-exam-answers", [ $userCourse->id ]),
+            24 * 60 * 60,
+            fn () => $this->service->getCourseFinalExamAnswers($userCourse)
+        );
 
         return response()->success($questions);
     }

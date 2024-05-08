@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Enums\EUserLoginType;
 use App\Enums\EUserRole;
 use App\Models\User\User;
+use App\Util\Constant;
 
 class UserService
 {
@@ -13,14 +14,20 @@ class UserService
         return User::with($with)->find($id);
     }
 
-    public function getUserByFilter(array $filters)
+    public function getUsers(array $filters, array $with = [])
     {
-        $filterModel = [
-            "email" => [ "where", "email" ],
-            "phone" => [ "where", "phone" ],
-        ];
 
-        return filter_query_with_model(User::query(), $filterModel, $filters)->first();
+        return filter_query_with_model(User::with($with), $this->getFilterModels($filters), $filters)->with($with)->get();
+    }
+
+    public function getUsersWithPage(array $filters, array $with = [])
+    {
+        return filter_query_with_model(User::with($with), $this->getFilterModels($filters), $filters)->simplePaginate(page_size());
+    }
+
+    public function getUser(array $filters, array $with = [])
+    {
+        return filter_query_with_model(User::with($with), $this->getFilterModels($filters), $filters)->with($with)->first();
     }
 
     public function createNormalUser(array $userData)
@@ -51,5 +58,27 @@ class UserService
     public function hashPassword(string $password)
     {
         return bcrypt($password);
+    }
+
+    protected function getFilterModels(array $filters)
+    {
+        return [
+            "email" => [ "where", "email" ],
+            "phone" => [ "where", "phone" ],
+            "filter" => [
+                [ "where" ],
+                [
+                    [
+                        "name" => null,
+                        "value" => function ($query) use ($filters) {
+                            return $query
+                                ->whereLike("name", $filters["filter"])
+                                ->orWhereLike("email", $filters["filter"])
+                                ->orWhereLike("phone", $filters["filter"]);
+                        }
+                    ]
+                ]
+            ]
+        ];
     }
 }
