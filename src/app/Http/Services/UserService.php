@@ -5,7 +5,6 @@ namespace App\Http\Services;
 use App\Enums\EUserLoginType;
 use App\Enums\EUserRole;
 use App\Models\User\User;
-use App\Util\Constant;
 
 class UserService
 {
