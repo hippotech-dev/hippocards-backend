@@ -54,6 +54,7 @@ class User extends Authenticatable implements JWTSubject
         "login_type" => EUserLoginType::class,
         "role_id" => EUserRole::class,
         "new_role" => EUserRole::class,
+        "is_guest" => "boolean"
     ];
 
     /**

@@ -16,17 +16,17 @@ class UserService
     public function getUsers(array $filters, array $with = [])
     {
 
-        return filter_query_with_model(User::with($with), $this->getFilterModels($filters), $filters)->with($with)->get();
+        return filter_query_with_model(User::query(), $this->getFilterModels($filters), $filters)->with($with)->where("is_guest", false)->get();
     }
 
     public function getUsersWithPage(array $filters, array $with = [])
     {
-        return filter_query_with_model(User::with($with), $this->getFilterModels($filters), $filters)->simplePaginate(page_size());
+        return filter_query_with_model(User::query(), $this->getFilterModels($filters), $filters)->with($with)->where("is_guest", false)->orderBy("id", "desc")->simplePaginate(page_size());
     }
 
     public function getUser(array $filters, array $with = [])
     {
-        return filter_query_with_model(User::with($with), $this->getFilterModels($filters), $filters)->with($with)->first();
+        return filter_query_with_model(User::query(), $this->getFilterModels($filters), $filters)->with($with)->where("is_guest", false)->first();
     }
 
     public function createNormalUser(array $userData)
