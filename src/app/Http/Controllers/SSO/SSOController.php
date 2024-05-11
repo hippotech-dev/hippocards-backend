@@ -19,7 +19,9 @@ use Illuminate\Validation\Rules\Enum;
 
 class SSOController extends Controller
 {
-    public function __construct(private SSOService $service, private ConfirmationService $confirmationService) {}
+    public function __construct(private SSOService $service, private ConfirmationService $confirmationService)
+    {
+    }
 
     /**
      * Authorize SSO request
@@ -341,7 +343,9 @@ class SSOController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function authorizeFacebook(Request $request) {}
+    public function authorizeFacebook(Request $request)
+    {
+    }
 
     /**
      * Gmail Callback
@@ -349,7 +353,9 @@ class SSOController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function callbackFacebook(Request $request) {}
+    public function callbackFacebook(Request $request)
+    {
+    }
 
     /**
      * Check user credential

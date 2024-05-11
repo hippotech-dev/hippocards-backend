@@ -167,9 +167,9 @@ class SSOService
 
     public function registerUser(EmailConfirmation $confirmation, array $userData)
     {
-        $this->checkUserValue($userData["value"], "register");
+        $this->checkUserValue($confirmation->email, "register");
 
-        return $this->userService->createNormalUser($userData);
+        return $this->userService->createNormalUser(array_merge($userData, $this->getUserCredentialFromValue($confirmation->email)));
     }
 
     public function forgotPassword(EmailConfirmation $confirmation, string $password)
@@ -215,12 +215,7 @@ class SSOService
 
     public function checkUserValue(string $value, string $type, string $password = null)
     {
-        $credentials = [];
-        check_email($value)
-            && $credentials["email"] = $value;
-
-        !check_email($value)
-            && $credentials["phone"] = $value;
+        $credentials = $this->getUserCredentialFromValue($value);
 
         $user =  $this->userService->getUser($credentials);
 
@@ -253,5 +248,17 @@ class SSOService
         }
 
         return $user;
+    }
+
+    public function getUserCredentialFromValue(string $value)
+    {
+        $credentials = array();
+        check_email($value)
+            && $credentials["email"] = $value;
+
+        !check_email($value)
+            && $credentials["phone"] = $value;
+
+        return $credentials;
     }
 }
