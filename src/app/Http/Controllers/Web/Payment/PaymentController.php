@@ -7,12 +7,11 @@ use App\Enums\EPaymentOrderType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Web\Payment\PaymentInvoiceResource;
 use App\Http\Services\PaymentService;
-use App\Http\Services\QPayService;
 use App\Models\Payment\PaymentInvoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Symfony\Component\Translation\Exception\NotFoundResourceException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PaymentController extends Controller
 {
@@ -31,7 +30,7 @@ class PaymentController extends Controller
         $requestUser = auth()->user();
         $invoice = $this->service->getInvoiceById($invoice, ["paymentOrder"]);
         if (is_null($invoice) || $requestUser->id !== $invoice->user_id) {
-            throw new NotFoundResourceException("Invoice not found!");
+            throw new NotFoundHttpException("Invoice not found!");
         }
         return new PaymentInvoiceResource($invoice);
     }

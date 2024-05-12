@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\System\Content\Account\UserController;
 use App\Http\Controllers\System\Content\AccountManagementController;
 use App\Http\Controllers\System\Content\PackageController;
 use App\Http\Controllers\System\Content\WordController;
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::apiResources([
     "package" => PackageController::class,
-    "account/user" => AccountManagementController::class,
+    "account/user" => UserController::class,
 ]);
 
 Route::prefix("package")->group(function () {

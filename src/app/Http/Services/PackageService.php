@@ -5,7 +5,6 @@ namespace App\Http\Services;
 use App\Models\Package\Baseklass;
 use App\Models\Package\Sort;
 use Illuminate\Support\Collection;
-use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class PackageService
 {
