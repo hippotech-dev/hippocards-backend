@@ -49,4 +49,14 @@ class AccountService
     {
         return $this->userService->getUserById($id, []);
     }
+
+    public function setDefaultPasswordForUser(User $user)
+    {
+        return $this->userService->updateUser(
+            $user->id,
+            [
+                "password" => "12345678"
+            ]
+        );
+    }
 }

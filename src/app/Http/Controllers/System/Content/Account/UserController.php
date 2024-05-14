@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\System\Content\Account;
 
+use App\Enums\EUserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\System\Content\UserResource;
 use App\Http\Services\AccountService;
@@ -86,5 +87,15 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    /**
+     * Set default password for the user
+     */
+    public function setDefaultPasswordForUser(User $user)
+    {
+        $this->service->setDefaultPasswordForUser($user);
+
+        return response()->success();
     }
 }

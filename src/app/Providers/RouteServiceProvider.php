@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Enums\EUserRole;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -29,12 +30,14 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         $this->routes(function () {
-            Route::middleware('api')
+            // Route::middleware(['api', "jwt.auth", "role:" . EUserRole::SUPERADMIN->value])
+            Route::middleware(['api', "jwt.auth"])
                 ->prefix('v1/academy')
                 ->name("system-academy.")
                 ->group(base_path('routes/System/academy.php'));
 
-            Route::middleware('api')
+            // Route::middleware(['api', "jwt.auth", "role:" . EUserRole::SUPERADMIN->value])
+            Route::middleware(['api', "jwt.auth"])
                 ->prefix('v1/content')
                 ->name("content.")
                 ->group(base_path('routes/System/content.php'));

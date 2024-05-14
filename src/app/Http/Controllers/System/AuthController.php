@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function __construct(private AuthService $service) {}
+    public function __construct(private AuthService $service)
+    {
+    }
 
     /**
      * Get academy identity
@@ -40,7 +42,7 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getAcademyIdentity()
+    public function getContentIdentity()
     {
         $requestUser = auth()->user();
         return response()->success([

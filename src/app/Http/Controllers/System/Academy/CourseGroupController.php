@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Validator;
 
 class CourseGroupController extends Controller
 {
-    public function __construct(private CourseService $service) {}
+    public function __construct(private CourseService $service)
+    {
+    }
 
     /**
      * Display a listing of the resource.

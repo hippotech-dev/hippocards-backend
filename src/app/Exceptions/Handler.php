@@ -41,7 +41,7 @@ class Handler extends ExceptionHandler
         }
 
         if ($exception instanceof UnauthorizedException) {
-            return response()->fail($exception->getMessage());
+            return response()->fail($exception->getMessage(), 401);
         }
 
         if ($exception instanceof PaymentException) {

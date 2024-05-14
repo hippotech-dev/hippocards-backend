@@ -22,6 +22,10 @@ Route::apiResources([
     "account/user" => UserController::class,
 ]);
 
+Route::prefix("account")->group(function () {
+    Route::post("user/{user}/set-default-password", [ UserController::class, "setDefaultPasswordForUser" ]);
+});
+
 Route::prefix("package")->group(function () {
     Route::prefix("action")->group(function () {
         Route::get("search", [ PackageController::class, "search" ]);

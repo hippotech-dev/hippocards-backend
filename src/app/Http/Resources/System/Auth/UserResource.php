@@ -32,7 +32,12 @@ class UserResource extends JsonResource
             "member" => boolval($this->member),
             "is_guest" => boolval($this->is_guest),
             "is_influencer" => boolval($this->is_influencer),
-            "verify" => $this->verify ?? false
+            "verify" => $this->verify ?? false,
+            "device_name" => $this->device_name,
+            "model" => $this->model,
+            "device_id" => $this->device_id,
+            "updated_at" => $this->updated_at,
+            "created_at" => $this->created_at,
         ];
     }
 }

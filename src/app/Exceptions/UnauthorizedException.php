@@ -6,5 +6,5 @@ use Exception;
 
 class UnauthorizedException extends Exception
 {
-    //
+    public $message = "Unauthorized";
 }
