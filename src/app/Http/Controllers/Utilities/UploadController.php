@@ -23,14 +23,16 @@ class UploadController extends Controller
         $validatedData = Validator::make(
             $request->only(
                 "file",
+                "folder"
             ),
             [
-                    "file" => "required|file|max:131072",
-                ]
+                "file" => "required|file|max:131072",
+                "folder" => "sometimes|string|max:64"
+            ]
         )
                 ->validate();
 
-        $asset = $this->service->createAsset($validatedData["file"]);
+        $asset = $this->service->createAsset($validatedData["file"], $validatedData["folder"] ?? null);
 
         return new AssetResource($asset);
     }

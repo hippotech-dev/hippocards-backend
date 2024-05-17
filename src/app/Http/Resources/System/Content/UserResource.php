@@ -14,6 +14,9 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $imagePath = str_contains($this->image, "upload/avatar")
+            ? $this->image
+            : "upload/avatar/" . $this->image;
         return [
             "id" => $this->id,
             "name" => $this->name,
@@ -22,9 +25,10 @@ class UserResource extends JsonResource
             "login_type" => $this->login_type,
             "logged_in" => boolval($this->logged_in),
             "image" => !is_null($this->image) && strlen($this->image) > 0
-                ? (append_cdn_path(str_contains($this->image, "upload/avatar")
-                    ? $this->image
-                    : "upload/avatar/" . $this->image))
+                ? append_cdn_path($imagePath)
+                : "https://api.dicebear.com/5.x/initials/png?seed=" . $this->name,
+            "s3_image" => !is_null($this->image) && strlen($this->image) > 0
+                ? append_s3_path($imagePath)
                 : "https://api.dicebear.com/5.x/initials/png?seed=" . $this->name,
             "role_id" => $this->new_role,
             "birth_year" => $this->birth_year,

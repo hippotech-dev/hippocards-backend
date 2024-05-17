@@ -25,6 +25,7 @@ class AccountService
             $assetPath = $this->assetService->getAssetPath($data["v3_asset_id"]);
             if (!is_null($assetPath)) {
                 $data["image"] = $assetPath;
+                unset($data["v3_asset_id"]);
             }
         }
 

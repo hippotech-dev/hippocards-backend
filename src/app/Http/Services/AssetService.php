@@ -25,10 +25,10 @@ class AssetService
         return $asset->path;
     }
 
-    public function createAsset(UploadedFile $file)
+    public function createAsset(UploadedFile $file, $folder = null)
     {
-        $folder = "v3/assets/" . date("Y-m");
-        $filename = $this->generateRandomFilename("." . $file->extension());
+        $folder = !is_null($folder) ? "v3/assets/" . $folder : "v3/assets/" . date("Y-m");
+        $filename = $this->generateRandomFilename($file->extension());
         $path = $folder . "/" . $filename;
 
         Storage::disk("s3-tokyo")->putFileAs($folder, $file, $filename);
@@ -87,9 +87,9 @@ class AssetService
         return $url;
     }
 
-    public function generateRandomFilename(string $ext)
+    public function generateRandomFilename(string $ext, $filename = "")
     {
-        return bin2hex(random_bytes(16)) . "-" . $ext;
+        return bin2hex(random_bytes(16)) . $filename . "." . $ext;
     }
 
     public function setTranscoderJob(Asset $asset, string $jobId)
