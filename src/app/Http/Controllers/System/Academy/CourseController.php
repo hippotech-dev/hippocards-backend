@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 use function Aws\boolean_value;
 
@@ -74,6 +75,11 @@ class CourseController extends Controller
     public function show(int $id)
     {
         $course = $this->service->getCourseById($id);
+
+        if (is_null($course)) {
+            throw new NotFoundHttpException();
+        }
+
         return new CourseResource($course);
     }
 
