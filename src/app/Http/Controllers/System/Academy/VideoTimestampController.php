@@ -14,7 +14,9 @@ use Illuminate\Validation\Rule;
 
 class VideoTimestampController extends Controller
 {
-    public function __construct(private CourseService $service) {}
+    public function __construct(private CourseService $service)
+    {
+    }
 
     /**
      * Display a listing of the resource.
@@ -39,7 +41,7 @@ class VideoTimestampController extends Controller
             [
                 "start" => "required|integer",
                 "end" => "required|integer",
-                "type" => ["required", Rule::in(ECourseBlockVideoTimestampType::EXAM->value, ECourseBlockVideoTimestampType::INPUT->value, ECourseBlockVideoTimestampType::TEXT->value)],
+                "type" => ["required", Rule::in(ECourseBlockVideoTimestampType::EXAM->value, ECourseBlockVideoTimestampType::IMAGE->value, ECourseBlockVideoTimestampType::TEXT->value)],
                 "content" => "required"
             ]
         )

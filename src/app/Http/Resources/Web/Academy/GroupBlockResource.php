@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Web\Academy;
 
+use App\Http\Resources\System\Academy\BlockImageResource;
 use App\Http\Resources\System\Academy\BlockVideoResource;
 use App\Http\Resources\System\Academy\WordSortResource;
 use Illuminate\Http\Request;
@@ -24,6 +25,7 @@ class GroupBlockResource extends JsonResource
             "v3_course_group_id" => $this->v3_course_group_id,
             "word_sort" => new WordSortResource($this->whenLoaded("wordSort")),
             "videos" => BlockVideoResource::collection($this->whenLoaded("videos")),
+            "images" => BlockImageResource::collection($this->whenLoaded("images")),
             "detail" => $this->whenLoaded("detail", function () {
                 return [
                     "sentences" => $this->detail->sentences ?? [],

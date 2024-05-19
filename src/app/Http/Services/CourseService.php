@@ -248,14 +248,14 @@ class CourseService
         return $group->blocks()->with($with)->where("id", $id)->first();
     }
 
-    public function getCourseBlockById(Course $course, int $id, array $with = ["wordSort", "videos.asset", "detail"])
+    public function getCourseBlockById(Course $course, int $id, array $with = ["wordSort", "videos.asset", "detail", "images.asset"])
     {
         return $course->blocks()->with($with)->where("id", $id)->first();
     }
 
     public function getCourseBlockByIdLoaded(Course $course, int $id)
     {
-        $block = $this->getCourseBlockById($course, $id, [ "videos.asset", "videos.videoTimestamps", "detail" ]);
+        $block = $this->getCourseBlockById($course, $id, [ "videos.asset", "videos.videoTimestamps", "detail", "images.asset" ]);
 
         if ($block->type === ECourseBlockType::EXAM) {
             return $block;
