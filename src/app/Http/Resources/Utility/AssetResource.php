@@ -16,6 +16,7 @@ class AssetResource extends JsonResource
     {
         return [
             "id" => $this->id,
+            "name" => $this->name,
             "path" => append_cdn_path($this->path),
             "s3_path" => append_s3_path($this->path),
             "size" => $this->size,

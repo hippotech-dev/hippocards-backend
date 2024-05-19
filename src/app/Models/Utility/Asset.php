@@ -14,6 +14,7 @@ class Asset extends Model
 
     protected $fillable = [
         "path",
+        "name",
         "size",
         "mime_type",
         "metadata",

@@ -27,7 +27,8 @@ class GroupBlockResource extends JsonResource
                     "sentences" => $this->detail->sentences ?? [],
                     "keywords" => $this->detail->keywords ?? [],
                 ];
-            })
+            }),
+            "images" => BlockImageResource::collection($this->whenLoaded("images"))
         ];
     }
 }

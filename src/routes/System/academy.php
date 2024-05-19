@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\System\Academy\BlockImageController;
 use App\Http\Controllers\System\Academy\BlockVideoController;
 use App\Http\Controllers\System\Academy\CourseController;
 use App\Http\Controllers\System\Academy\CourseDetailController;
@@ -27,6 +28,7 @@ Route::apiResources([
     "course.group" => CourseGroupController::class,
     "group.block" => GroupBlockController::class,
     "block.video" => BlockVideoController::class,
+    "block.image" => BlockImageController::class,
     "video.timestamp" => VideoTimestampController::class
 ]);
 

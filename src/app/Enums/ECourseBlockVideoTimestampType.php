@@ -11,4 +11,5 @@ enum ECourseBlockVideoTimestampType: string
     case EXAM = "EXAM";
     case INPUT = "INPUT";
     case TEXT = "TEXT";
+    case IMAGE = "IMAGE";
 }

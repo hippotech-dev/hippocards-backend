@@ -35,6 +35,7 @@ class AssetService
 
         return Asset::create([
             "path" => $path,
+            "name" => $file->getClientOriginalName(),
             "size" => $file->getSize(),
             "mime_type" => $file->getMimeType(),
         ]);

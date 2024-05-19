@@ -2,24 +2,25 @@
 
 namespace App\Models\Course;
 
-use App\Enums\ECourseBlockVideoType;
+use App\Enums\ECourseBlockImageType;
 use App\Models\Utility\Asset;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CourseBlockVideo extends Model
+class CourseBlockImage extends Model
 {
-    public $table = "v3_course_block_videos";
-    public $timestamps = false;
+    use HasFactory;
+    public $table = "v3_course_block_images";
 
     protected $fillable = [
         "type",
-        "duration",
         "v3_course_group_block_id",
+        "path",
         "v3_asset_id"
     ];
 
-    public $casts = [
-        "type" => ECourseBlockVideoType::class
+    protected $casts = [
+        "type" => ECourseBlockImageType::class
     ];
 
     public function asset()
@@ -30,10 +31,5 @@ class CourseBlockVideo extends Model
     public function courseGroupBlock()
     {
         return $this->belongsTo(CourseGroupBlock::class);
-    }
-
-    public function videoTimestamps()
-    {
-        return $this->hasMany(CourseBlockVideoTimestamp::class, "v3_course_video_id");
     }
 }

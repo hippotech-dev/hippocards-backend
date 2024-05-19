@@ -14,6 +14,7 @@ use App\Http\Resources\System\Academy\WordResource;
 use App\Jobs\CourseCertificateJob;
 use App\Models\Course\Course;
 use App\Models\Course\CourseBlockDetail;
+use App\Models\Course\CourseBlockImage;
 use App\Models\Course\CourseBlockResponse;
 use App\Models\Course\CourseBlockVideo;
 use App\Models\Course\CourseBlockVideoTimestamp;
@@ -242,7 +243,7 @@ class CourseService
         return $course->blocks()->get();
     }
 
-    public function getGroupBlockById(CourseGroup $group, int $id, array $with = ["wordSort", "videos.asset", "detail"])
+    public function getGroupBlockById(CourseGroup $group, int $id, array $with = ["wordSort", "videos.asset", "detail", "images.asset"])
     {
         return $group->blocks()->with($with)->where("id", $id)->first();
     }
@@ -560,6 +561,33 @@ class CourseService
     public function deleteVideoTimestamp(CourseBlockVideoTimestamp $timestamp)
     {
         return $timestamp->delete();
+    }
+
+    /**
+     * Image
+     */
+
+    public function getBlockImages(CourseGroupBlock $block, $filter = [], array $with = [])
+    {
+        $filterModel = [
+            "type" => [ "where", "type" ]
+        ];
+
+        return filter_query_with_model($block->images()->with($with), $filterModel, $filter)->get();
+    }
+
+    public function createBlockImage(CourseGroupBlock $block, array $data)
+    {
+        if (array_key_exists("v3_asset_id", $data)) {
+            $data["path"] = $this->assetService->getAssetPath($data["v3_asset_id"]);
+        }
+
+        return $block->images()->create($data);
+    }
+
+    public function deleteBlockImage(CourseBlockImage $image)
+    {
+        return $image->delete();
     }
 
     /**
