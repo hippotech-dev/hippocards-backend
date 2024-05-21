@@ -64,7 +64,11 @@ class AssetService
 
     public function createNonuploadedAssetByObject(string $objectType, string $filename)
     {
-        $path = "v3/upload/" . $objectType . "/" . $this->generateRandomFilename($filename);
+        $filenameSplit = explode(".", $filename);
+        $path = "v3/upload/" . $objectType . "/" . $this->generateRandomFilename(
+            $filenameSplit[count($filenameSplit) - 1],
+            count($filenameSplit) > 1 ? $filenameSplit[0] : ""
+        );
 
         return Asset::create([
             "path" => $path,
@@ -96,7 +100,7 @@ class AssetService
 
     public function generateRandomFilename(string $ext, $filename = "")
     {
-        return bin2hex(random_bytes(16)) . $filename . "." . $ext;
+        return bin2hex(random_bytes(16)) . '-' . $filename . "." . $ext;
     }
 
     public function setTranscoderJob(Asset $asset, string $jobId)
