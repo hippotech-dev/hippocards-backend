@@ -4,10 +4,8 @@ use App\Util\Constant;
 use Illuminate\Support\Str;
 use GuzzleHttp\Client;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 if (!function_exists('cdn_path')) {
     function cdn_path(?string $path)

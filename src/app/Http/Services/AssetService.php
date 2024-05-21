@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Enums\EStatus;
 use App\Exceptions\AppException;
 use App\Models\Utility\Asset;
 use Illuminate\Http\UploadedFile;
@@ -11,6 +12,11 @@ use Intervention\Image\Interfaces\ImageInterface;
 
 class AssetService
 {
+    public function __construct(private VDOCipherService $vdoService)
+    {
+
+    }
+
     public function getAssetById(int $id)
     {
         return Asset::find($id);
@@ -95,8 +101,23 @@ class AssetService
 
     public function setTranscoderJob(Asset $asset, string $jobId)
     {
-        $asset->update([
+        return $asset->update([
             "transcoder_job_id" => $jobId
+        ]);
+    }
+
+    public function uploadToDRMProvider(Asset $asset)
+    {
+        $response = $this->vdoService->importByUrl(append_s3_path($asset->path));
+
+        return $asset->update([
+            "metadata" => array_merge(
+                ($asset->metadata ?? []),
+                [
+                    "vdo_cipher_video_id" => $response["id"] ?? null,
+                    "vdo_cipher_video_status" => EStatus::PENDING
+                ]
+            )
         ]);
     }
 

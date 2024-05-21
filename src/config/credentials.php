@@ -19,5 +19,8 @@ return [
         "CLIENT_ID" =>  env("HIPPO_CLIENT_ID", ""),
         "CLIENT_SECRET" =>  env("HIPPO_CLIENT_SECRET", ""),
         "VERIFIER" => env("HIPPO_VERIFIER", "")
+    ],
+    'vdoCipher' => [
+        "API_KEY" => env('VDO_CIPHER_API_KEY', "")
     ]
 ];

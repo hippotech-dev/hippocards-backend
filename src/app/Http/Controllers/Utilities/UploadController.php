@@ -6,6 +6,7 @@ use App\Exceptions\AppException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Utility\AssetResource;
 use App\Http\Services\AssetService;
+use App\Http\Services\VDOCipherService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -87,6 +88,9 @@ class UploadController extends Controller
         if (is_null($asset)) {
             throw new AppException("Invalid asset id!");
         }
+
+        $this->service->uploadToDRMProvider($asset);
+
         $this->service->setTranscoderJob($asset, $validatedData["job_id"]);
 
         return response()->success();
