@@ -34,14 +34,15 @@ class AssetService
     public function createAsset(UploadedFile $file, $folder = null)
     {
         $folder = !is_null($folder) ? "v3/assets/" . $folder : "v3/assets/" . date("Y-m");
-        $filename = $this->generateRandomFilename($file->extension());
+        $filename = $file->getClientOriginalName();
+        $filename = $this->generateRandomFilename($filename . "." . $file->extension());
         $path = $folder . "/" . $filename;
 
         Storage::disk("s3-tokyo")->putFileAs($folder, $file, $filename);
 
         return Asset::create([
             "path" => $path,
-            "name" => $file->getClientOriginalName(),
+            "name" => $filename,
             "size" => $file->getSize(),
             "mime_type" => $file->getMimeType(),
         ]);
@@ -64,14 +65,13 @@ class AssetService
 
     public function createNonuploadedAssetByObject(string $objectType, string $filename)
     {
-        $filenameSplit = explode(".", $filename);
         $path = "v3/upload/" . $objectType . "/" . $this->generateRandomFilename(
-            $filenameSplit[count($filenameSplit) - 1],
-            count($filenameSplit) > 1 ? $filenameSplit[0] : ""
+            $filename
         );
 
         return Asset::create([
             "path" => $path,
+            "name" => $filename,
             "size" => 0,
             "mime_type" => "unknown",
         ]);
@@ -98,9 +98,9 @@ class AssetService
         return $url;
     }
 
-    public function generateRandomFilename(string $ext, $filename = "")
+    public function generateRandomFilename(string $filename)
     {
-        return bin2hex(random_bytes(16)) . '-' . $filename . "." . $ext;
+        return bin2hex(random_bytes(16)) . '-' . $filename;
     }
 
     public function setTranscoderJob(Asset $asset, string $jobId)
