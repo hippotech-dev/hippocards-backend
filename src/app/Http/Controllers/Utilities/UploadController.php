@@ -89,9 +89,9 @@ class UploadController extends Controller
             throw new AppException("Invalid asset id!");
         }
 
-        $this->service->uploadToDRMProvider($asset);
-
         $this->service->setTranscoderJob($asset, $validatedData["job_id"]);
+
+        $this->service->uploadToDRMProvider($asset);
 
         return response()->success();
     }
