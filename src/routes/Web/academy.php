@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Utilities\UploadController;
 use App\Http\Controllers\Web\Academy\CertificateController;
 use App\Http\Controllers\Web\Academy\CourseBlockController;
 use App\Http\Controllers\Web\Academy\CourseCompletionController;
@@ -35,8 +36,14 @@ Route::prefix("course")->group(function () {
         Route::post("final-exam/{examInstance}/finish", [ CourseController::class, "finishFinalExamData" ]);
         Route::post("block/{block}/progress", [ CourseBlockController::class, "setCourseCompletion" ]);
     });
-    Route::post("block/{block}/sentence-keyword", [ CourseBlockController::class, "submitSentenceKeywordResponse" ]);
-    Route::get("block/{block}/sentence-keyword", [ CourseBlockController::class, "getSentenceKeywordsResponses" ]);
-    Route::get("exam/{block}", [ CourseBlockController::class, "getCourseExamData" ]);
-    Route::post("exam/{block}/submit", [ CourseBlockController::class, "submitExamAnswers" ]);
+
+    Route::prefix("block")->group(function () {
+        Route::post("{block}/sentence-keyword", [ CourseBlockController::class, "submitSentenceKeywordResponse" ]);
+        Route::get("{block}/sentence-keyword", [ CourseBlockController::class, "getSentenceKeywordsResponses" ]);
+    });
+
+    Route::prefix("exam")->group(function () {
+        Route::get("{block}", [ CourseBlockController::class, "getCourseExamData" ]);
+        Route::post("{block}/submit", [ CourseBlockController::class, "submitExamAnswers" ]);
+    });
 });

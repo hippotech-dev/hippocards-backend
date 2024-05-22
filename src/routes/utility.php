@@ -9,4 +9,5 @@ Route::prefix("upload")->group(function () {
     Route::post("video/url", [ UploadController::class, "getVideoSignedUrl" ]);
     Route::post("video/job/submit", [ UploadController::class, "setTranscoderJob" ]);
     Route::post("video/job/complete", [ UploadController::class, "completeTranscoderJob" ]);
+    Route::post("video/{asset}/otp", [ UploadController::class, "getVideoPlaybackAndOTPInfo" ]);
 });

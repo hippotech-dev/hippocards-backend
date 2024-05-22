@@ -22,7 +22,8 @@ class AssetResource extends JsonResource
             "size" => $this->size,
             "mime_type" => $this->mime_type,
             "metadata" => [
-                "transcoded_url" => array_key_exists("transcoded_url", $this->metadata ?? []) ? append_s3_path($this->metadata["transcoded_url"] ?? null) : null
+                "transcoded_url" => array_key_exists("transcoded_url", $this->metadata ?? []) ? append_s3_path($this->metadata["transcoded_url"] ?? null) : null,
+                "vdo_cipher_video_id" => array_key_exists("vdo_cipher_video_id", $this->metadata ?? []) ? $this->metadata["vdo_cipher_video_id"] : null
             ],
         ];
     }

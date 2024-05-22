@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Utility\AssetResource;
 use App\Http\Services\AssetService;
 use App\Http\Services\VDOCipherService;
+use App\Models\Utility\Asset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -111,8 +112,26 @@ class UploadController extends Controller
         )
             ->validate();
 
-        $this->service->completeTranscoderJob($validatedData["job_id"]);
+        $asset = $this->service->getAsset([ "transcoder_job_id" => $validatedData["job_id"] ]);
+
+        if (is_null($asset)) {
+            throw new AppException("Asset is invalid!");
+        }
+
+        $this->service->completeTranscoderJob($asset);
 
         return response()->success();
+    }
+
+    /**
+     * Get video playback and otp info
+     */
+    public function getVideoPlaybackAndOTPInfo(Asset $asset)
+    {
+        $result = $this->service->getVideoPlaybackAndOTPInfo($asset);
+
+        return response()->successAppend([
+            "data" => $result
+        ]);
     }
 }

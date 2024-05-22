@@ -6,6 +6,7 @@ use App\Enums\EStatus;
 use App\Exceptions\AppException;
 use App\Models\Utility\Asset;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Interfaces\EncodedImageInterface;
 use Intervention\Image\Interfaces\ImageInterface;
@@ -20,6 +21,15 @@ class AssetService
     public function getAssetById(int $id)
     {
         return Asset::find($id);
+    }
+
+    public function getAsset(array $filter, array $with = [])
+    {
+        $filterModel = [
+            "transcoder_job_id" => [ "where", "transcoder_job_id" ]
+        ];
+
+        return  filter_query_with_model(Asset::query(), $filterModel, $filter)->with($with)->first();
     }
 
     public function getAssetPath(int $id)
@@ -112,7 +122,8 @@ class AssetService
 
     public function uploadToDRMProvider(Asset $asset)
     {
-        $response = $this->vdoService->importByUrl(append_s3_path($asset->path));
+        $path = $asset->path;
+        $response = $this->vdoService->importByUrl(append_s3_path($path));
 
         return $asset->update([
             "metadata" => array_merge(
@@ -125,19 +136,37 @@ class AssetService
         ]);
     }
 
-    public function completeTranscoderJob(string $jobId)
+    public function completeTranscoderJob(Asset $asset)
     {
-        $asset = Asset::where("transcoder_job_id", $jobId)->first();
-        if (is_null($asset)) {
-            throw new AppException("Asset is invalid!");
-        }
         $metadata = $asset->metadata ?? [];
         $pathSplit = explode("/", $asset->path);
         $filename = $pathSplit[count($pathSplit) - 1];
         $filenameSplit = explode(".", $filename);
-        $metadata["transcoded_url"] = "v3/transcoded-video/" . ($filenameSplit[0] ?? "none") . ".m3u8";
-        return $asset->update([
-            "metadata" => $metadata
-        ]);
+        $filenameSplit[count($filenameSplit) - 1] = "m3u8";
+        $metadata["transcoded_url"] = "v3/transcoded-video/" . implode(".", $filenameSplit);
+
+        $asset->metadata = $metadata;
+        return $asset->save();
+    }
+
+    public function getVideoPlaybackAndOTPInfo(Asset $asset)
+    {
+        $metadata = $asset->metadata ?? [];
+
+        if (!array_key_exists("vdo_cipher_video_id", $metadata)) {
+            throw new AppException("Video is not protected!");
+        }
+
+        $videoId = $metadata["vdo_cipher_video_id"];
+
+        $otp =  Cache::remember(cache_key("vdo-video-otp-playback-v1", [ $videoId ]), 55 * 60, function () use ($videoId) {
+            return $this->vdoService->getVideoOTP($videoId);
+        });
+
+        if (is_null($otp)) {
+            throw new AppException("Video is not protected!");
+        }
+
+        return $otp;
     }
 }
