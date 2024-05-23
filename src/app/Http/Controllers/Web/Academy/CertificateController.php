@@ -17,7 +17,7 @@ class CertificateController extends Controller
 {
     public function __construct(private AssetService $assetService, private CourseService $service)
     {
-        $this->middleware("jwt.auth", [
+        $this->middleware("auth.jwt-session", [
             "only" => [ "index" ]
         ]);
     }

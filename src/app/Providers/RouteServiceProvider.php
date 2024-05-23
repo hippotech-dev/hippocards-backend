@@ -42,12 +42,12 @@ class RouteServiceProvider extends ServiceProvider
                 ->name("content.")
                 ->group(base_path('routes/System/content.php'));
 
-            Route::middleware('api')
+            Route::middleware("web-api")
                 ->prefix('v1/web/academy')
                 ->name("web-academy.")
                 ->group(base_path('routes/Web/academy.php'));
 
-            Route::middleware('api')
+            Route::middleware('web-api')
                 ->prefix('v1/web/payment')
                 ->name("web-payment.")
                 ->group(base_path('routes/Web/payment.php'));
@@ -57,7 +57,7 @@ class RouteServiceProvider extends ServiceProvider
                 ->name("auth.")
                 ->group(base_path('routes/auth.php'));
 
-            Route::middleware('api')
+            Route::middleware('web-api')
                 ->prefix('v1/sso')
                 ->name("sso.")
                 ->group(base_path('routes/sso.php'));

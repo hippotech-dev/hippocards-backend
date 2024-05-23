@@ -17,7 +17,7 @@ class PaymentController extends Controller
 {
     public function __construct(private PaymentService $service)
     {
-        $this->middleware("jwt.auth", [
+        $this->middleware("auth.jwt-session", [
             "except" => "qpayCallback"
         ]);
     }

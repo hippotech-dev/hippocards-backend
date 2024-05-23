@@ -24,13 +24,13 @@ class VDOCipherService
                     ]
                 ]
             );
-            Log::channel("custom")->info("VDO Success: " . $url, [
+            Log::channel("custom")->info("VDO Import Success: " . $url, [
                 "data" => $response,
                 "url" => $url,
             ]);
             return $response;
         } catch (Exception $err) {
-            Log::channel("custom")->error("VDOException: " . $err->getMessage());
+            Log::channel("custom")->error("VDO Import Exception: " . $err->getMessage());
         }
     }
 
@@ -49,13 +49,39 @@ class VDOCipherService
                     ]
                 ]
             );
-            Log::channel("custom")->info("VDO Success: " . $videoId, [
+            Log::channel("custom")->info("VDO OTP Success: " . $videoId, [
                 "data" => $response,
                 "videoId" => $videoId,
             ]);
             return $response;
         } catch (Exception $err) {
-            Log::channel("custom")->error("VDOException: " . $err->getMessage());
+            Log::channel("custom")->error("VDO OTP Exception: " . $err->getMessage());
+            return null;
+        }
+    }
+
+    public function deleteVideos(array $videoIds)
+    {
+        try {
+            $response = fetch_url(
+                "https://dev.vdocipher.com/api/videos",
+                "DELETE",
+                [
+                    "headers" => [
+                        "Authorization" => "Apisecret " . Config::get("credentials.vdoCipher.API_KEY", "")
+                    ],
+                    RequestOptions::JSON => [
+                        "videos" => $videoIds
+                    ]
+                ]
+            );
+            Log::channel("custom")->info("VDO Delete Success", [
+                "data" => $response,
+                "videoIds" => $videoIds,
+            ]);
+            return $response;
+        } catch (Exception $err) {
+            Log::channel("custom")->error("VDO Delete Exception: " . $err->getMessage());
             return null;
         }
     }

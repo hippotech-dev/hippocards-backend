@@ -17,7 +17,7 @@ class CourseCompletionController extends Controller
 {
     public function __construct(private CourseService $service)
     {
-        $this->middleware("jwt.auth");
+        $this->middleware("auth.jwt-session");
     }
 
     /**

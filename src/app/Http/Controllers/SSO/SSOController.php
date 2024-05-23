@@ -9,6 +9,7 @@ use App\Http\Services\ConfirmationService;
 use App\Http\Services\GoogleService;
 use App\Http\Services\SSOService;
 use App\Http\Services\UserService;
+use App\Util\Constant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -128,6 +129,8 @@ class SSOController extends Controller
             ->validate();
 
         $result = $this->service->getAuthenticationToken($validatedData);
+
+        $request->session()->put(Constant::JWT_TOKEN_KEY, $result["access_token"]);
 
         return response()->success($result);
     }
