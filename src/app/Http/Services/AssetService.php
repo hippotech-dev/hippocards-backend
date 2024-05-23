@@ -89,8 +89,41 @@ class AssetService
 
     public function deleteAssetById(int $id)
     {
-        // $asset = $this->getAssetById($id);
-        return Asset::where("id", $id)->delete();
+        $asset = $this->getAssetById($id);
+
+        return $this->deleteAsset($asset);
+    }
+
+    public function deleteAsset(Asset $asset)
+    {
+        $this->deleteAssetFile($asset);
+
+        $this->deleteAssetDRMVideo($asset);
+
+        return $asset->delete();
+    }
+
+    public function deleteAssetFile(Asset $asset)
+    {
+        return Storage::disk("s3-tokyo")->delete($asset->path);
+    }
+
+    public function deleteAssetDRMVideo(Asset $asset)
+    {
+        $metadata = $asset->metadata ?? [];
+        if (!array_key_exists("vdo_cipher_video_id", $metadata)) {
+            return false;
+        }
+
+        $videoId = $metadata["vdo_cipher_video_id"];
+
+        if (is_null($videoId)) {
+            return false;
+        }
+
+        return $this->vdoService->deleteVideo([
+            $videoId
+        ]);
     }
 
     public function createVideoUploadUrl(Asset $asset, array $metaData = [])
