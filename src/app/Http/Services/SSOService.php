@@ -130,7 +130,10 @@ class SSOService
         $attempt = $this->createAuthenticationAttempt($user, $oauthOptions);
         return [
             "code" => $attempt->code,
-            "redirect_uri" => $attempt->redirect_uri . "?" . http_build_query([ "code" => $attempt->code, "state", $attempt->state ]),
+            "redirect_uri" =>
+                $attempt->redirect_uri
+                . ($attempt->redirect_uri[strlen($attempt->redirect_uri) - 1] === "&" ? "" : "?")
+                . http_build_query([ "code" => $attempt->code, "state", $attempt->state ]),
             "state" => $attempt->state
         ];
     }

@@ -98,4 +98,16 @@ class UserController extends Controller
 
         return response()->success();
     }
+
+    /**
+     * Account delete request
+     */
+    public function deleteAccountRequest()
+    {
+        $user = auth()->user();
+
+        // $this->service->deleteUser($user);
+
+        return response()->success();
+    }
 }

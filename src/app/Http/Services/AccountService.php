@@ -19,6 +19,16 @@ class AccountService
         return $this->userService->getUsersWithPage($filter, []);
     }
 
+    public function getUserById(int $id)
+    {
+        return $this->userService->getUserById($id, []);
+    }
+
+    public function deleteUser(User $user)
+    {
+        return $this->userService->deleteUser($user);
+    }
+
     public function updateUser(User $user, array $data)
     {
         if (array_key_exists("v3_asset_id", $data)) {
@@ -44,11 +54,6 @@ class AccountService
         }
 
         return $this->userService->updateUser($user->id, $data);
-    }
-
-    public function getUserById(int $id)
-    {
-        return $this->userService->getUserById($id, []);
     }
 
     public function setDefaultPasswordForUser(User $user)

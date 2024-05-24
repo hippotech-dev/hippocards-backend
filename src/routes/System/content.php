@@ -24,6 +24,7 @@ Route::apiResources([
 
 Route::prefix("account")->group(function () {
     Route::post("user/{user}/set-default-password", [ UserController::class, "setDefaultPasswordForUser" ]);
+    Route::post("delete-user", [ UserController::class, "deleteAccountRequest" ]);
 });
 
 Route::prefix("package")->group(function () {

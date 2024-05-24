@@ -54,6 +54,11 @@ class UserService
         return User::where("id", $id)->update($userData);
     }
 
+    public function deleteUser(User $user)
+    {
+        return $user->delete();
+    }
+
     public function hashPassword(string $password)
     {
         return bcrypt($password);
