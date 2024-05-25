@@ -42,3 +42,17 @@ jobs:
           file: ./src/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HIPPO_SECONDARY_SERVER_HOST }}
+          username: ${{ secrets.HIPPO_SECONDARY_SERVER_USERNAME }}
+          key: ${{ secrets.HIPPO_SECONDARY_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd hippocards/hippocards-backend
+            git pull origin main
+            docker compose pull
+            docker compose down
+            docker compose up -d
