@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Utilities\UploadController;
+use App\Http\Controllers\Utilities\UtilityController;
 use App\Http\Controllers\Utilities\VideoController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,3 +14,5 @@ Route::prefix("upload")->group(function () {
 });
 
 Route::post("webhook/drm-video-ready", [ UploadController::class, "webhookVDOVideoSuccess" ]);
+
+Route::get("version", [ UtilityController::class, "getCodeVersion" ]);
