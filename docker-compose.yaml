@@ -31,7 +31,7 @@ services:
     depends_on:
       - redis
   queue:
-    image: ghcr.io/hippotech-dev/hippo-queue
+    image: ghcr.io/hippotech-dev/hippo-api
     build:
       context: .
       dockerfile: ./src/Dockerfile
