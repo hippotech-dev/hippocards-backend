@@ -13,7 +13,7 @@ services:
     networks:
       - app-network
   hippo-api:
-    image: ghcr.io/hippotech-dev/hippocards-backend:main@sha256:f256a0c15e3806adf64035ff1f31505b81047b21c402fd5baa00daa35cd8102d
+    image: ghcr.io/hippotech-dev/hippocards-backend:main
     build:
       context: .
       dockerfile: ./src/Dockerfile
@@ -31,7 +31,7 @@ services:
     depends_on:
       - redis
   queue:
-    image: ghcr.io/hippotech-dev/hippocards-backend:main@sha256:f256a0c15e3806adf64035ff1f31505b81047b21c402fd5baa00daa35cd8102d
+    image: ghcr.io/hippotech-dev/hippocards-backend:main
     build:
       context: .
       dockerfile: ./src/Dockerfile
