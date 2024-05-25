@@ -227,17 +227,17 @@ class SSOService
         switch ($type) {
             case "register":
                 if (!is_null($user)) {
-                    throw new UnauthorizedException("User with such email or phone number is already registered!");
+                    throw new UnauthorizedException("Энэхүү имэйл эсвэл утас аль хэдийн бүртгэл үүсгэсэн байна!");
                 }
                 break;
             case "forgot":
                 if (is_null($user)) {
-                    throw new UnauthorizedException("User with such email or phone number is not registered!");
+                    throw new UnauthorizedException("Энэхүү имэйл эсвэл утас бүртгэл үүсгээгүй байна!");
                 }
                 break;
             case "login":
                 if (is_null($user)) {
-                    throw new UnauthorizedException("Email or phone number does not exists!");
+                    throw new UnauthorizedException("Энэхүү имэйл эсвэл утас бүртгэл үүсгээгүй байна!");
                 }
 
                 // if (array_key_exists("email", $credentials) && $user->login_type !== EUserLoginType::LOGIN_NORMAL) {
@@ -245,7 +245,7 @@ class SSOService
                 // }
 
                 if (!auth()->validate($credentials)) {
-                    throw new UnauthorizedException("Incorrect password!");
+                    throw new UnauthorizedException("Нууц үг буруу байна!");
                 }
                 break;
         }

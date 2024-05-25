@@ -11,3 +11,5 @@ Route::prefix("upload")->group(function () {
     Route::post("video/job/complete", [ UploadController::class, "completeTranscoderJob" ]);
     Route::post("video/{asset}/otp", [ UploadController::class, "getVideoPlaybackAndOTPInfo" ]);
 });
+
+Route::post("webhook/drm-video-ready", [ UploadController::class, "webhookVDOVideoSuccess" ]);

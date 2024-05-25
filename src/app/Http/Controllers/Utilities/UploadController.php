@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Utilities;
 
+use App\Enums\EStatus;
 use App\Exceptions\AppException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Utility\AssetResource;
 use App\Http\Services\AssetService;
 use App\Http\Services\VDOCipherService;
 use App\Models\Utility\Asset;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class UploadController extends Controller
@@ -133,5 +136,38 @@ class UploadController extends Controller
         return response()->successAppend([
             "data" => $result
         ]);
+    }
+
+    /**
+     * Webhook when video is ready
+     */
+    public function webhookVDOVideoSuccess(Request $request)
+    {
+        $validatedData = Validator::make(
+            $request->only("event", "payload"),
+            [
+                "event" => "required|string",
+                "payload" => "required|array",
+                "payload.id" => "required|string",
+            ]
+        )
+            ->validate();
+        $payload = $validatedData["payload"];
+        $event = $validatedData["event"];
+        $videoId = $payload["id"];
+
+        Log::channel("custom")->info(print_r($validatedData, true));
+
+        $asset = $this->service->getAsset([
+            "vdo_drm_video_id" => $videoId
+        ]);
+
+        if (is_null($asset)) {
+            throw new AppException("VDO Video not found!");
+        }
+
+        $this->service->setVDOVideoStatus($asset, $event);
+
+        return response()->success();
     }
 }

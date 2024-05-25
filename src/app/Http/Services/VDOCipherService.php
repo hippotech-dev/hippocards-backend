@@ -25,7 +25,7 @@ class VDOCipherService
                 ]
             );
             Log::channel("custom")->info("VDO Import Success: " . $url, [
-                "data" => $response,
+                "data" => print_r($response, true),
                 "url" => $url,
             ]);
             return $response;
@@ -50,7 +50,7 @@ class VDOCipherService
                 ]
             );
             Log::channel("custom")->info("VDO OTP Success: " . $videoId, [
-                "data" => $response,
+                "data" => print_r($response, true),
                 "videoId" => $videoId,
             ]);
             return $response;
@@ -76,7 +76,7 @@ class VDOCipherService
                 ]
             );
             Log::channel("custom")->info("VDO Delete Success", [
-                "data" => $response,
+                "data" => print_r($response, true),
                 "videoIds" => $videoIds,
             ]);
             return $response;

@@ -26,6 +26,7 @@ class AssetService
     public function getAsset(array $filter, array $with = [])
     {
         $filterModel = [
+            "vdo_drm_video_id" => [ "where", "vdo_drm_video_id" ],
             "transcoder_job_id" => [ "where", "transcoder_job_id" ]
         ];
 
@@ -110,12 +111,11 @@ class AssetService
 
     public function deleteAssetDRMVideo(Asset $asset)
     {
-        $metadata = $asset->metadata ?? [];
-        if (!array_key_exists("vdo_cipher_video_id", $metadata)) {
+        if (is_null($asset->vdo_drm_video_id)) {
             return false;
         }
 
-        $videoId = $metadata["vdo_cipher_video_id"];
+        $videoId = $asset->vdo_drm_video_id;
 
         if (is_null($videoId)) {
             return false;
@@ -159,13 +159,8 @@ class AssetService
         $response = $this->vdoService->importByUrl(append_s3_path($path));
 
         return $asset->update([
-            "metadata" => array_merge(
-                ($asset->metadata ?? []),
-                [
-                    "vdo_cipher_video_id" => $response["id"] ?? null,
-                    "vdo_cipher_video_status" => EStatus::PENDING
-                ]
-            )
+            "vdo_drm_video_id" => $response["id"] ?? null,
+            "vdo_drm_video_status" => EStatus::PENDING
         ]);
     }
 
@@ -184,13 +179,12 @@ class AssetService
 
     public function getVideoPlaybackAndOTPInfo(Asset $asset)
     {
-        $metadata = $asset->metadata ?? [];
 
-        if (!array_key_exists("vdo_cipher_video_id", $metadata)) {
+        if (is_null($asset->vdo_drm_video_id)) {
             throw new AppException("Video is not protected!");
         }
 
-        $videoId = $metadata["vdo_cipher_video_id"];
+        $videoId = $asset->vdo_drm_video_id;
 
         $otp =  Cache::remember(cache_key("vdo-video-otp-playback-v1", [ $videoId ]), 55 * 60, function () use ($videoId) {
             return $this->vdoService->getVideoOTP($videoId);
@@ -201,5 +195,24 @@ class AssetService
         }
 
         return $otp;
+    }
+
+    public function setVDOVideoStatus(Asset $asset, string $event)
+    {
+        switch ($event) {
+            case "video:ready":
+                $status = EStatus::SUCCESS;
+                break;
+            case "video:error":
+                $status = EStatus::FAILURE;
+                break;
+            default:
+                $status = EStatus::PENDING;
+                break;
+        }
+
+        return $asset->update([
+            "vdo_drm_video_status" => $status
+        ]);
     }
 }
