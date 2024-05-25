@@ -18,8 +18,7 @@ services:
       dockerfile: ./src/Dockerfile
     restart: unless-stopped
     volumes:
-      - ./src:/var/www/html:cached
-      - hippo-api-vendor:/var/www/html/vendor:cached
+      - ./src/storage/logs:/var/www/html/storage/logs
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - app-network
@@ -36,8 +35,7 @@ services:
       dockerfile: ./src/Dockerfile
     restart: unless-stopped
     volumes:
-      - ./src:/var/www/html:cached
-      - hippo-api-vendor:/var/www/html/vendor:cached
+      - ./src/storage/logs:/var/www/html/storage/logs
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - app-network
@@ -75,6 +73,4 @@ networks:
 
 volumes:
   redis-data:
-    driver: local
-  hippo-api-vendor:
     driver: local

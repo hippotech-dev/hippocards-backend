@@ -18,12 +18,11 @@ services:
       dockerfile: ./src/Dockerfile
     restart: unless-stopped
     volumes:
-      - ./src:/var/www/html
-      - hippo-api-vendor:/var/www/html/vendor
+      - ./src/storage/logs:/var/www/html/storage/logs
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - app-network
-    env_file: ./src/.env.production
+    env_file: ./src/.env.development
     deploy:
       replicas: 3
     environment:
@@ -36,12 +35,11 @@ services:
       dockerfile: ./src/Dockerfile
     restart: unless-stopped
     volumes:
-      - ./src:/var/www/html:cached
-      - hippo-api-vendor:/var/www/html/vendor:cached
+      - ./src/storage/logs:/var/www/html/storage/logs
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - app-network
-    env_file: ./src/.env.production
+    env_file: ./src/.env.development
     environment:
       - CONTAINER_ROLE=queue
     depends_on:
@@ -67,6 +65,4 @@ networks:
 
 volumes:
   redis-data:
-    driver: local
-  hippo-api-vendor:
     driver: local
