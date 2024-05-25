@@ -94,9 +94,11 @@ class CourseController extends Controller
                 "description",
                 "v3_thumbnail_asset_id",
                 "language_id",
-                "level"
+                "level",
+                "status"
             ),
             [
+                "status" => "sometimes|integer",
                 "name" => "sometimes|string|max:64",
                 "description" => "sometimes|string|max:1024",
                 "v3_thumbnail_asset_id" => "sometimes|integer|exists:v3_assets,id",
