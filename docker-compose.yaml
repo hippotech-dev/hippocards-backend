@@ -13,6 +13,7 @@ services:
     networks:
       - app-network
   hippo-api:
+    image: ghcr.io/hippotech-dev/hippo-api
     build:
       context: .
       dockerfile: ./src/Dockerfile
@@ -30,6 +31,7 @@ services:
     depends_on:
       - redis
   queue:
+    image: ghcr.io/hippotech-dev/hippo-queue
     build:
       context: .
       dockerfile: ./src/Dockerfile
