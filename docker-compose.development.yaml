@@ -9,7 +9,7 @@ services:
     volumes:
       - redis-data:/root/redis
       - ./redis/custom.conf:/usr/local/etc/redis/redis.conf
-    env_file: ./src/.env.production
+    env_file: ./src/.env.development
     networks:
       - app-network
   hippo-api:

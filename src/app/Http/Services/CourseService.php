@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Enums\ECourseBlockImageType;
 use App\Enums\ECourseBlockType;
 use App\Enums\ECourseBlockVideoType;
 use App\Enums\ECourseExamType;
@@ -248,6 +249,11 @@ class CourseService
         return $group->blocks()->with($with)->where("id", $id)->first();
     }
 
+    public function getBlockById(int $id, array $with = [])
+    {
+        return CourseGroupBlock::with($with)->find($id);
+    }
+
     public function getCourseBlockById(Course $course, int $id, array $with = ["wordSort", "videos.asset", "detail", "images.asset"])
     {
         return $course->blocks()->with($with)->where("id", $id)->first();
@@ -471,6 +477,33 @@ class CourseService
             ->where("v3_course_completion_id", $completion->id)
             ->where("type", $type)
             ->get();
+    }
+
+    public function importWordImagesToBlock(CourseGroupBlock $block)
+    {
+        $blockSort = $this->packageService->getSortByIdInclude($block->sort_id, [
+            "images"
+        ]);
+
+        $blockImages = $this->getBlockImages($block, [], [ "asset" ]);
+
+        $images = $blockSort->word->wordImages ?? [];
+
+        foreach ($images as $image) {
+            $path = $image->image->image;
+            // dd($path, $blockImages);
+            $check = $blockImages->search(fn ($blockImage) => $blockImage->asset->path === $path);
+
+            if (is_numeric($check)) {
+                continue;
+            }
+
+            $asset = $this->assetService->createAssetByUrl($path, "Imported");
+            $this->createBlockImage($block, [
+                "v3_asset_id" => $asset->id,
+                "type" => ECourseBlockImageType::DEFAULT
+            ]);
+        }
     }
 
     /**

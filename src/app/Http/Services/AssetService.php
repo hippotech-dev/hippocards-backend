@@ -88,6 +88,20 @@ class AssetService
         ]);
     }
 
+    public function createAssetByUrl(string $url, string $name = null)
+    {
+        if (is_null($name)) {
+            $urlSplit = explode("/", $url);
+            $name = $urlSplit[count($urlSplit) - 1];
+        }
+        return Asset::create([
+            "path" => $url,
+            "name" => $name,
+            "size" => 0,
+            "mime_type" => "unknown",
+        ]);
+    }
+
     public function deleteAssetById(int $id)
     {
         $asset = $this->getAssetById($id);

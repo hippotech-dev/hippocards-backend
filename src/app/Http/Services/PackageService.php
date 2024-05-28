@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Models\Package\Baseklass;
 use App\Models\Package\Sort;
+use App\Models\Package\Word\Word;
 use Illuminate\Support\Collection;
 
 class PackageService
@@ -40,33 +41,100 @@ class PackageService
             return null;
         }
 
-        return Sort::with([
-            "word.translation",
-            "word.pronunciation",
-            "word.wordImaginations" => function ($query) use ($sort) {
+        $word = Word::with([
+            "translation",
+            "pronunciation",
+            "wordImaginations" => function ($query) use ($sort) {
                 $query->where("baseklass_id", $sort->baseklass_id)
                     ->where("language_id", $sort->language_id);
             },
-            "word.wordImaginations.imagination",
-            "word.exampleSentences" => function ($query) use ($sort) {
+            "wordImaginations.imagination",
+            "exampleSentences" => function ($query) use ($sort) {
                 $query->where("baseklass_id", $sort->baseklass_id)
                     ->where("language_id", $sort->language_id);
             },
-            "word.exampleSentences.example",
-            "word.wordKeyword" => function ($query) use ($sort) {
+            "exampleSentences.example",
+            "wordKeyword" => function ($query) use ($sort) {
                 $query->where("baseklass_id", $sort->baseklass_id)
                     ->where("language_id", $sort->language_id);
             },
-            "word.wordKeyword.keyword",
-            "word.wordImage" => function ($query) use ($sort) {
+            "wordKeyword.keyword",
+            "wordImages" => function ($query) use ($sort) {
                 $query->where("baseklass_id", $sort->baseklass_id)
                     ->where("language_id", $sort->language_id);
             },
-            "word.wordImage.image",
-            "word.pos",
-            "word.synonyms",
+            "wordImages.image",
+            "pos",
+            "synonyms",
         ])
-            ->find($id);
+            ->find($sort->word_id);
+
+        $sort->setRelation("word", $word);
+
+        return $sort;
+    }
+
+    public function getSortByIdInclude(int $id, array $include = [])
+    {
+        $sort = $this->getSortById($id);
+
+        if (is_null($sort)) {
+            return null;
+        }
+
+        $with = [];
+
+        if (in_array("images", $include)) {
+            array_merge($with, [
+                "wordImages" => function ($query) use ($sort) {
+                    $query->where("baseklass_id", $sort->baseklass_id)
+                        ->where("language_id", $sort->language_id);
+                },
+            ]);
+            array_push($with, "wordImages.image");
+        }
+
+        if (in_array("translation", $include)) {
+            array_push($with, "translation");
+        }
+
+        if (in_array("pronunciation", $include)) {
+            array_push($with, "pronunciation");
+        }
+
+        if (in_array("pos", $include)) {
+            array_push($with, "pos");
+        }
+
+        if (in_array("synonyms", $include)) {
+            array_push($with, "synonyms");
+        }
+
+        if (in_array("imaginations", $include)) {
+            array_merge($with, [
+                "word.wordImaginations" => function ($query) use ($sort) {
+                    $query->where("baseklass_id", $sort->baseklass_id)
+                        ->where("language_id", $sort->language_id);
+                },
+            ]);
+            array_push($with, "word.wordImaginations.imagination");
+        }
+
+        if (in_array("keywords", $include)) {
+            array_merge($with, [
+                "word.wordKeyword" => function ($query) use ($sort) {
+                    $query->where("baseklass_id", $sort->baseklass_id)
+                        ->where("language_id", $sort->language_id);
+                },
+            ]);
+            array_push($with, "word.wordKeyword.keyword");
+        }
+        $word = Word::with($with)
+            ->find($sort->word_id);
+
+        $sort->setRelation("word", $word);
+
+        return $sort;
     }
 
     public function getPackagesSorts(Collection|array $packages)

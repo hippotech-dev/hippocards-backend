@@ -138,4 +138,14 @@ class GroupBlockController extends Controller
 
         return response()->success();
     }
+
+    /**
+     * Import word images to block
+     */
+    public function importWordImagesToBlock(CourseGroupBlock $block)
+    {
+        $this->service->importWordImagesToBlock($block);
+
+        return response()->success();
+    }
 }

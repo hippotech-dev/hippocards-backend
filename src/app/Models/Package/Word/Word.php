@@ -42,7 +42,7 @@ class Word extends Model
         return $this->hasMany(WordKeyword::class, "word_id");
     }
 
-    public function wordImage()
+    public function wordImages()
     {
         return $this->hasMany(WordImage::class, "word_id");
     }

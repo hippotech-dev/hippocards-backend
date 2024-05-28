@@ -149,56 +149,56 @@ class WordResource extends JsonResource
                 }
                 return $wordKeyword->keyword->name;
             }),
-            "image" => $this->whenLoaded("wordImage", function () {
-                if (is_null($this->wordImage)) {
+            "image" => $this->whenLoaded("wordImages", function () {
+                if (is_null($this->wordImages)) {
                     return null;
                 }
-                $baseImage = $this->wordImage->whereIn("tag", [ null, EWordImageType::PRIMARY ]);
-                $wordImage = !is_null($this->baseklass_id)
+                $baseImage = $this->wordImages->whereIn("tag", [ null, EWordImageType::PRIMARY ]);
+                $wordImages = !is_null($this->baseklass_id)
                     ? $baseImage->where("baseklass_id", $this->baseklass_id)->first()
                     : $baseImage->first();
-                if (is_null($wordImage) || is_null($wordImage->image)) {
+                if (is_null($wordImages) || is_null($wordImages->image)) {
                     return null;
                 }
-                return "https://cdn.hippo.cards/storage/" . $wordImage->image->image;
+                return "https://cdn.hippo.cards/storage/" . $wordImages->image->image;
             }),
-            "thumbnail_image" => $this->whenLoaded("wordImage", function () {
-                if (is_null($this->wordImage)) {
+            "thumbnail_image" => $this->whenLoaded("wordImages", function () {
+                if (is_null($this->wordImages)) {
                     return null;
                 }
-                $wordImage = !is_null($this->baseklass_id)
-                    ? $this->wordImage->where("baseklass_id", $this->baseklass_id)->first()
-                    : $this->wordImage->first();
-                if (is_null($wordImage) || is_null($wordImage->image)) {
+                $wordImages = !is_null($this->baseklass_id)
+                    ? $this->wordImages->where("baseklass_id", $this->baseklass_id)->first()
+                    : $this->wordImages->first();
+                if (is_null($wordImages) || is_null($wordImages->image)) {
                     return null;
                 }
-                return "https://cdn.hippo.cards/storage/" . $wordImage->image->tumbnail_img;
+                return "https://cdn.hippo.cards/storage/" . $wordImages->image->tumbnail_img;
             }),
-            "imagination_image" => $this->whenLoaded("wordImage", function () {
-                if (is_null($this->wordImage)) {
+            "imagination_image" => $this->whenLoaded("wordImages", function () {
+                if (is_null($this->wordImages)) {
                     return null;
                 }
-                $baseImage = $this->wordImage->where("tag", EWordImageType::IMAGINATION);
-                $wordImage = !is_null($this->baseklass_id)
+                $baseImage = $this->wordImages->where("tag", EWordImageType::IMAGINATION);
+                $wordImages = !is_null($this->baseklass_id)
                     ? $baseImage->where("baseklass_id", $this->baseklass_id)->first()
                     : $baseImage->first();
-                if (is_null($wordImage) || is_null($wordImage->image)) {
+                if (is_null($wordImages) || is_null($wordImages->image)) {
                     return null;
                 }
-                return "https://cdn.hippo.cards/storage/" . $wordImage->image->image;
+                return "https://cdn.hippo.cards/storage/" . $wordImages->image->image;
             }),
-            "definition_image" => $this->whenLoaded("wordImage", function () {
-                if (is_null($this->wordImage)) {
+            "definition_image" => $this->whenLoaded("wordImages", function () {
+                if (is_null($this->wordImages)) {
                     return null;
                 }
-                $baseImage = $this->wordImage->where("tag", EWordImageType::DEFINITION);
-                $wordImage = !is_null($this->baseklass_id)
+                $baseImage = $this->wordImages->where("tag", EWordImageType::DEFINITION);
+                $wordImages = !is_null($this->baseklass_id)
                     ? $baseImage->where("baseklass_id", $this->baseklass_id)->first()
                     : $baseImage->first();
-                if (is_null($wordImage) || is_null($wordImage->image)) {
+                if (is_null($wordImages) || is_null($wordImages->image)) {
                     return null;
                 }
-                return "https://cdn.hippo.cards/storage/" . $wordImage->image->image;
+                return "https://cdn.hippo.cards/storage/" . $wordImages->image->image;
             }),
             "sort" => $this->when(!is_null($this->sort), $this->sort),
             "pos" => $this->whenLoaded("pos", function () {
