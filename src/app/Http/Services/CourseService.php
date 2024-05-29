@@ -413,18 +413,27 @@ class CourseService
 
     public function createUpdateBlockDetail(CourseGroupBlock $block, array $data)
     {
-        [ "sentences" => $sentences, "keywords" => $keywords ] = $data;
+        return DB::transaction(function () use ($block, $data) {
+            [ "sentences" => $sentences, "keywords" => $keywords ] = $data;
 
-        return $block->detail()->updateOrCreate(
-            [
-                "v3_course_id" => $block->v3_course_id,
-                "v3_course_block_id" => $block->id
-            ],
-            [
-                "sentences" => $sentences,
-                "keywords" => $keywords
-            ]
-        );
+            $this->updateGroupBlock($block, [
+                "metadata" => [
+                    "detail_sentences_counter" => ($block->metadata["detail_sentences_counter"] ?? 0) + count($sentences),
+                    "detail_keyword_counter" => ($block->metadata["detail_keyword_counter"] ?? 0) + count($keywords),
+                ]
+            ]);
+
+            return $block->detail()->updateOrCreate(
+                [
+                    "v3_course_id" => $block->v3_course_id,
+                    "v3_course_block_id" => $block->id
+                ],
+                [
+                    "sentences" => $sentences,
+                    "keywords" => $keywords
+                ]
+            );
+        });
     }
 
     public function submitSentenceKeywordResponse(CourseGroupBlock $block, CourseCompletion $completion, User $user, array $data)
@@ -449,7 +458,6 @@ class CourseService
                         "user_id" => $user->id
                     ]);
                 }, $sentences));
-                return;
             case "keyword":
                 $check = $responses->filter(function ($item) use ($keyword) {
                     return $keyword === $item->keyword;
@@ -615,7 +623,15 @@ class CourseService
             $data["path"] = $this->assetService->getAssetPath($data["v3_asset_id"]);
         }
 
-        return $block->images()->create($data);
+        return DB::transaction(function () use ($block, $data) {
+            $this->updateGroupBlock($block, [
+                "metadata" => [
+                    "upload_image_counter" => ($block->metadata["upload_image_counter"] ?? 0) + 1
+                ]
+            ]);
+
+            return $block->images()->create($data);
+        });
     }
 
     public function deleteBlockImage(CourseBlockImage $image)
