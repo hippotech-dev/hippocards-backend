@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Utilities;
+namespace App\Http\Controllers\Utility;
 
 use App\Enums\EStatus;
 use App\Exceptions\AppException;
@@ -25,19 +25,15 @@ class UploadController extends Controller
      */
     public function uploadFile(Request $request)
     {
-        $validatedData = Validator::make(
-            $request->only(
-                "file",
-                "folder"
-            ),
-            [
-                "file" => "required|file|max:131072",
-                "folder" => "sometimes|string|max:64"
-            ]
-        )
-                ->validate();
+        $validatedData = Validator::make($request->only("file", "folder"), [
+            "file" => "required|file|max:131072",
+            "folder" => "sometimes|string|max:64",
+        ])->validate();
 
-        $asset = $this->service->createAsset($validatedData["file"], $validatedData["folder"] ?? null);
+        $asset = $this->service->createAsset(
+            $validatedData["file"],
+            $validatedData["folder"] ?? null
+        );
 
         return new AssetResource($asset);
     }
@@ -48,26 +44,24 @@ class UploadController extends Controller
     public function getVideoSignedUrl(Request $request)
     {
         $validatedData = Validator::make(
-            $request->only(
-                "filename",
-                "object_type",
-            ),
+            $request->only("filename", "object_type"),
             [
                 "filename" => "required|string|max:32",
                 "object_type" => "required|string|max:128",
             ]
-        )
-            ->validate();
+        )->validate();
 
-
-        $asset = $this->service->createNonuploadedAssetByObject($validatedData["object_type"], $validatedData["filename"]);
+        $asset = $this->service->createNonuploadedAssetByObject(
+            $validatedData["object_type"],
+            $validatedData["filename"]
+        );
         $url = $this->service->createVideoUploadUrl($asset, [
-            "asset_id" => $asset->id
+            "asset_id" => $asset->id,
         ]);
 
         return response()->success([
             "url" => $url,
-            "asset" => new AssetResource($asset)
+            "asset" => new AssetResource($asset),
         ]);
     }
 
@@ -77,16 +71,12 @@ class UploadController extends Controller
     public function setTranscoderJob(Request $request)
     {
         $validatedData = Validator::make(
-            $request->only([
-                "job_id",
-                "asset_id"
-            ]),
+            $request->only(["job_id", "asset_id"]),
             [
                 "job_id" => "required|string",
-                "asset_id" => "required|integer"
+                "asset_id" => "required|integer",
             ]
-        )
-            ->validate();
+        )->validate();
 
         $asset = $this->service->getAssetById($validatedData["asset_id"]);
         if (is_null($asset)) {
@@ -105,17 +95,13 @@ class UploadController extends Controller
      */
     public function completeTranscoderJob(Request $request)
     {
-        $validatedData = Validator::make(
-            $request->only([
-                "job_id",
-            ]),
-            [
-                "job_id" => "required|string",
-            ]
-        )
-            ->validate();
+        $validatedData = Validator::make($request->only(["job_id"]), [
+            "job_id" => "required|string",
+        ])->validate();
 
-        $asset = $this->service->getAsset([ "transcoder_job_id" => $validatedData["job_id"] ]);
+        $asset = $this->service->getAsset([
+            "transcoder_job_id" => $validatedData["job_id"],
+        ]);
 
         if (is_null($asset)) {
             throw new AppException("Asset is invalid!");
@@ -134,7 +120,7 @@ class UploadController extends Controller
         $result = $this->service->getVideoPlaybackAndOTPInfo($asset);
 
         return response()->successAppend([
-            "data" => $result
+            "data" => $result,
         ]);
     }
 
@@ -143,15 +129,11 @@ class UploadController extends Controller
      */
     public function webhookVDOVideoSuccess(Request $request)
     {
-        $validatedData = Validator::make(
-            $request->only("event", "payload"),
-            [
-                "event" => "required|string",
-                "payload" => "required|array",
-                "payload.id" => "required|string",
-            ]
-        )
-            ->validate();
+        $validatedData = Validator::make($request->only("event", "payload"), [
+            "event" => "required|string",
+            "payload" => "required|array",
+            "payload.id" => "required|string",
+        ])->validate();
         $payload = $validatedData["payload"];
         $event = $validatedData["event"];
         $videoId = $payload["id"];
@@ -159,7 +141,7 @@ class UploadController extends Controller
         Log::channel("custom")->info(print_r($validatedData, true));
 
         $asset = $this->service->getAsset([
-            "vdo_drm_video_id" => $videoId
+            "vdo_drm_video_id" => $videoId,
         ]);
 
         if (is_null($asset)) {

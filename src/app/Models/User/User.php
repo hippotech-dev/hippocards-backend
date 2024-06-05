@@ -8,6 +8,7 @@ use App\Models\Course\CourseCertificate;
 use App\Models\Payment\PaymentInvoice;
 use App\Models\Payment\PaymentOrder;
 use App\Models\SSO\OAuthAuthenticationAttempt;
+use App\Models\Subscription\SubUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -95,5 +96,10 @@ class User extends Authenticatable implements JWTSubject
     public function courseCertificates()
     {
         return $this->hasMany(CourseCertificate::class);
+    }
+
+    public function subscription()
+    {
+        return $this->hasOne(SubUser::class, "user_id");
     }
 }

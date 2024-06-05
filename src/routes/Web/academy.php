@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Utilities\UploadController;
+use App\Http\Controllers\Utility\UploadController;
 use App\Http\Controllers\Web\Academy\CertificateController;
 use App\Http\Controllers\Web\Academy\CourseBlockController;
 use App\Http\Controllers\Web\Academy\CourseCompletionController;

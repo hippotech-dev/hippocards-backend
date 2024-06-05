@@ -1,9 +1,10 @@
 <?php
 
+use App\Http\Controllers\System\Content\Account\SubscriptionController;
 use App\Http\Controllers\System\Content\Account\UserController;
-use App\Http\Controllers\System\Content\AccountManagementController;
 use App\Http\Controllers\System\Content\PackageController;
 use App\Http\Controllers\System\Content\WordController;
+use App\Http\Controllers\System\Utility\SubscriptionPlanController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,9 +21,14 @@ use Illuminate\Support\Facades\Route;
 Route::apiResources([
     "package" => PackageController::class,
     "account/user" => UserController::class,
+    "utility/subscription-plan" => SubscriptionPlanController::class
 ]);
 
 Route::prefix("account")->group(function () {
+    Route::prefix("subscription")->group(function () {
+        Route::get("{user}", [ SubscriptionController::class, "index" ]);
+        Route::patch("{user}", [ SubscriptionController::class, "store" ]);
+    });
     Route::post("user/{user}/set-default-password", [ UserController::class, "setDefaultPasswordForUser" ]);
     Route::post("delete-user", [ UserController::class, "deleteAccountRequest" ]);
 });

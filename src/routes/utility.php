@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Utilities\UploadController;
-use App\Http\Controllers\Utilities\UtilityController;
-use App\Http\Controllers\Utilities\VideoController;
+use App\Http\Controllers\Utility\UploadController;
+use App\Http\Controllers\Utility\UtilityController;
+use App\Http\Controllers\Utility\VideoController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix("upload")->group(function () {
