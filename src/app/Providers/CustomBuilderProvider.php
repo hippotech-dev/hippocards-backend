@@ -28,9 +28,15 @@ class CustomBuilderProvider extends ServiceProvider
             return $this->where($attribute, 'LIKE', "%{$searchTerm}%");
         });
         Builder::macro('moreThan', function (string $attribute, string $searchTerm) {
-            return $this->where($attribute, '<=', $searchTerm);
+            return $this->where($attribute, '<', $searchTerm);
         });
         Builder::macro('lessThan', function (string $attribute, string $searchTerm) {
+            return $this->where($attribute, '>', $searchTerm);
+        });
+        Builder::macro('moreEqualThan', function (string $attribute, string $searchTerm) {
+            return $this->where($attribute, '<=', $searchTerm);
+        });
+        Builder::macro('lessEqualThen', function (string $attribute, string $searchTerm) {
             return $this->where($attribute, '>=', $searchTerm);
         });
         Builder::macro('orWhereLike', function (string $attribute, string $searchTerm) {

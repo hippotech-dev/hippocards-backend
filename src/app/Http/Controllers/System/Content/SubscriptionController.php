@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\System\Content\Account;
+namespace App\Http\Controllers\System\Content;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\System\Utility\SubscriptionResource;

@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\System\Content\Account\SubscriptionController;
-use App\Http\Controllers\System\Content\Account\UserController;
+use App\Http\Controllers\System\Content\SubscriptionController;
+use App\Http\Controllers\System\Content\UserController;
 use App\Http\Controllers\System\Content\PackageController;
 use App\Http\Controllers\System\Content\WordController;
 use App\Http\Controllers\System\Utility\SubscriptionPlanController;
