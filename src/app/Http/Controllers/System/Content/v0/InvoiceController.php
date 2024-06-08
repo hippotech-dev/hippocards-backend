@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\System\Content\v0;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\v0\InvoiceResource;
 use App\Http\Services\OldPaymentService;
 use App\Http\Services\v0\PaymentService;
 use Illuminate\Http\Request;
@@ -22,12 +23,15 @@ class InvoiceController extends Controller
             "start_date",
             "end_date",
             "user_id",
-            "object_id"
+            "object_id",
+            "id",
+            "filter",
+            "status"
         );
 
         $invoices = $this->service->getInvoicesWithPage($filters, [ "user" ]);
 
-        return response()->success($invoices);
+        return InvoiceResource::collection($invoices);
     }
 
     /**

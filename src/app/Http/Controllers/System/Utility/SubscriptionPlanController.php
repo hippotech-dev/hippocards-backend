@@ -18,10 +18,7 @@ class SubscriptionPlanController extends Controller
      */
     public function index()
     {
-        $plans = $this->service->getSubscriptionPlans([
-            "is_subscription" => false,
-            "is_paid" => true,
-        ]);
+        $plans = $this->service->getSubscriptionPlans();
 
         return SubscriptionPlanResource::collection($plans);
     }

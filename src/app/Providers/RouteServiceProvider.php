@@ -42,6 +42,11 @@ class RouteServiceProvider extends ServiceProvider
                 ->name("content.")
                 ->group(base_path('routes/System/content.php'));
 
+            Route::middleware(['api', "jwt.auth"])
+                ->prefix('v0/content')
+                ->name("v0-content.")
+                ->group(base_path('routes/v0/System/content.php'));
+
             Route::middleware('api')
                 ->prefix('v1/web/academy')
                 ->name("web-academy.")
