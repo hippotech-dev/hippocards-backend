@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Utility\UploadController;
+use App\Http\Controllers\Web\Academy\UserController;
 use App\Http\Controllers\Web\Academy\CertificateController;
 use App\Http\Controllers\Web\Academy\CourseBlockController;
 use App\Http\Controllers\Web\Academy\CourseCompletionController;
@@ -24,7 +24,8 @@ Route::apiResources([
     "course.group" => CourseGroupController::class,
     "course.block" => CourseBlockController::class,
     "course.completion" => CourseCompletionController::class,
-    "user/certificate" => CertificateController::class
+    "user/certificate" => CertificateController::class,
+    "account/user" => UserController::class,
 ]);
 
 Route::prefix("course")->group(function () {
