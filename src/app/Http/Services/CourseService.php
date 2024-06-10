@@ -419,6 +419,8 @@ class CourseService
             $detail = $this->getBlockDetail($block);
 
             if (is_null($detail)) {
+                $keywords = $keywords ?? [];
+                $sentences = $sentences ?? [];
                 $detail = $block->detail()->create([
                     "v3_course_id" => $block->v3_course_id,
                     "v3_course_block_id" => $block->id,
