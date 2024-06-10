@@ -21,7 +21,7 @@ class UserService
 
     public function getUsersWithPage(array $filters, array $with = [])
     {
-        return filter_query_with_model(User::query(), $this->getFilterModels($filters), $filters)->with($with)->where("is_guest", false)->orderBy("id", "desc")->simplePaginate(page_size());
+        return filter_query_with_model(User::query(), $this->getFilterModels($filters), $filters)->with($with)->where("is_guest", false)->orderBy("id", "desc")->paginate(page_size());
     }
 
     public function getUser(array $filters, array $with = [])

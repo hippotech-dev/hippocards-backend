@@ -338,6 +338,6 @@ if (!function_exists("generate_filter_schema")) {
 if (!function_exists("page_size")) {
     function page_size()
     {
-        return min($_GET["pageSize"] ?? Constant::DEFAULT_PAGINATION, 100);
+        return min($_GET["limit"] ?? Constant::DEFAULT_PAGINATION, 100);
     }
 }
