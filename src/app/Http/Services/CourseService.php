@@ -416,6 +416,25 @@ class CourseService
         return DB::transaction(function () use ($block, $data) {
             [ "sentences" => $sentences, "keywords" => $keywords ] = $data;
 
+            $detail = $this->getBlockDetail($block);
+
+            if (is_null($detail)) {
+                $detail = $block->detail()->create([
+                    "v3_course_id" => $block->v3_course_id,
+                    "v3_course_block_id" => $block->id,
+                    "sentences" => $sentences,
+                    "keywords" => $keywords
+                ]);
+            } else {
+                $keywords = is_null($keywords) ? $detail->keywords ?? [] : $keywords;
+                $sentences = is_null($sentences) ? $detail->sentences ?? [] : $sentences;
+
+                $detail->update([
+                    "sentences" => $sentences,
+                    "keywords" => $keywords
+                ]);
+            }
+
             $this->updateGroupBlock($block, [
                 "metadata" => [
                     "detail_sentences_counter" => ($block->metadata["detail_sentences_counter"] ?? 0) + count($sentences),
@@ -423,17 +442,13 @@ class CourseService
                 ]
             ]);
 
-            return $block->detail()->updateOrCreate(
-                [
-                    "v3_course_id" => $block->v3_course_id,
-                    "v3_course_block_id" => $block->id
-                ],
-                [
-                    "sentences" => $sentences,
-                    "keywords" => $keywords
-                ]
-            );
+            return $detail;
         });
+    }
+
+    public function getBlockDetail(CourseGroupBlock $block)
+    {
+        return $block->detail()->first();
     }
 
     public function submitSentenceKeywordResponse(CourseGroupBlock $block, CourseCompletion $completion, User $user, array $data)
@@ -512,6 +527,48 @@ class CourseService
                 "type" => ECourseBlockImageType::DEFAULT
             ]);
         }
+    }
+
+    public function importWordSentencesToBlock(CourseGroupBlock $block)
+    {
+        $blockSort = $this->packageService->getSortByIdInclude($block->sort_id, [
+            "exampleSentences.example"
+        ]);
+
+        $wordExampleSentences = $blockSort->word->exampleSentences ?? collect([]);
+
+        $blockDetail = $this->getBlockDetail($block);
+
+        $sentences = $blockDetail->sentences ?? [];
+
+        $sentenceOne = $wordExampleSentences->where("type", 1)->first();
+        $sentenceOneTranslation = $wordExampleSentences->where("type", 2)->first();
+        $sentenceTwo = $wordExampleSentences->where("type", 4)->first();
+        $sentenceTwoTranslation = $wordExampleSentences->where("type", 5)->first();
+
+        if (!is_null($sentenceOne)) {
+            array_push($sentences, ([
+                "value" => $sentenceOne->example->name ?? "",
+                "is_english" => true,
+                "translation" => $sentenceOneTranslation->example->name ?? ""
+            ]));
+        }
+
+        if (!is_null($sentenceTwo)) {
+            array_push($sentences, ([
+                "value" => $sentenceTwo->example->name ?? "",
+                "is_english" => true,
+                "translation" => $sentenceTwoTranslation->example->name ?? ""
+            ]));
+        }
+
+        return $this->createUpdateBlockDetail(
+            $block,
+            [
+                "sentences" => $sentences,
+                "keywords" => null
+            ]
+        );
     }
 
     /**

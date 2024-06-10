@@ -50,6 +50,7 @@ Route::prefix("group")->group(function () {
     Route::prefix("block")->group(function () {
         Route::post("{block}/detail", [ GroupBlockController::class, "createUpdateBlockDetail" ]);
         Route::post("{block}/import-word-image", [ GroupBlockController::class, "importWordImagesToBlock" ]);
+        Route::post("{block}/import-word-sentence", [ GroupBlockController::class, "importWordSentencesToBlock" ]);
     });
 });
 

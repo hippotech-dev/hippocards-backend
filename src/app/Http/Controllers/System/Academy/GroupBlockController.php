@@ -148,4 +148,14 @@ class GroupBlockController extends Controller
 
         return response()->success();
     }
+
+    /**
+     * Import word sentences to block
+     */
+    public function importWordSentencesToBlock(CourseGroupBlock $block)
+    {
+        $this->service->importWordSentencesToBlock($block);
+
+        return response()->success();
+    }
 }
