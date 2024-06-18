@@ -8,6 +8,28 @@ use App\Models\User\User;
 
 class UserService
 {
+    protected function getFilterModels(array $filters)
+    {
+        return [
+            "email" => [ "where", "email" ],
+            "phone" => [ "where", "phone" ],
+            "filter" => [
+                [ "where" ],
+                [
+                    [
+                        "name" => null,
+                        "value" => function ($query) use ($filters) {
+                            return $query
+                                ->whereLike("name", $filters["filter"])
+                                ->orWhereLike("email", $filters["filter"])
+                                ->orWhereLike("phone", $filters["filter"]);
+                        }
+                    ]
+                ]
+            ]
+        ];
+    }
+
     public function getUserById(int $id, array $with = [])
     {
         return User::with($with)->find($id);
@@ -62,27 +84,5 @@ class UserService
     public function hashPassword(string $password)
     {
         return bcrypt($password);
-    }
-
-    protected function getFilterModels(array $filters)
-    {
-        return [
-            "email" => [ "where", "email" ],
-            "phone" => [ "where", "phone" ],
-            "filter" => [
-                [ "where" ],
-                [
-                    [
-                        "name" => null,
-                        "value" => function ($query) use ($filters) {
-                            return $query
-                                ->whereLike("name", $filters["filter"])
-                                ->orWhereLike("email", $filters["filter"])
-                                ->orWhereLike("phone", $filters["filter"]);
-                        }
-                    ]
-                ]
-            ]
-        ];
     }
 }

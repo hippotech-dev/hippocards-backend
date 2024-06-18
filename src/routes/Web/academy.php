@@ -48,3 +48,7 @@ Route::prefix("course")->group(function () {
         Route::post("{block}/submit", [ CourseBlockController::class, "submitExamAnswers" ]);
     });
 });
+
+Route::prefix("account")->group(function () {
+    Route::get("purchased-course", [ CourseController::class, "getUserPurchasedCourses" ]);
+});

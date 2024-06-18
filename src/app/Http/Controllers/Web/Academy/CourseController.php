@@ -6,11 +6,13 @@ use App\Exceptions\AppException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Web\Academy\CourseResource;
 use App\Http\Resources\Web\Academy\CourseExamInstanceResource;
+use App\Http\Resources\Web\Academy\UserCourseResource;
 use App\Http\Services\CourseService;
 use App\Models\Course\Course;
 use App\Models\Course\CourseExamInstance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CourseController extends Controller
@@ -143,5 +145,19 @@ class CourseController extends Controller
         );
 
         return response()->success($questions);
+    }
+
+    /**
+     * Get user purchased courses with active duration
+     */
+    public function getUserPurchasedCourses()
+    {
+        $requestUser = auth()->user();
+
+        return Cache::remember(cache_key("user-courses", [ $requestUser->id, 4 ]), 3600, function () use ($requestUser) {
+            $userCourses = $this->service->getUserCourses($requestUser);
+
+            return UserCourseResource::collection($userCourses);
+        });
     }
 }

@@ -30,32 +30,36 @@ use App\Models\User\User;
 use App\Models\Utility\Asset;
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class CourseService
 {
-    private array $filterModel = [
-
-    ];
-
     public function __construct(private AssetService $assetService, private PackageService $packageService)
     {
+    }
+
+    protected function getFilterModels(array $filters)
+    {
+        return [
+            "id_in" => [ "whereIn", "id" ],
+        ];
     }
 
     /**
      * Course
      */
 
-    public function getCourses(array $filter = [], array $with = [])
+    public function getCourses(array $filters = [], array $with = [])
     {
 
-        return filter_query_with_model(Course::with($with), $this->filterModel, $filter)->get();
+        return filter_query_with_model(Course::with($with), $this->getFilterModels($filters), $filters)->get();
     }
 
-    public function getCourseWithPage(array $filter = [], array $with = [ "language", "detail" ], int $size = 20)
+    public function getCourseWithPage(array $filters = [], array $with = [ "language", "detail" ], int $size = 20)
     {
 
-        return filter_query_with_model(Course::with($with)->latest(), $this->filterModel, $filter)->paginate($size);
+        return filter_query_with_model(Course::with($with)->latest(), $this->getFilterModels($filters), $filters)->paginate($size);
     }
 
     public function getCourseById(int $id, array $with = [ "groups", "detail", "packages", "groups" ])
@@ -995,9 +999,32 @@ class CourseService
      * User course
      */
 
+    public function getUserCourses(User $user, array $with = [])
+    {
+        array_push($with, "course.detail");
+        $userCourses = UserCourse::with($with)
+            ->where("user_id", $user->id)
+            ->orderBy("created_at", "desc")
+            ->get();
+
+        return $userCourses;
+    }
+
+    public function createUserCourse(User $user, array $data)
+    {
+        $courseId = $data["v3_course_id"];
+        Cache::forget(cache_key("user-courses", [ $user->id ]));
+        return UserCourse::create([
+            "start" => date("Y-m-d 00:00:00"),
+            "end" => date("Y-m-d 00:00:00", strtotime("+1 month")),
+            "user_id" => $user->id,
+            "v3_course_id" => $courseId
+        ]);
+    }
+
     public function getUserActiveCourses(User $user)
     {
-        $userCourses =  UserCourse::with("course.detail")
+        $userCourses = UserCourse::with("course.detail")
             ->where("user_id", $user->id)
             ->where("end", ">=", date("Y-m-d"))
             ->get();

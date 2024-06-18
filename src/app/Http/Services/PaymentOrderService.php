@@ -12,9 +12,14 @@ use App\Models\Payment\PaymentInvoice;
 use App\Models\Payment\PaymentOrder;
 use App\Models\Payment\PaymentOrderItem;
 use App\Models\User\User;
+use Illuminate\Support\Facades\Cache;
 
 class PaymentOrderService
 {
+    public function __construct(private CourseService $courseService)
+    {
+    }
+
     public function getPaymentOrderFromInvoice(PaymentInvoice $invoice)
     {
         return $invoice->paymentOrder()->first();
@@ -99,12 +104,8 @@ class PaymentOrderService
     {
         switch ($item->object_type) {
             case Course::class:
-                return UserCourse::create([
-                    "start" => date("Y-m-d 00:00:00"),
-                    "end" => date("Y-m-d 00:00:00", strtotime("+1 month")),
-                    "user_id" => $user->id,
-                    "v3_course_id" => $item->object_id
-                ]);
+                $this->courseService->createUserCourse($user, [ "v3_course_id" => $item->object_id ]);
+                break;
             default:
                 throw new AppException("Invalid order item type!");
         }
