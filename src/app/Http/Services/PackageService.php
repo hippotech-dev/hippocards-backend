@@ -163,6 +163,7 @@ class PackageService
                     ],
                 ],
             ],
+            "language" => [ "where", "language_id" ]
         ];
 
         return filter_query_with_model(Sort::with("word", "package")->whereNotNull("baseklass_id"), $filterModel, $filters)->orderBy("id", "desc")->simplePaginate(page_size());

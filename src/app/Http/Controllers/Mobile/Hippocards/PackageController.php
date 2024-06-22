@@ -21,9 +21,13 @@ class PackageController extends Controller
     public function searchWords(Request $request)
     {
         $filters = Validator::make(
-            $request->only("search"),
+            $request->only(
+                "search",
+                "language"
+            ),
             [
                 "search" => "required|string|max:256",
+                "language" => "sometimes|integer",
             ]
         )
             ->validate();

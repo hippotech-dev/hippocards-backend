@@ -18,6 +18,7 @@ class WordSortResource extends JsonResource
             "id" => $this->id,
             "word_id" => $this->word_id,
             "package_id" => $this->baseklass_id,
+            "language_id" => $this->language_id,
             "word" => new WordResource($this->whenLoaded("word")),
             "package" => new PackageResource($this->whenLoaded("package"))
         ];
