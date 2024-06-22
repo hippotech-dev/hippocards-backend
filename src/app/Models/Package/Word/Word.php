@@ -17,6 +17,10 @@ class Word extends Model
         "mp3"
     ];
 
+    /**
+     * Relations
+     */
+
     public function translation()
     {
         return $this->hasOne(WordTranslation::class, "word_id");
@@ -56,4 +60,8 @@ class Word extends Model
     {
         return $this->hasMany(WordSynonym::class, "word_id");
     }
+
+    /**
+     * Scopes
+     */
 }

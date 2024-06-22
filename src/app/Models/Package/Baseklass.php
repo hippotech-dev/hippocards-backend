@@ -30,6 +30,10 @@ class Baseklass extends Model
       "sort",
     ];
 
+    /**
+     * Relations
+     */
+
     public function mainCategory()
     {
         return $this->belongsTo(MainCategory::class);
@@ -48,5 +52,16 @@ class Baseklass extends Model
     public function systemIcon()
     {
         return $this->belongsTo(SystemIcon::class);
+    }
+
+    /**
+     * Scopes
+     */
+
+    public function scopeActive($query)
+    {
+        return $query
+            ->where("article_id", false)
+            ->where("prepare_see", false);
     }
 }

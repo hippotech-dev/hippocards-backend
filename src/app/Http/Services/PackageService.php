@@ -146,4 +146,25 @@ class PackageService
         }
         return Sort::with("word")->whereIn("baseklass_id", $ids)->get();
     }
+
+    public function searchWords(array $filters)
+    {
+        $filterModel = [
+            "search" => [
+                [ "whereHas", "whereHas" ],
+                [
+                    [
+                        "name" => "word",
+                        "value" => fn ($query) => $query->whereLike("word", $filters["search"])
+                    ],
+                    [
+                        "name" => "package",
+                        "value" => fn ($query) => $query->active()
+                    ],
+                ],
+            ],
+        ];
+
+        return filter_query_with_model(Sort::with("word", "package")->whereNotNull("baseklass_id"), $filterModel, $filters)->orderBy("id", "desc")->simplePaginate(page_size());
+    }
 }

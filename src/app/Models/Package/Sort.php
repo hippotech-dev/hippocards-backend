@@ -18,6 +18,10 @@ class Sort extends Model
         'baseklass_id'
     ];
 
+    /**
+     * Relations
+     */
+
     public function word()
     {
         return $this->hasOne(Word::class, "id", "word_id");
@@ -27,4 +31,8 @@ class Sort extends Model
     {
         return $this->belongsTo(Baseklass::class, "baseklass_id");
     }
+
+    /**
+     * Scopes
+     */
 }

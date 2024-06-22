@@ -31,21 +31,31 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
             // Route::middleware(['api', "jwt.auth", "role:" . EUserRole::SUPERADMIN->value])
+            // System
+
             Route::middleware(['api', "jwt.auth"])
-                ->prefix('v1/academy')
+                ->prefix('v1/system/academy')
                 ->name("system-academy.")
                 ->group(base_path('routes/System/academy.php'));
 
             // Route::middleware(['api', "jwt.auth", "role:" . EUserRole::SUPERADMIN->value])
             Route::middleware(['api', "jwt.auth"])
-                ->prefix('v1/content')
+                ->prefix('v1/system/content')
                 ->name("content.")
                 ->group(base_path('routes/System/content.php'));
 
             Route::middleware(['api', "jwt.auth"])
-                ->prefix('v0/content')
+                ->prefix('v0/system/content')
                 ->name("v0-content.")
                 ->group(base_path('routes/v0/System/content.php'));
+
+            // Mobile
+            Route::middleware(['api', "jwt.auth"])
+                ->prefix('v1/mobile/hippocards')
+                ->name("mobile-hippocards.")
+                ->group(base_path('routes/Mobile/hippocards.php'));
+
+            // Web
 
             Route::middleware('api')
                 ->prefix('v1/web/academy')
@@ -57,15 +67,21 @@ class RouteServiceProvider extends ServiceProvider
                 ->name("web-payment.")
                 ->group(base_path('routes/Web/payment.php'));
 
+            // Auth
+
             Route::middleware('api')
                 ->prefix('v1/auth')
                 ->name("auth.")
                 ->group(base_path('routes/auth.php'));
 
+            // SSO
+
             Route::middleware('api')
                 ->prefix('v1/sso')
                 ->name("sso.")
                 ->group(base_path('routes/sso.php'));
+
+            // Utility
 
             Route::middleware('api')
                 ->prefix('v1/utility')
