@@ -1004,7 +1004,7 @@ class CourseService
         array_push($with, "course.detail");
         $userCourses = UserCourse::with($with)
             ->where("user_id", $user->id)
-            ->orderBy("created_at", "desc")
+            ->orderBy("end", "desc")
             ->get();
 
         return $userCourses;
