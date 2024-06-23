@@ -13,6 +13,7 @@ class PackageController extends Controller
 {
     public function __construct(private PackageService $service)
     {
+        $this->middleware("jwt.auth");
     }
 
     /**
@@ -32,12 +33,28 @@ class PackageController extends Controller
         )
             ->validate();
 
-        $sorts = Cache::remember(
+        $resource = Cache::remember(
             cache_key("search-words", array_merge($filters, [ $request->get("page", 1) ])),
             60 * 5,
-            fn () => $this->service->searchWords($filters)
+            fn () => WordSortResource::collection($this->service->searchWords($filters))
         );
 
-        return WordSortResource::collection($sorts);
+        return $resource;
+    }
+
+    /**
+     * Get memorized words
+     */
+    public function getMemorizedWords(Request $request)
+    {
+        $requestUser = auth()->user();
+        $page = $request->get("page", 1);
+        $resource = Cache::remember(
+            cache_key("memorized-words", [ $requestUser->id, $page, 1 ]),
+            60,
+            fn () => WordSortResource::collection($this->service->getMemorizedWords($requestUser))
+        );
+
+        return $resource;
     }
 }

@@ -1,9 +1,13 @@
 <?php
 
 use App\Http\Controllers\Utility\UploadController;
+use App\Http\Controllers\Utility\UserActivityController;
 use App\Http\Controllers\Utility\UtilityController;
-use App\Http\Controllers\Utility\VideoController;
 use Illuminate\Support\Facades\Route;
+
+Route::apiResources([
+    "user-activity" => UserActivityController::class
+]);
 
 Route::prefix("upload")->group(function () {
     Route::post("file", [ UploadController::class, "uploadFile" ]);

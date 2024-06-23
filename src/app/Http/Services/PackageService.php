@@ -2,13 +2,20 @@
 
 namespace App\Http\Services;
 
+use App\Enums\EUserActivityType;
 use App\Models\Package\Baseklass;
 use App\Models\Package\Sort;
 use App\Models\Package\Word\Word;
+use App\Models\User\User;
+use App\Models\Utility\UserActivity;
 use Illuminate\Support\Collection;
 
 class PackageService
 {
+    public function __construct(private UserActivityService $userActivityService)
+    {
+    }
+
     public function getPackages(array $filter)
     {
         $filterModel = [
@@ -151,21 +158,29 @@ class PackageService
     {
         $filterModel = [
             "search" => [
-                [ "whereHas", "whereHas" ],
+                [ "whereHas" ],
                 [
                     [
                         "name" => "word",
                         "value" => fn ($query) => $query->whereLike("word", $filters["search"])
-                    ],
-                    [
-                        "name" => "package",
-                        "value" => fn ($query) => $query->active()
-                    ],
+                    ]
                 ],
             ],
-            "language" => [ "where", "language_id" ]
+            "language" => [ "where", "language_id" ],
+            "id_in" => [ "whereIn",  ]
         ];
 
-        return filter_query_with_model(Sort::with("word", "package")->whereNotNull("baseklass_id"), $filterModel, $filters)->orderBy("id", "desc")->simplePaginate(page_size());
+        return filter_query_with_model(Sort::with("word.translation", "package")->active(), $filterModel, $filters)->orderBy("id", "desc")->simplePaginate(page_size());
+    }
+
+    public function getMemorizedWords(User $user)
+    {
+        $activitiesWithSorts = $this->userActivityService->getUserActivitiesByTypeWithPage($user, EUserActivityType::WORD, [ "object.word.translation", "object.package" ]);
+
+        $activitiesWithSortsCollection = $activitiesWithSorts->getCollection();
+
+        $activitiesWithSorts->setCollection($activitiesWithSortsCollection->pluck("object"));
+
+        return $activitiesWithSorts;
     }
 }

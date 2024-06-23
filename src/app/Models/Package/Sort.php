@@ -35,4 +35,11 @@ class Sort extends Model
     /**
      * Scopes
      */
+
+    public function scopeActive($query)
+    {
+        return $query
+            ->whereNotNull("baseklass_id")
+            ->whereHas("package", fn ($subQuery) => $subQuery->active());
+    }
 }

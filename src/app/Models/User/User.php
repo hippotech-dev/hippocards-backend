@@ -9,6 +9,7 @@ use App\Models\Payment\PaymentInvoice;
 use App\Models\Payment\PaymentOrder;
 use App\Models\SSO\OAuthAuthenticationAttempt;
 use App\Models\Subscription\SubUser;
+use App\Models\Utility\UserActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -78,6 +79,10 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
+    /**
+     * Relations
+     */
+
     public function authenticationAttempts()
     {
         return $this->hasMany(OAuthAuthenticationAttempt::class);
@@ -102,4 +107,13 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(SubUser::class, "user_id");
     }
+
+    public function activities()
+    {
+        return $this->hasMany(UserActivity::class);
+    }
+
+    /**
+     * Scopes
+     */
 }
