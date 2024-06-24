@@ -2,9 +2,9 @@
 
 namespace App\Models\Package\Word;
 
+use App\Models\Utility\Sentence;
 use Illuminate\Database\Eloquent\Model;
 
-// word update_type number 1-image, 2-tr, 3-kw, 5-imagination, 6-example, 7-ex_t, 8-ex_word, 9-gif, 10-sound
 class Word extends Model
 {
     protected $table = 'word';
@@ -59,6 +59,11 @@ class Word extends Model
     public function synonyms()
     {
         return $this->hasMany(WordSynonym::class, "word_id");
+    }
+
+    public function sentences()
+    {
+        return $this->morphMany(Sentence::class, "object", "object_type", "object_id");
     }
 
     /**

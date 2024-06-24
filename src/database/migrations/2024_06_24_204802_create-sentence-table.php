@@ -13,9 +13,11 @@ return new class () extends Migration {
         Schema::create("v3_sentences", function (Blueprint $table) {
             $table->id();
             $table->integer("language_id")->index()->nullable();
+            $table->unsignedBigInteger("object_id")->nullable();
+            $table->string("object_type")->nullable();
 
             $table->string("value");
-            $table->string("translation");
+            $table->string("translation")->nullable();
             $table->integer("type")->index();
             $table->timestamps();
 
@@ -29,6 +31,8 @@ return new class () extends Migration {
                 ->references("id")
                 ->on("language")
                 ->nullOnDelete();
+
+            $table->unique([ "object_id", "object_type" ]);
         });
     }
 
