@@ -20,8 +20,6 @@ class AccessToken extends Model
     ];
 
     protected $casts = [
-        "refresh_expire" => "date",
-        "access_expire" => "date",
         "type" => EAccessTokenType::class
     ];
 }

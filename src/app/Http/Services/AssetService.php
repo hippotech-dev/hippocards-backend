@@ -59,6 +59,22 @@ class AssetService
         ]);
     }
 
+    public function createAudioAsset(mixed $contents)
+    {
+        $folder = "v3/audio/" . date("Y-m");
+        $filename = $this->generateRandomFilename("audio.mp3");
+        $path = $folder . "/" . $filename;
+
+        Storage::disk("s3-tokyo")->put($path, $contents);
+
+        return Asset::create([
+            "path" => $path,
+            "name" => $filename,
+            "size" => 0,
+            "mime_type" => "unknown",
+        ]);
+    }
+
     public function createImageAsset(EncodedImageInterface $file)
     {
         $folder = "v3/assets/" . date("Y-m");
@@ -157,7 +173,7 @@ class AssetService
 
     public function generateRandomFilename(string $filename)
     {
-        return bin2hex(random_bytes(16)) . '-' . $filename;
+        return bin2hex(random_bytes(16)) . (($filename[0] ?? "") === "." ? $filename : '-' . $filename);
     }
 
     public function setTranscoderJob(Asset $asset, string $jobId)

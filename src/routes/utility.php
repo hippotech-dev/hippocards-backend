@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Utility\AudioController;
 use App\Http\Controllers\Utility\UploadController;
 use App\Http\Controllers\Utility\UserActivityController;
 use App\Http\Controllers\Utility\UtilityController;
@@ -15,6 +16,10 @@ Route::prefix("upload")->group(function () {
     Route::post("video/job/submit", [ UploadController::class, "setTranscoderJob" ]);
     Route::post("video/job/complete", [ UploadController::class, "completeTranscoderJob" ]);
     Route::post("video/{asset}/otp", [ UploadController::class, "getVideoPlaybackAndOTPInfo" ]);
+});
+
+Route::prefix("audio")->group(function () {
+    Route::post("generate", [ AudioController::class, "generateAudio" ]);
 });
 
 Route::post("webhook/drm-video-ready", [ UploadController::class, "webhookVDOVideoSuccess" ]);
