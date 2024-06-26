@@ -538,35 +538,20 @@ class CourseService
     public function importWordSentencesToBlock(CourseGroupBlock $block)
     {
         $blockSort = $this->packageService->getSortByIdInclude($block->sort_id, [
-            "exampleSentences.example"
+            "examples"
         ]);
 
-        $wordExampleSentences = $blockSort->word->exampleSentences ?? collect([]);
+        $wordDefinitionSentences = $blockSort->word->definitionSentences ?? collect([]);
 
         $blockDetail = $this->getBlockDetail($block);
 
         $sentences = $blockDetail->sentences ?? [];
 
-        $sentenceOne = $wordExampleSentences->where("type", 1)->first();
-        $sentenceOneTranslation = $wordExampleSentences->where("type", 2)->first();
-        $sentenceTwo = $wordExampleSentences->where("type", 4)->first();
-        $sentenceTwoTranslation = $wordExampleSentences->where("type", 5)->first();
-
-        if (!is_null($sentenceOne)) {
-            array_push($sentences, ([
-                "value" => $sentenceOne->example->name ?? "",
-                "is_english" => true,
-                "translation" => $sentenceOneTranslation->example->name ?? ""
-            ]));
-        }
-
-        if (!is_null($sentenceTwo)) {
-            array_push($sentences, ([
-                "value" => $sentenceTwo->example->name ?? "",
-                "is_english" => true,
-                "translation" => $sentenceTwoTranslation->example->name ?? ""
-            ]));
-        }
+        array_push($sentences, $wordDefinitionSentences->map(fn ($wordDefinitionSentence) => [
+            "value" => $wordDefinitionSentence->value ?? "",
+            "is_english" => true,
+            "translation" => $wordDefinitionSentence->translation ?? "",
+        ]));
 
         return $this->createUpdateBlockDetail(
             $block,

@@ -55,16 +55,6 @@ class PackageService
         $word = Word::with([
             "translation",
             "pronunciation",
-            "wordImaginations" => function ($query) use ($sort) {
-                $query->where("baseklass_id", $sort->baseklass_id)
-                    ->where("language_id", $sort->language_id);
-            },
-            "wordImaginations.imagination",
-            "exampleSentences" => function ($query) use ($sort) {
-                $query->where("baseklass_id", $sort->baseklass_id)
-                    ->where("language_id", $sort->language_id);
-            },
-            "exampleSentences.example",
             "wordKeyword" => function ($query) use ($sort) {
                 $query->where("baseklass_id", $sort->baseklass_id)
                     ->where("language_id", $sort->language_id);
@@ -77,6 +67,8 @@ class PackageService
             "wordImages.image",
             "pos",
             "synonyms",
+            "definitionSentences",
+            "imaginationSentences"
         ])
             ->find($sort->word_id);
 
@@ -122,13 +114,11 @@ class PackageService
         }
 
         if (in_array("imaginations", $include)) {
-            array_merge($with, [
-                "word.wordImaginations" => function ($query) use ($sort) {
-                    $query->where("baseklass_id", $sort->baseklass_id)
-                        ->where("language_id", $sort->language_id);
-                },
-            ]);
-            array_push($with, "word.wordImaginations.imagination");
+            array_push($with, "imaginationSentences");
+        }
+
+        if (in_array("examples", $include)) {
+            array_push($with, "definitionSentences");
         }
 
         if (in_array("keywords", $include)) {
@@ -237,6 +227,35 @@ class PackageService
                     "latin" => $latin2->example->name ?? "",
                     "order" => 1,
                     "type" => ESentenceType::DEFINITION,
+                ]);
+            }
+        });
+    }
+
+    public function convertOldImaginationToNewSentence()
+    {
+        DB::transaction(function () {
+            $sorts = Sort::with("word.wordImaginations.imagination")->limit(41000)->offset(40000)->get();
+
+            foreach ($sorts as $sort) {
+                if (is_null($sort->word) || count($sort->word->wordImaginations) === 0) {
+                    continue;
+                }
+
+                $wordImaginations = $sort->word->wordImaginations;
+
+                $value = $wordImaginations->where("baseklass_id", $sort->baseklass_id)->first();
+
+                if (is_null($value) || is_null($value->imagination) || $value->imagination->name === "") {
+                    continue;
+                }
+
+                Sentence::create([
+                    "object_id" => $sort->word_id,
+                    "object_type" => Word::class,
+                    "language_id" => $sort->language_id,
+                    "type" => ESentenceType::IMAGINATION,
+                    "value" => $value->imagination->name ?? "",
                 ]);
             }
         });

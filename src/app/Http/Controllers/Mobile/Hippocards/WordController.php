@@ -3,10 +3,17 @@
 namespace App\Http\Controllers\Mobile\Hippocards;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Mobile\Hippocards\WordResource;
+use App\Http\Services\PackageService;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class WordController extends Controller
 {
+    public function __construct(private PackageService $service)
+    {
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -28,7 +35,13 @@ class WordController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $sort = $this->service->getSortByIdLoaded($id);
+
+        if (is_null($sort)) {
+            throw new NotFoundHttpException("Sort not found!");
+        }
+
+        return new WordResource($sort->word);
     }
 
     /**

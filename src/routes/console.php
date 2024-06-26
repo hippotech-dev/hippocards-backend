@@ -22,3 +22,7 @@ Artisan::command('inspire', function () {
 Artisan::command('custom:migrate-old-sentence', function (PackageService $service) {
     $service->convertOldSentencesToNewSentence();
 })->purpose('Display an inspiring quote');
+
+Artisan::command('custom:migrate-old-imagination', function (PackageService $service) {
+    $service->convertOldImaginationToNewSentence();
+})->purpose('Display an inspiring quote');
