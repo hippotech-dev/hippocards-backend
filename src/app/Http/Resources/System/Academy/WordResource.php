@@ -4,6 +4,7 @@ namespace App\Http\Resources\System\Academy;
 
 use App\Enums\EWordImageType;
 use App\Enums\EWordSimilarType;
+use App\Http\Resources\Utility\SentenceResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,95 +21,13 @@ class WordResource extends JsonResource
             "id" => $this->id,
             "word" => $this->word,
             "package_id" => $this->when(!is_null($this->package_id), $this->package_id),
+            "definition_sentences" => SentenceResource::collection($this->whenLoaded("definitionSentences")),
+            "imagination_sentences" => SentenceResource::collection($this->whenLoaded("imaginationSentences")),
             "translation" => $this->whenLoaded("translation", function () {
                 if (is_null($this->translation)) {
                     return null;
                 }
                 return $this->translation->name;
-            }),
-            "sentence_audio" => $this->whenLoaded("exampleSentences", function () {
-                if (is_null($this->exampleSentences)) {
-                    return null;
-                }
-                $sentence = !is_null($this->baseklass_id)
-                    ? $this->exampleSentences->where("type", 1)->where("baseklass_id", $this->baseklass_id)->first()
-                    : $this->exampleSentences->where("type", 1)->first();
-                if (is_null($sentence)) {
-                    return null;
-                }
-                return cdn_path($sentence->audio);
-            }),
-            "sentence" => $this->whenLoaded("exampleSentences", function () {
-                if (is_null($this->exampleSentences)) {
-                    return null;
-                }
-                $sentence = !is_null($this->baseklass_id)
-                    ? $this->exampleSentences->where("type", 1)->where("baseklass_id", $this->baseklass_id)->first()
-                    : $this->exampleSentences->where("type", 1)->first();
-                if (is_null($sentence) || is_null($sentence->example)) {
-                    return null;
-                }
-                return $sentence->example->name;
-            }),
-            "sentence_translation" => $this->whenLoaded("exampleSentences", function () {
-                if (is_null($this->exampleSentences)) {
-                    return null;
-                }
-                $sentence = !is_null($this->baseklass_id)
-                    ? $this->exampleSentences->where("type", 2)->where("baseklass_id", $this->baseklass_id)->first()
-                    : $this->exampleSentences->where("type", 2)->first();
-                if (is_null($sentence) || is_null($sentence->example)) {
-                    return null;
-                }
-                return $sentence->example->name;
-            }),
-            "sentence_latin" => $this->whenLoaded("exampleSentences", function () {
-                if (is_null($this->exampleSentences)) {
-                    return null;
-                }
-                $sentence = !is_null($this->baseklass_id)
-                    ? $this->exampleSentences->where("type", 3)->where("baseklass_id", $this->baseklass_id)->first()
-                    : $this->exampleSentences->where("type", 3)->first();
-                if (is_null($sentence) || is_null($sentence->example)) {
-                    return null;
-                }
-                return $sentence->example->name;
-            }),
-            "sentence2" => $this->whenLoaded("exampleSentences", function () {
-                if (is_null($this->exampleSentences)) {
-                    return null;
-                }
-                $sentence = !is_null($this->baseklass_id)
-                    ? $this->exampleSentences->where("type", 4)->where("baseklass_id", $this->baseklass_id)->first()
-                    : $this->exampleSentences->where("type", 4)->first();
-                if (is_null($sentence) || is_null($sentence->example)) {
-                    return null;
-                }
-                return $sentence->example->name;
-            }),
-            "sentence2_translation" => $this->whenLoaded("exampleSentences", function () {
-                if (is_null($this->exampleSentences)) {
-                    return null;
-                }
-                $sentence = !is_null($this->baseklass_id)
-                    ? $this->exampleSentences->where("type", 5)->where("baseklass_id", $this->baseklass_id)->first()
-                    : $this->exampleSentences->where("type", 5)->first();
-                if (is_null($sentence) || is_null($sentence->example)) {
-                    return null;
-                }
-                return $sentence->example->name;
-            }),
-            "sentence2_latin" => $this->whenLoaded("exampleSentences", function () {
-                if (is_null($this->exampleSentences)) {
-                    return null;
-                }
-                $sentence = !is_null($this->baseklass_id)
-                    ? $this->exampleSentences->where("type", 6)->where("baseklass_id", $this->baseklass_id)->first()
-                    : $this->exampleSentences->where("type", 6)->first();
-                if (is_null($sentence) || is_null($sentence->example)) {
-                    return null;
-                }
-                return $sentence->example->name;
             }),
             "pronunciation" => $this->whenLoaded("pronunciation", function () {
                 if (is_null($this->pronunciation)) {
