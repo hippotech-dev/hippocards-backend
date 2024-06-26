@@ -6,6 +6,7 @@ use App\Enums\ECourseBlockImageType;
 use App\Enums\ECourseBlockType;
 use App\Enums\ECourseBlockVideoType;
 use App\Enums\ECourseExamType;
+use App\Enums\ESentenceType;
 use App\Enums\EStatus;
 use App\Exceptions\AppException;
 use App\Exceptions\UnauthorizedException;
@@ -547,16 +548,19 @@ class CourseService
 
         $sentences = $blockDetail->sentences ?? [];
 
-        array_push($sentences, $wordDefinitionSentences->map(fn ($wordDefinitionSentence) => [
-            "value" => $wordDefinitionSentence->value ?? "",
-            "is_english" => true,
-            "translation" => $wordDefinitionSentence->translation ?? "",
-        ]));
-
         return $this->createUpdateBlockDetail(
             $block,
             [
-                "sentences" => $sentences,
+                "sentences" => array_merge(
+                    $sentences,
+                    $wordDefinitionSentences
+                        ->map(fn ($wordDefinitionSentence) => [
+                            "value" => $wordDefinitionSentence->value ?? "",
+                            "is_english" => true,
+                            "translation" => $wordDefinitionSentence->translation ?? "",
+                        ])
+                        ->toArray()
+                ),
                 "keywords" => null
             ]
         );

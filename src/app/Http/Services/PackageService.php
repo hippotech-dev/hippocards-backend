@@ -130,8 +130,7 @@ class PackageService
             ]);
             array_push($with, "word.wordKeyword.keyword");
         }
-        $word = Word::with($with)
-            ->find($sort->word_id);
+        $word = Word::with($with)->find($sort->word_id);
 
         $sort->setRelation("word", $word);
 
