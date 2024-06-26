@@ -2,13 +2,17 @@
 
 namespace App\Http\Services;
 
+use App\Enums\ESentenceType;
 use App\Enums\EUserActivityType;
 use App\Models\Package\Baseklass;
 use App\Models\Package\Sort;
 use App\Models\Package\Word\Word;
+use App\Models\Package\Word\WordExample;
 use App\Models\User\User;
+use App\Models\Utility\Sentence;
 use App\Models\Utility\UserActivity;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class PackageService
 {
@@ -182,5 +186,59 @@ class PackageService
         $activitiesWithSorts->setCollection($activitiesWithSortsCollection->pluck("object"));
 
         return $activitiesWithSorts;
+    }
+
+    public function convertOldSentencesToNewSentence()
+    {
+        DB::transaction(function () {
+            $sorts = Sort::with("word.exampleSentences.example")->limit(41000)->offset(40000)->get();
+
+            foreach ($sorts as $sort) {
+                if (is_null($sort->word) || count($sort->word->exampleSentences) === 0) {
+                    continue;
+                }
+
+                $examplesSentences = $sort->word->exampleSentences;
+
+                $value = $examplesSentences->where("type", 1)->where("baseklass_id", $sort->baseklass_id)->first();
+
+                if (is_null($value) || is_null($value->example) || $value->example->name === "") {
+                    continue;
+                }
+
+                $translation = $examplesSentences->where("type", 2)->where("baseklass_id", $sort->baseklass_id)->first();
+                $latin = $examplesSentences->where("type", 3)->where("baseklass_id", $sort->baseklass_id)->first();
+
+                Sentence::create([
+                    "object_id" => $sort->word_id,
+                    "object_type" => Word::class,
+                    "language_id" => $sort->language_id,
+                    "type" => ESentenceType::DEFINITION,
+                    "value" => $value->example->name ?? "",
+                    "translation" => $translation->example->name ?? "",
+                    "latin" => $latin->example->name ?? "",
+                ]);
+
+                $value2 = $examplesSentences->where("type", 4)->where("baseklass_id", $sort->baseklass_id)->first();
+
+                if (is_null($value2) || is_null($value2->example) || $value2->example->name === "") {
+                    continue;
+                }
+
+                $translation2 = $examplesSentences->where("type", 5)->where("baseklass_id", $sort->baseklass_id)->first();
+                $latin2 = $examplesSentences->where("type", 6)->where("baseklass_id", $sort->baseklass_id)->first();
+
+                Sentence::create([
+                    "object_id" => $sort->word_id,
+                    "object_type" => Word::class,
+                    "language_id" => $sort->language_id,
+                    "value" => $value2->example->name ?? "",
+                    "translation" => $translation2->example->name ?? "",
+                    "latin" => $latin2->example->name ?? "",
+                    "order" => 1,
+                    "type" => ESentenceType::DEFINITION,
+                ]);
+            }
+        });
     }
 }

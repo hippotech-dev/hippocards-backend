@@ -11,4 +11,5 @@ enum EUserActivityType: int
     case DEFAULT = 0;
     case WORD = 1;
     case COURSE = 2;
+    case ARTICLE = 3;
 }

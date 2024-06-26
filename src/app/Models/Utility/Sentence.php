@@ -15,9 +15,12 @@ class Sentence extends Model
     protected $fillable = [
         "value",
         "translation",
+        "pronunciation",
+        "latin",
         "object_id",
         "object_type",
         "type",
+        "order",
         "v3_audio_asset_id",
         "language_id",
     ];

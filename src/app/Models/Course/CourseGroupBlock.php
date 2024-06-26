@@ -4,6 +4,7 @@ namespace App\Models\Course;
 
 use App\Enums\ECourseBlockType;
 use App\Models\Package\Sort;
+use App\Models\Utility\Sentence;
 use Illuminate\Database\Eloquent\Model;
 
 class CourseGroupBlock extends Model
@@ -61,5 +62,10 @@ class CourseGroupBlock extends Model
     public function sentenceKeywordResponses()
     {
         return $this->hasMany(CourseBlockResponse::class, "v3_course_block_id");
+    }
+
+    public function sentences()
+    {
+        return $this->morphMany(Sentence::class, "object", "object_type", "object_id");
     }
 }

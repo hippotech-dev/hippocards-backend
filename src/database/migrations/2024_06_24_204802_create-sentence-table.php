@@ -16,8 +16,11 @@ return new class () extends Migration {
             $table->unsignedBigInteger("object_id")->nullable();
             $table->string("object_type")->nullable();
 
-            $table->string("value");
-            $table->string("translation")->nullable();
+            $table->string("value", 2048)->nullable();
+            $table->string("translation", 2048)->nullable();
+            $table->string("pronunciation", 2048)->nullable();
+            $table->string("latin", 2048)->nullable();
+            $table->integer("order")->default(0);
             $table->integer("type")->index();
             $table->timestamps();
 
@@ -32,7 +35,7 @@ return new class () extends Migration {
                 ->on("language")
                 ->nullOnDelete();
 
-            $table->unique([ "object_id", "object_type" ]);
+            $table->index([ "object_id", "object_type" ]);
         });
     }
 

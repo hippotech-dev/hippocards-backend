@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Services\PackageService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
@@ -16,4 +17,8 @@ use Illuminate\Support\Facades\Artisan;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
+})->purpose('Display an inspiring quote');
+
+Artisan::command('custom:migrate-old-sentence', function (PackageService $service) {
+    $service->convertOldSentencesToNewSentence();
 })->purpose('Display an inspiring quote');
