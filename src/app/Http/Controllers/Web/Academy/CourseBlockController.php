@@ -38,7 +38,7 @@ class CourseBlockController extends Controller
     public function show(Course $course, int $id)
     {
         $block = Cache::remember(
-            cache_key("show-block-detail-v2", [ $id ]),
+            cache_key("show-block-detail", [ $id ]),
             3600,
             fn () => new GroupBlockResource($this->service->getCourseBlockByIdLoaded($course, $id))
         );

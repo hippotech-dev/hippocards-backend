@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Mobile\Hippocards\WordResource;
 use App\Http\Services\PackageService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class WordController extends Controller
@@ -35,13 +36,21 @@ class WordController extends Controller
      */
     public function show(string $id)
     {
-        $sort = $this->service->getSortByIdLoaded($id);
+        $sort = Cache::remember(
+            cache_key("get-word-overview", [ $id, 123 ]),
+            3600,
+            function () use ($id) {
+                $sort = $this->service->getSortByIdLoaded($id);
 
-        if (is_null($sort)) {
-            throw new NotFoundHttpException("Sort not found!");
-        }
+                if (is_null($sort)) {
+                    throw new NotFoundHttpException("Sort not found!");
+                }
 
-        return new WordResource($sort->word);
+                return (new WordResource($sort->word))->toArray(request());
+            }
+        );
+
+        return $sort;
     }
 
     /**

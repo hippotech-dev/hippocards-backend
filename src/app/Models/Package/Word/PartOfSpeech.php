@@ -12,4 +12,9 @@ class PartOfSpeech extends Model
     protected $fillable = [
         "pos_id", "word_id"
     ];
+
+    public function posType()
+    {
+        return $this->belongsTo(PosType::class, "pos_id");
+    }
 }

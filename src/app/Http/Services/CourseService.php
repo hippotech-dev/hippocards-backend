@@ -698,7 +698,7 @@ class CourseService
     public function generateCourseExamQuestions(Course $course, int $total)
     {
         $blocks = $course->blocks()
-            ->with([ "wordSort", "wordSort.word.translation" ])
+            ->with([ "wordSort", "wordSort.word.detail" ])
             ->where("type", ECourseBlockType::LESSON)
             ->inRandomOrder()
             ->limit($total)
@@ -719,9 +719,9 @@ class CourseService
                 $generatedData,
                 [
                     "id" => $block->id,
-                    "question" => $isWord ? $word->translation->name ?? "NONE" : $word->word,
+                    "question" => $isWord ? $word->detail->translation ?? "NONE" : $word->word,
                     "correct_answer" => $word->id,
-                    "answers" => $answers->map(fn ($item) => ["id" => $item->id ?? 0, "answer" => $isWord ? $item->word ?? "NONE" : $item->translation->name ?? "NONE"]),
+                    "answers" => $answers->map(fn ($item) => ["id" => $item->id ?? 0, "answer" => $isWord ? $item->word ?? "NONE" : $item->detail->translation ?? "NONE"]),
                     "is_word" => $isWord,
                 ]
             );
@@ -848,7 +848,7 @@ class CourseService
 
     public function getCourseExamQuestions(CourseGroupBlock $examBlock)
     {
-        $previousBlocks = CourseGroupBlock::with("wordSort.word", "wordSort.word.translation")
+        $previousBlocks = CourseGroupBlock::with("wordSort.word", "wordSort.word.detail")
             ->where("v3_course_group_id", $examBlock->v3_course_group_id)
             ->where("order", "<", $examBlock->order)
             ->orderBy("order", "asc")
@@ -871,8 +871,8 @@ class CourseService
                 $generatedData,
                 [
                     "id" => $block->id,
-                    "question" => $isWord ? $word->translation->name ?? "NONE" : $word->word,
-                    "answers" => $answers->map(fn ($item) => ["id" => $item->id ?? 0, "answer" => $isWord ? $item->word ?? "NONE" : $item->translation->name ?? "NONE",]),
+                    "question" => $isWord ? $word->detail->translation ?? "NONE" : $word->word,
+                    "answers" => $answers->map(fn ($item) => ["id" => $item->id ?? 0, "answer" => $isWord ? $item->word ?? "NONE" : $item->detail->translation ?? "NONE",]),
                     "is_word" => $isWord,
                 ]
             );
@@ -885,7 +885,7 @@ class CourseService
     {
         $answerConvertedArr = array_column($answers, "answer_id", "question_id");
 
-        $blocks = CourseGroupBlock::with("wordSort.word.translation")->whereIn("id", array_keys($answerConvertedArr))->get();
+        $blocks = CourseGroupBlock::with("wordSort.word")->whereIn("id", array_keys($answerConvertedArr))->get();
 
         $generatedData = array();
 

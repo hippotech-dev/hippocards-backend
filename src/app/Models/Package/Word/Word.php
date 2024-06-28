@@ -3,6 +3,8 @@
 namespace App\Models\Package\Word;
 
 use App\Enums\ESentenceType;
+use App\Models\Package\WordDetail;
+use App\Models\Package\WordImage;
 use App\Models\Utility\Sentence;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,39 +24,14 @@ class Word extends Model
      * Relations
      */
 
-    public function translation()
+    public function mainDetail()
     {
-        return $this->hasOne(WordTranslation::class, "word_id");
+        return $this->hasOne(WordDetail::class, "word_id");
     }
 
-    public function pronunciation()
-    {
-        return $this->hasOne(WordPronunciation::class, "word_id");
-    }
-
-    public function wordImaginations()
-    {
-        return $this->hasMany(WordImagination::class, "word_id");
-    }
-
-    public function exampleSentences()
-    {
-        return $this->hasMany(WordExample::class, "word_id");
-    }
-
-    public function wordKeyword()
-    {
-        return $this->hasMany(WordKeyword::class, "word_id");
-    }
-
-    public function wordImages()
+    public function images()
     {
         return $this->hasMany(WordImage::class, "word_id");
-    }
-
-    public function pos()
-    {
-        return $this->hasOne(PartOfSpeech::class, "word_id");
     }
 
     public function synonyms()

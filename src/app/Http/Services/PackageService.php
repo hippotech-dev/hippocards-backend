@@ -2,8 +2,12 @@
 
 namespace App\Http\Services;
 
+use App\Enums\EPartOfSpeech;
 use App\Enums\ESentenceType;
 use App\Enums\EUserActivityType;
+use App\Enums\EWordImageType;
+use App\Models\Package\WordDetail;
+use App\Models\Package\WordImage;
 use App\Models\Package\Baseklass;
 use App\Models\Package\Sort;
 use App\Models\Package\Word\Word;
@@ -16,7 +20,7 @@ use Illuminate\Support\Facades\DB;
 
 class PackageService
 {
-    public function __construct(private UserActivityService $userActivityService)
+    public function __construct(private UserActivityService $userActivityService, private AssetService $assetService)
     {
     }
 
@@ -53,19 +57,8 @@ class PackageService
         }
 
         $word = Word::with([
-            "translation",
-            "pronunciation",
-            "wordKeyword" => function ($query) use ($sort) {
-                $query->where("baseklass_id", $sort->baseklass_id)
-                    ->where("language_id", $sort->language_id);
-            },
-            "wordKeyword.keyword",
-            "wordImages" => function ($query) use ($sort) {
-                $query->where("baseklass_id", $sort->baseklass_id)
-                    ->where("language_id", $sort->language_id);
-            },
-            "wordImages.image",
-            "pos",
+            "mainDetail",
+            "images",
             "synonyms",
             "definitionSentences",
             "imaginationSentences"
@@ -88,25 +81,11 @@ class PackageService
         $with = [];
 
         if (in_array("images", $include)) {
-            array_merge($with, [
-                "wordImages" => function ($query) use ($sort) {
-                    $query->where("baseklass_id", $sort->baseklass_id)
-                        ->where("language_id", $sort->language_id);
-                },
-            ]);
-            array_push($with, "wordImages.image");
+            array_push($with, "images");
         }
 
-        if (in_array("translation", $include)) {
-            array_push($with, "translation");
-        }
-
-        if (in_array("pronunciation", $include)) {
-            array_push($with, "pronunciation");
-        }
-
-        if (in_array("pos", $include)) {
-            array_push($with, "pos");
+        if (in_array("mainDetail", $include)) {
+            array_push($with, "mainDetail");
         }
 
         if (in_array("synonyms", $include)) {
@@ -121,15 +100,6 @@ class PackageService
             array_push($with, "definitionSentences");
         }
 
-        if (in_array("keywords", $include)) {
-            array_merge($with, [
-                "word.wordKeyword" => function ($query) use ($sort) {
-                    $query->where("baseklass_id", $sort->baseklass_id)
-                        ->where("language_id", $sort->language_id);
-                },
-            ]);
-            array_push($with, "word.wordKeyword.keyword");
-        }
         $word = Word::with($with)->find($sort->word_id);
 
         $sort->setRelation("word", $word);
@@ -163,100 +133,17 @@ class PackageService
             "id_in" => [ "whereIn",  ]
         ];
 
-        return filter_query_with_model(Sort::with("word.translation", "package")->active(), $filterModel, $filters)->orderBy("id", "desc")->simplePaginate(page_size());
+        return filter_query_with_model(Sort::with("word.mainDetail", "package")->active(), $filterModel, $filters)->orderBy("id", "desc")->simplePaginate(page_size());
     }
 
     public function getMemorizedWords(User $user)
     {
-        $activitiesWithSorts = $this->userActivityService->getUserActivitiesByTypeWithPage($user, EUserActivityType::WORD, [ "object.word.translation", "object.package" ]);
+        $activitiesWithSorts = $this->userActivityService->getUserActivitiesByTypeWithPage($user, EUserActivityType::WORD, [ "object.word.mainDetail", "object.package" ]);
 
         $activitiesWithSortsCollection = $activitiesWithSorts->getCollection();
 
         $activitiesWithSorts->setCollection($activitiesWithSortsCollection->pluck("object"));
 
         return $activitiesWithSorts;
-    }
-
-    public function convertOldSentencesToNewSentence()
-    {
-        DB::transaction(function () {
-            $sorts = Sort::with("word.exampleSentences.example")->limit(41000)->offset(40000)->get();
-
-            foreach ($sorts as $sort) {
-                if (is_null($sort->word) || count($sort->word->exampleSentences) === 0) {
-                    continue;
-                }
-
-                $examplesSentences = $sort->word->exampleSentences;
-
-                $value = $examplesSentences->where("type", 1)->where("baseklass_id", $sort->baseklass_id)->first();
-
-                if (is_null($value) || is_null($value->example) || $value->example->name === "") {
-                    continue;
-                }
-
-                $translation = $examplesSentences->where("type", 2)->where("baseklass_id", $sort->baseklass_id)->first();
-                $latin = $examplesSentences->where("type", 3)->where("baseklass_id", $sort->baseklass_id)->first();
-
-                Sentence::create([
-                    "object_id" => $sort->word_id,
-                    "object_type" => Word::class,
-                    "language_id" => $sort->language_id,
-                    "type" => ESentenceType::DEFINITION,
-                    "value" => $value->example->name ?? "",
-                    "translation" => $translation->example->name ?? "",
-                    "latin" => $latin->example->name ?? "",
-                ]);
-
-                $value2 = $examplesSentences->where("type", 4)->where("baseklass_id", $sort->baseklass_id)->first();
-
-                if (is_null($value2) || is_null($value2->example) || $value2->example->name === "") {
-                    continue;
-                }
-
-                $translation2 = $examplesSentences->where("type", 5)->where("baseklass_id", $sort->baseklass_id)->first();
-                $latin2 = $examplesSentences->where("type", 6)->where("baseklass_id", $sort->baseklass_id)->first();
-
-                Sentence::create([
-                    "object_id" => $sort->word_id,
-                    "object_type" => Word::class,
-                    "language_id" => $sort->language_id,
-                    "value" => $value2->example->name ?? "",
-                    "translation" => $translation2->example->name ?? "",
-                    "latin" => $latin2->example->name ?? "",
-                    "order" => 1,
-                    "type" => ESentenceType::DEFINITION,
-                ]);
-            }
-        });
-    }
-
-    public function convertOldImaginationToNewSentence()
-    {
-        DB::transaction(function () {
-            $sorts = Sort::with("word.wordImaginations.imagination")->limit(41000)->offset(40000)->get();
-
-            foreach ($sorts as $sort) {
-                if (is_null($sort->word) || count($sort->word->wordImaginations) === 0) {
-                    continue;
-                }
-
-                $wordImaginations = $sort->word->wordImaginations;
-
-                $value = $wordImaginations->where("baseklass_id", $sort->baseklass_id)->first();
-
-                if (is_null($value) || is_null($value->imagination) || $value->imagination->name === "") {
-                    continue;
-                }
-
-                Sentence::create([
-                    "object_id" => $sort->word_id,
-                    "object_type" => Word::class,
-                    "language_id" => $sort->language_id,
-                    "type" => ESentenceType::IMAGINATION,
-                    "value" => $value->imagination->name ?? "",
-                ]);
-            }
-        });
     }
 }
