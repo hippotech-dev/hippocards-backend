@@ -2,6 +2,8 @@
 
 namespace App\Models\Package;
 
+use App\Enums\EPackageType;
+use App\Enums\EStatus;
 use App\Models\Package\Sort;
 use App\Models\Utility\Language;
 use App\Models\Utility\MainCategory;
@@ -20,14 +22,18 @@ class Baseklass extends Model
       "name",
       "foreign_name",
       "description",
-      "group_name",
       "main_category_id",
       "icon_id",
-      "is_active",
-      "prepare_see",
       "language_id",
       "for_kids",
       "sort",
+      "type",
+      "status"
+    ];
+
+    protected $casts = [
+        "type" => EPackageType::class,
+        "status" => EStatus::class
     ];
 
     /**

@@ -10,13 +10,25 @@ use Illuminate\Http\Request;
 
 class PackageController extends Controller
 {
-    public function __construct(private PackageService $service) {}
+    public function __construct(private PackageService $service)
+    {
+        $this->middleware("jwt.auth");
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $filters = $request->only("name_like", "language_id", "status");
+
+        if (count($filters) === 0) {
+            return response()->success([]);
+        }
+
+        $packages = $this->service->getPackages($filters);
+
+        return PackageResource::collection($packages);
     }
 
     /**
@@ -30,7 +42,7 @@ class PackageController extends Controller
             return response()->success([]);
         }
 
-        $packages = $this->service->searchPackages($filters);
+        $packages = $this->service->getPackages($filters);
 
         return PackageResource::collection($packages);
     }

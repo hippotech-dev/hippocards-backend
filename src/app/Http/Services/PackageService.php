@@ -24,23 +24,23 @@ class PackageService
     {
     }
 
-    public function getPackages(array $filter)
+    protected function getFilterModel(array $filters)
     {
-        $filterModel = [
+        return [
+            "name_like" => [ "whereLike", "name" ],
+            "language_id" => [ "where", "language_id" ],
             "id_in" => [ "whereIn", "id" ]
         ];
-
-        return filter_query_with_model(Baseklass::query(), $filterModel, $filter)->get();
     }
 
-    public function searchPackages(array $filter)
+    public function getPackages(array $filters)
     {
-        $filterModel = [
-            "name_like" => [ "whereLike", "name" ],
-            "language_id" => [ "where", "language_id" ]
-        ];
+        return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->get();
+    }
 
-        return filter_query_with_model(Baseklass::query(), $filterModel, $filter)->paginate($_GET["limit"] ?? null)->withQueryString();
+    public function getPackagesWithPage(array $filters)
+    {
+        return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->paginate($_GET["limit"] ?? null)->withQueryString();
     }
 
     public function getSortById(int $id, $with = [ "word" ])
