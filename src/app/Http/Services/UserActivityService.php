@@ -68,9 +68,24 @@ class UserActivityService
                 "action" => $action,
             ],
             [
-                "type" => 1,
+                "type" => $type,
                 "updated_at" => date("Y-m-d H:i:s")
             ]
         );
+    }
+
+    public function createObjectActivity(User $user, mixed $object, EUserActivityType $type, EUserActivityAction $action)
+    {
+        return $user->activities()->create([
+            "object_id" => $object->id,
+            "object_type" => get_class($object),
+            "action" => $action,
+            "type" => $type
+        ]);
+    }
+
+    public function createPackageActivity(User $user, mixed $object, EUserActivityAction $action)
+    {
+        return $this->createObjectActivity($user, $object, EUserActivityType::PACKAGE, $action);
     }
 }

@@ -4,12 +4,14 @@ namespace App\Http\Services;
 
 use App\Enums\EPackageType;
 use App\Enums\EStatus;
+use App\Enums\EUserActivityAction;
 use App\Enums\EUserActivityType;
 use App\Models\Package\Baseklass;
 use App\Models\Package\Sort;
 use App\Models\Package\Word\Word;
 use App\Models\User\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class PackageService
 {
@@ -39,20 +41,31 @@ class PackageService
 
     public function createPackage(User $user, array $data)
     {
-        return Baseklass::create(array_merge(
-            $data,
-            [
-                "created_by" => $user->id,
-                "status" => EStatus::PENDING,
-                "word_count" => 0,
-                "article_id" => 0
-            ]
-        ));
+        return DB::transaction(function () use ($user, $data) {
+            $package = Baseklass::create(array_merge(
+                $data,
+                [
+                    "created_by" => $user->id,
+                    "status" => EStatus::PENDING,
+                    "word_count" => 0,
+                    "article_id" => 0
+                ]
+            ));
+
+            $this->userActivityService->createPackageActivity($user, $package, EUserActivityAction::CREATE);
+
+            return $package;
+        });
     }
 
-    public function updatePackage(array $data)
+    public function updatePackage(User $user, Baseklass $package, array $data)
     {
-        return Baseklass::create($data);
+        return DB::transaction(function () use ($user, $package, $data) {
+            $this->userActivityService->createPackageActivity($user, $package, EUserActivityAction::UPDATE);
+            return $package->update(array_merge(
+                $data
+            ));
+        });
     }
 
     public function getSortById(int $id, $with = [ "word" ])
