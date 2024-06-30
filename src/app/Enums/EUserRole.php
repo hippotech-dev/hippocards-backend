@@ -12,4 +12,6 @@ enum EUserRole: int
     case SUPERADMIN = 1;
     case MANAGER = 4;
     case USER = 5;
+    case CONTENT_CREATOR = 6;
+    case CONTENT_MANAGER = 7;
 }

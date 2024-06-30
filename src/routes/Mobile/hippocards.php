@@ -6,7 +6,8 @@ use App\Http\Controllers\Mobile\Hippocards\WordController;
 use Illuminate\Support\Facades\Route;
 
 Route::apiResources([
-    "word" => WordController::class
+    "word" => WordController::class,
+    "package" => PackageController::class
 ]);
 
 Route::prefix("word")->group(function () {

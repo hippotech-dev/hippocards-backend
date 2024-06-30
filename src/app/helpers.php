@@ -338,6 +338,30 @@ if (!function_exists("generate_filter_schema")) {
 if (!function_exists("page_size")) {
     function page_size()
     {
-        return min($_GET["limit"] ?? Constant::DEFAULT_PAGINATION, 100);
+        return min($_GET["limit"] ?? Constant::DEFAULT_PAGINATION, 25);
+    }
+}
+
+if (!function_exists("get_sort_info")) {
+    function get_sort_info($default  = [ "field" => "id", "value" => "desc" ])
+    {
+        return [ "field" => $_GET["_sort"] ?? $default["field"], "value" => $_GET["_order"] ?? $default["value"] ];
+    }
+}
+
+if (!function_exists("get_role_middleware")) {
+    function get_role_middleware(mixed $scopes)
+    {
+        $type = gettype($scopes);
+
+        if ($type === "array") {
+            return "role:" . implode(",", array_map(fn ($scope) => $scope->value, $scopes));
+        } elseif ($type === "string") {
+            return "role:" . $scopes;
+        } elseif ($type === "object") {
+            return "role:" . $scopes->value;
+        }
+
+        return "role";
     }
 }

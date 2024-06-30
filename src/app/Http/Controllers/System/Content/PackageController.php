@@ -2,17 +2,25 @@
 
 namespace App\Http\Controllers\System\Content;
 
+use App\Enums\EPackageType;
+use App\Enums\EPermissionScope;
 use App\Exceptions\AppException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\System\Academy\PackageResource;
 use App\Http\Services\PackageService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class PackageController extends Controller
 {
     public function __construct(private PackageService $service)
     {
         $this->middleware("jwt.auth");
+        $this->middleware(get_role_middleware(EPermissionScope::READ_PACKAGE))->only("index");
+        $this->middleware(get_role_middleware(EPermissionScope::CREATE_PACKAGE))->only("store");
+        $this->middleware(get_role_middleware(EPermissionScope::UPDATE_PACKAGE))->only("update");
+        $this->middleware(get_role_middleware(EPermissionScope::DELETE_PACKAGE))->only("delete");
     }
 
     /**
@@ -22,11 +30,7 @@ class PackageController extends Controller
     {
         $filters = $request->only("name_like", "language_id", "status");
 
-        if (count($filters) === 0) {
-            return response()->success([]);
-        }
-
-        $packages = $this->service->getPackages($filters);
+        $packages = $this->service->getPackagesWithPage($filters);
 
         return PackageResource::collection($packages);
     }
@@ -42,7 +46,7 @@ class PackageController extends Controller
             return response()->success([]);
         }
 
-        $packages = $this->service->getPackages($filters);
+        $packages = $this->service->getPackagesWithPage($filters);
 
         return PackageResource::collection($packages);
     }
@@ -52,7 +56,37 @@ class PackageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = Validator::make(
+            $request->only(
+                "name",
+                "description",
+                "icon_id",
+                "for_kids",
+                "type",
+                "foreign_name",
+                "type",
+                "language_id"
+            ),
+            [
+                "name" => "required|string|max:128",
+                "language_id" => "required|integer",
+                "description" => "required|string|max:256",
+                "for_kids" => "required|boolean",
+                "type" => [
+                    "required",
+                    Rule::in(EPackageType::ARTICLE->value, EPackageType::DEFAULT->value, EPackageType::BOOK->value)
+                ],
+                "foreign_name" => "sometimes|string|max:128",
+                "icon_id" => "sometimes|integer",
+            ]
+        )
+            ->validate();
+
+        $requestUser = auth()->user();
+
+        $package = $this->service->createPackage($requestUser, $validatedData);
+
+        return new PackageResource($package);
     }
 
     /**

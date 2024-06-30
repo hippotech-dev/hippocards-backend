@@ -2,21 +2,14 @@
 
 namespace App\Http\Services;
 
-use App\Enums\EPartOfSpeech;
-use App\Enums\ESentenceType;
+use App\Enums\EPackageType;
+use App\Enums\EStatus;
 use App\Enums\EUserActivityType;
-use App\Enums\EWordImageType;
-use App\Models\Package\WordDetail;
-use App\Models\Package\WordImage;
 use App\Models\Package\Baseklass;
 use App\Models\Package\Sort;
 use App\Models\Package\Word\Word;
-use App\Models\Package\Word\WordExample;
 use App\Models\User\User;
-use App\Models\Utility\Sentence;
-use App\Models\Utility\UserActivity;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class PackageService
 {
@@ -38,9 +31,28 @@ class PackageService
         return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->get();
     }
 
-    public function getPackagesWithPage(array $filters)
+    public function getPackagesWithPage(array $filters, $orderBy = [ "field" => "id", "value" => "desc" ])
     {
-        return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->paginate($_GET["limit"] ?? null)->withQueryString();
+        $orderBy = get_sort_info($orderBy);
+        return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->paginate($_GET["limit"] ?? null)->withQueryString();
+    }
+
+    public function createPackage(User $user, array $data)
+    {
+        return Baseklass::create(array_merge(
+            $data,
+            [
+                "created_by" => $user->id,
+                "status" => EStatus::PENDING,
+                "word_count" => 0,
+                "article_id" => 0
+            ]
+        ));
+    }
+
+    public function updatePackage(array $data)
+    {
+        return Baseklass::create($data);
     }
 
     public function getSortById(int $id, $with = [ "word" ])
@@ -133,7 +145,7 @@ class PackageService
             "id_in" => [ "whereIn",  ]
         ];
 
-        return filter_query_with_model(Sort::with("word.mainDetail", "package")->active(), $filterModel, $filters)->orderBy("id", "desc")->simplePaginate(page_size());
+        return filter_query_with_model(Sort::with("word.mainDetail", "package")->byType(EPackageType::DEFAULT)->active(), $filterModel, $filters)->orderBy("id", "desc")->simplePaginate(page_size());
     }
 
     public function getMemorizedWords(User $user)

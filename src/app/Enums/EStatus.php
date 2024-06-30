@@ -12,4 +12,5 @@ enum EStatus: int
     case SUCCESS = 1;
     case FAILURE = 2;
     case PUBLISHED = 3;
+    case PACKAGE_PUBLISHED = 4;
 }

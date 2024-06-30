@@ -5,6 +5,7 @@ namespace App\Models\Package;
 use App\Enums\EPackageType;
 use App\Enums\EStatus;
 use App\Models\Package\Sort;
+use App\Models\User\User;
 use App\Models\Utility\Language;
 use App\Models\Utility\MainCategory;
 use App\Models\Utility\SystemIcon;
@@ -19,16 +20,19 @@ class Baseklass extends Model
     public $timestamps = false;
 
     protected $fillable = [
-      "name",
-      "foreign_name",
-      "description",
-      "main_category_id",
-      "icon_id",
-      "language_id",
-      "for_kids",
-      "sort",
-      "type",
-      "status"
+        "name",
+        "foreign_name",
+        "description",
+        "main_category_id",
+        "icon_id",
+        "language_id",
+        "for_kids",
+        "word_count",
+        "sort",
+        "article_id",
+        "type",
+        "status",
+        "created_by"
     ];
 
     protected $casts = [
@@ -60,14 +64,22 @@ class Baseklass extends Model
         return $this->belongsTo(SystemIcon::class);
     }
 
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, "created_by");
+    }
+
     /**
      * Scopes
      */
 
+    public function scopeByType($query, EPackageType $type)
+    {
+        return $query->where("type", $type);
+    }
+
     public function scopeActive($query)
     {
-        return $query
-            ->where("article_id", false)
-            ->where("prepare_see", false);
+        return $query->where("status", EStatus::PACKAGE_PUBLISHED);
     }
 }
