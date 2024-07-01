@@ -24,8 +24,15 @@ class PackageService
         return [
             "name_like" => [ "whereLike", "name" ],
             "language_id" => [ "where", "language_id" ],
+            "for_kids" => [ "where", "for_kids" ],
+            "created_by" => [ "where", "created_by" ],
             "id_in" => [ "whereIn", "id" ]
         ];
+    }
+
+    protected function createSystemPackageActivity(User $user, mixed $object, EUserActivityAction $action)
+    {
+        return $this->userActivityService->createObjectActivity($user, $object, EUserActivityType::SYSTEM_PACKAGE, $action);
     }
 
     public function getPackages(array $filters)
@@ -37,6 +44,16 @@ class PackageService
     {
         $orderBy = get_sort_info($orderBy);
         return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->paginate($_GET["limit"] ?? null)->withQueryString();
+    }
+
+    public function getPackageById(int $id, array $with = [])
+    {
+        return Baseklass::with($with)->find($id);
+    }
+
+    public function getPackage(array $filters, array $with = [])
+    {
+        return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->with($with)->first();
     }
 
     public function createPackage(User $user, array $data)
@@ -52,7 +69,7 @@ class PackageService
                 ]
             ));
 
-            $this->userActivityService->createPackageActivity($user, $package, EUserActivityAction::CREATE);
+            $this->createSystemPackageActivity($user, $package, EUserActivityAction::CREATE);
 
             return $package;
         });
@@ -61,10 +78,18 @@ class PackageService
     public function updatePackage(User $user, Baseklass $package, array $data)
     {
         return DB::transaction(function () use ($user, $package, $data) {
-            $this->userActivityService->createPackageActivity($user, $package, EUserActivityAction::UPDATE);
+            $this->createSystemPackageActivity($user, $package, EUserActivityAction::UPDATE);
             return $package->update(array_merge(
                 $data
             ));
+        });
+    }
+
+    public function deletePackage(User $user, Baseklass $package)
+    {
+        return DB::transaction(function () use ($user, $package) {
+            $this->createSystemPackageActivity($user, $package, EUserActivityAction::DELETE);
+            return $package->delete();
         });
     }
 
@@ -163,7 +188,7 @@ class PackageService
 
     public function getMemorizedWords(User $user)
     {
-        $activitiesWithSorts = $this->userActivityService->getUserActivitiesByTypeWithPage($user, EUserActivityType::WORD, [ "object.word.mainDetail", "object.package" ]);
+        $activitiesWithSorts = $this->userActivityService->getUserActivitiesByTypeWithPage($user, EUserActivityType::USER_WORD, [ "object.word.mainDetail", "object.package" ]);
 
         $activitiesWithSortsCollection = $activitiesWithSorts->getCollection();
 

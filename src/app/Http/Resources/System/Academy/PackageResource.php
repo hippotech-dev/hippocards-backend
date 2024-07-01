@@ -3,6 +3,7 @@
 namespace App\Http\Resources\System\Academy;
 
 use App\Enums\EPackageType;
+use App\Http\Resources\System\Content\UserResource;
 use App\Http\Resources\Utility\LanguageResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -22,6 +23,7 @@ class PackageResource extends JsonResource
             "name" => $this->name,
             "foreign_name" => $this->foreign_name,
             "description" => $this->description,
+            "for_kids" => $this->for_kids,
             "word_count" => is_null($this->word_sorts_count) ? 0 : $this->word_sorts_count,
             "language_id" => $this->language_id,
             "is_free" => boolval($this->is_free),
@@ -34,7 +36,10 @@ class PackageResource extends JsonResource
                 }
                 return null;
             }),
+            "status" => $this->status,
+            "type" => $this->type,
             "language" => new LanguageResource($this->whenLoaded("language")),
+            "created_by" => new UserResource($this->whenLoaded("createdBy")),
         ];
     }
 }

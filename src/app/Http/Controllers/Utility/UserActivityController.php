@@ -33,8 +33,9 @@ class UserActivityController extends Controller
                 "type" => [
                     "required",
                     Rule::in(
-                        EUserActivityType::COURSE->value,
-                        EUserActivityType::WORD->value,
+                        EUserActivityType::USER_COURSE->value,
+                        EUserActivityType::USER_WORD->value,
+                        EUserActivityType::USER_PACKAGE->value,
                     )
                 ],
                 "action" => [

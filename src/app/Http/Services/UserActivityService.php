@@ -7,6 +7,7 @@ use App\Enums\EUserActivityType;
 use App\Enums\EUserLoginType;
 use App\Enums\EUserRole;
 use App\Exceptions\AppException;
+use App\Models\Package\Baseklass;
 use App\Models\Package\Sort;
 use App\Models\User\User;
 
@@ -46,8 +47,10 @@ class UserActivityService
     public function getActivityObjectByType(EUserActivityType $type, int $objectId)
     {
         switch ($type) {
-            case EUserActivityType::WORD:
+            case EUserActivityType::USER_WORD:
                 return Sort::find($objectId);
+            case EUserActivityType::USER_PACKAGE:
+                return Baseklass::find($objectId);
             default:
                 throw new AppException("Invalid activity type!");
         }
@@ -82,10 +85,5 @@ class UserActivityService
             "action" => $action,
             "type" => $type
         ]);
-    }
-
-    public function createPackageActivity(User $user, mixed $object, EUserActivityAction $action)
-    {
-        return $this->createObjectActivity($user, $object, EUserActivityType::PACKAGE, $action);
     }
 }
