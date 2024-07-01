@@ -4,9 +4,8 @@ namespace App\Http\Controllers\System\Content;
 
 use App\Enums\EPackageType;
 use App\Enums\EPermissionScope;
-use App\Exceptions\AppException;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\System\Academy\PackageResource;
+use App\Http\Resources\System\Content\PackageResource;
 use App\Http\Services\PackageService;
 use App\Models\Package\Baseklass;
 use Illuminate\Http\Request;
@@ -19,7 +18,7 @@ class PackageController extends Controller
     public function __construct(private PackageService $service)
     {
         $this->middleware("jwt.auth");
-        $this->middleware(get_role_middleware(EPermissionScope::READ_PACKAGE))->only("index");
+        $this->middleware(get_role_middleware(EPermissionScope::READ_PACKAGE))->only("index", "show");
         $this->middleware(get_role_middleware(EPermissionScope::CREATE_PACKAGE))->only("store");
         $this->middleware(get_role_middleware(EPermissionScope::UPDATE_PACKAGE))->only("update");
         $this->middleware(get_role_middleware(EPermissionScope::DELETE_PACKAGE))->only("delete");

@@ -17,7 +17,6 @@ class Baseklass extends Model
     use SoftDeletes;
 
     protected $table = 'baseklass';
-    public $timestamps = false;
 
     protected $fillable = [
         "name",
