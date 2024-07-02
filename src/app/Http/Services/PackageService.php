@@ -24,9 +24,21 @@ class PackageService
         return [
             "name_like" => [ "whereLike", "name" ],
             "language_id" => [ "where", "language_id" ],
+            "language" => [ "where", "language_id" ],
+            "type" => [ "where", "type" ],
+            "status" => [ "where", "status" ],
             "for_kids" => [ "where", "for_kids" ],
             "created_by" => [ "where", "created_by" ],
-            "id_in" => [ "whereIn", "id" ]
+            "id_in" => [ "whereIn", "id" ],
+            "filter" => [
+                [ "where" ],
+                [
+                    [
+                        "name" => null,
+                        "value" => fn ($query) => $query->whereLike("name", $filters["filter"])->orWhereLike("foreign_name", $filters["filter"])
+                    ]
+                ]
+            ]
         ];
     }
 

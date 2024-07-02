@@ -29,7 +29,7 @@ class PackageController extends Controller
      */
     public function index(Request $request)
     {
-        $filters = $request->only("name_like", "language_id", "status");
+        $filters = $request->only("filter", "name_like", "language", "status", "type");
 
         $packages = $this->service->getPackagesWithPage($filters);
 
