@@ -31,7 +31,9 @@ class Baseklass extends Model
         "article_id",
         "type",
         "status",
-        "created_by"
+        "created_by",
+        "thumbnail_path",
+        "v3_thumbnail_asset_id"
     ];
 
     protected $casts = [
@@ -43,9 +45,9 @@ class Baseklass extends Model
      * Relations
      */
 
-    public function mainCategory()
+    public function category()
     {
-        return $this->belongsTo(MainCategory::class);
+        return $this->belongsTo(MainCategory::class, "main_category_id");
     }
 
     public function language()
@@ -60,7 +62,7 @@ class Baseklass extends Model
 
     public function systemIcon()
     {
-        return $this->belongsTo(SystemIcon::class);
+        return $this->belongsTo(SystemIcon::class, "icon_id");
     }
 
     public function createdBy()

@@ -26,15 +26,7 @@ class PackageResource extends JsonResource
             "is_free" => boolval($this->is_free),
             "preview" => $this->prepare_see,
             "is_book" => boolval($this->is_book),
-            "icon_path" => $this->whenLoaded("systemIcon", function () {
-                if ($this->is_book) {
-                    return Config::get("constants.CDN_URL") . "/" . $this->new_image;
-                }
-                if (!is_null($this->systemIcon)) {
-                    return Config::get("constants.CDN_URL") . "/" . $this->systemIcon->path;
-                }
-                return null;
-            }),
+            "thumbnail_path" => append_s3_path($this->thumbnail_path),
             "language" => new LanguageResource($this->whenLoaded("language")),
         ];
     }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\System\Content\SubscriptionController;
 use App\Http\Controllers\System\Content\UserController;
 use App\Http\Controllers\System\Content\PackageController;
+use App\Http\Controllers\System\Content\Utility\CategoryController;
 use App\Http\Controllers\System\Content\WordController;
 use App\Http\Controllers\System\Utility\LanguageController;
 use App\Http\Controllers\System\Utility\SubscriptionPlanController;
@@ -23,7 +24,8 @@ Route::apiResources([
     "package" => PackageController::class,
     "account/user" => UserController::class,
     "utility/subscription-plan" => SubscriptionPlanController::class,
-    "utility/language" => LanguageController::class
+    "utility/language" => LanguageController::class,
+    "utility/category" => CategoryController::class
 ]);
 
 Route::prefix("account")->group(function () {

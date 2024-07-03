@@ -31,7 +31,7 @@ class PackageController extends Controller
     {
         $filters = $request->only("filter", "name_like", "language", "status", "type");
 
-        $packages = $this->service->getPackagesWithPage($filters);
+        $packages = $this->service->getPackagesWithPage($filters, [ "category" ]);
 
         return PackageResource::collection($packages);
     }
@@ -61,7 +61,8 @@ class PackageController extends Controller
             $request->only(
                 "name",
                 "description",
-                "icon_id",
+                "v3_thumbnail_asset_id",
+                "main_category_id",
                 "for_kids",
                 "type",
                 "foreign_name",
@@ -73,12 +74,13 @@ class PackageController extends Controller
                 "language_id" => "required|integer",
                 "description" => "required|string|max:256",
                 "for_kids" => "required|boolean",
+                "main_category_id" => "required|integer",
                 "type" => [
                     "required",
                     Rule::in(EPackageType::ARTICLE->value, EPackageType::DEFAULT->value, EPackageType::BOOK->value)
                 ],
                 "foreign_name" => "sometimes|string|max:128",
-                "icon_id" => "sometimes|integer",
+                "v3_thumbnail_asset_id" => "sometimes|integer",
             ]
         )
             ->validate();

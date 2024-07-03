@@ -52,10 +52,10 @@ class PackageService
         return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->get();
     }
 
-    public function getPackagesWithPage(array $filters, $orderBy = [ "field" => "id", "value" => "desc" ])
+    public function getPackagesWithPage(array $filters, array $with = [], $orderBy = [ "field" => "id", "value" => "desc" ])
     {
         $orderBy = get_sort_info($orderBy);
-        return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->paginate($_GET["limit"] ?? null)->withQueryString();
+        return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->with($with)->paginate($_GET["limit"] ?? null)->withQueryString();
     }
 
     public function getPackageById(int $id, array $with = [])
@@ -71,6 +71,10 @@ class PackageService
     public function createPackage(User $user, array $data)
     {
         return DB::transaction(function () use ($user, $data) {
+            if (array_key_exists("v3_thumbnail_asset_id", $data)) {
+                $data["thumbnail_path"] = $this->assetService->getAssetPath($data["v3_thumbnail_asset_id"]);
+            }
+
             $package = Baseklass::create(array_merge(
                 $data,
                 [
@@ -207,5 +211,28 @@ class PackageService
         $activitiesWithSorts->setCollection($activitiesWithSortsCollection->pluck("object"));
 
         return $activitiesWithSorts;
+    }
+
+    public function convertPackageIconsToAssets()
+    {
+        DB::transaction(function () {
+            $packages = Baseklass::with("systemIcon")->whereNotNull("icon_id")->get();
+
+            foreach ($packages as $package) {
+
+                $icon = $package->systemIcon;
+
+                if (is_null($icon)) {
+                    continue;
+                }
+
+                $asset = $this->assetService->createAssetByUrl($icon->path);
+
+                $package->update([
+                    "thumbnail_path" => $asset->path,
+                    "v3_thumbnail_asset_id" => $asset->id
+                ]);
+            }
+        });
     }
 }
