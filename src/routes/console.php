@@ -18,7 +18,3 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
-
-Artisan::command('custom:convert-icons-to-assets', function (PackageService $service) {
-    $service->convertPackageIconsToAssets();
-})->purpose('Display an inspiring quote');

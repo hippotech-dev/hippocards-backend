@@ -212,27 +212,4 @@ class PackageService
 
         return $activitiesWithSorts;
     }
-
-    public function convertPackageIconsToAssets()
-    {
-        DB::transaction(function () {
-            $packages = Baseklass::with("systemIcon")->whereNotNull("icon_id")->get();
-
-            foreach ($packages as $package) {
-
-                $icon = $package->systemIcon;
-
-                if (is_null($icon)) {
-                    continue;
-                }
-
-                $asset = $this->assetService->createAssetByUrl($icon->path);
-
-                $package->update([
-                    "thumbnail_path" => $asset->path,
-                    "v3_thumbnail_asset_id" => $asset->id
-                ]);
-            }
-        });
-    }
 }
