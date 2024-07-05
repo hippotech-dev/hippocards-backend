@@ -3,20 +3,25 @@
 namespace App\Http\Controllers\System\Content;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\System\Academy\PackageResource;
 use App\Http\Resources\System\Academy\WordSortResource;
-use App\Http\Services\WordService;
+use App\Http\Services\PackageService;
 use Illuminate\Http\Request;
 
 class WordController extends Controller
 {
-    public function __construct(private WordService $service) {}
+    public function __construct(private PackageService $service)
+    {
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $filters = $request->only("search", "package", "language", "word");
+
+        $words = $this->service->getSortsWithSimplePage($filters, ["word"]);
+
+        return WordSortResource::collection($words);
     }
 
     /**
@@ -24,15 +29,15 @@ class WordController extends Controller
      */
     public function search(Request $request)
     {
-        $filters = $request->only("package", "language", "word");
+        $filters = $request->only("search", "package", "language", "word");
 
         if (count($filters) === 0) {
             return response()->success([]);
         }
 
-        $packages = $this->service->searchSorts($filters, ["word"]);
+        $words = $this->service->getSortsWithSimplePage($filters, ["word"]);
 
-        return WordSortResource::collection($packages);
+        return WordSortResource::collection($words);
     }
 
     /**

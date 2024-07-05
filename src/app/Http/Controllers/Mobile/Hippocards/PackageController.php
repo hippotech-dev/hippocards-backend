@@ -36,7 +36,7 @@ class PackageController extends Controller
         $resource = Cache::remember(
             cache_key("search-words", array_merge($filters, [ $request->get("page", 1) ])),
             60 * 5,
-            fn () => WordSortResource::collection($this->service->searchWords($filters))
+            fn () => WordSortResource::collection($this->service->getSortsWithSimplePage($filters))
         );
 
         return $resource;

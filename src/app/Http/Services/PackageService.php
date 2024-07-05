@@ -183,7 +183,7 @@ class PackageService
         return Sort::with("word")->whereIn("baseklass_id", $ids)->get();
     }
 
-    public function searchWords(array $filters)
+    public function getSortsWithSimplePage(array $filters)
     {
         $filterModel = [
             "search" => [
@@ -196,6 +196,7 @@ class PackageService
                 ],
             ],
             "language" => [ "where", "language_id" ],
+            "package" => [ "where", "baseklass_id" ],
             "id_in" => [ "whereIn",  ]
         ];
 

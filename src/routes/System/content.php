@@ -3,8 +3,8 @@
 use App\Http\Controllers\System\Content\SubscriptionController;
 use App\Http\Controllers\System\Content\UserController;
 use App\Http\Controllers\System\Content\PackageController;
-use App\Http\Controllers\System\Content\Utility\CategoryController;
 use App\Http\Controllers\System\Content\WordController;
+use App\Http\Controllers\System\Utility\CategoryController;
 use App\Http\Controllers\System\Utility\LanguageController;
 use App\Http\Controllers\System\Utility\SubscriptionPlanController;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::apiResources([
     "package" => PackageController::class,
+    "word" => WordController::class,
     "account/user" => UserController::class,
     "utility/subscription-plan" => SubscriptionPlanController::class,
     "utility/language" => LanguageController::class,

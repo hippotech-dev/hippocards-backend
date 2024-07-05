@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\System\Content\Utility;
+namespace App\Http\Controllers\System\Utility;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Utility\CategoryResource;

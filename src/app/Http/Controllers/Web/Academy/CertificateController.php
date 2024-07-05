@@ -9,9 +9,6 @@ use App\Http\Services\CourseService;
 use App\Jobs\CourseCertificateJob;
 use App\Models\Course\Course;
 use App\Models\User\User;
-use Illuminate\Http\Request;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Typography\FontFactory;
 
 class CertificateController extends Controller
 {
