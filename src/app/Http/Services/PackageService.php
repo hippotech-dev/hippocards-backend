@@ -49,23 +49,23 @@ class PackageService
 
     public function getPackages(array $filters)
     {
-        return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->get();
+        return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->withCount("wordSorts")->get();
     }
 
     public function getPackagesWithPage(array $filters, array $with = [], $orderBy = [ "field" => "id", "value" => "desc" ])
     {
         $orderBy = get_sort_info($orderBy);
-        return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->with($with)->paginate($_GET["limit"] ?? null)->withQueryString();
+        return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->withCount("wordSorts")->orderBy($orderBy["field"], $orderBy["value"])->with($with)->paginate($_GET["limit"] ?? null)->withQueryString();
     }
 
     public function getPackageById(int $id, array $with = [])
     {
-        return Baseklass::with($with)->find($id);
+        return Baseklass::with($with)->withCount("wordSorts")->find($id);
     }
 
     public function getPackage(array $filters, array $with = [])
     {
-        return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->with($with)->first();
+        return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->with($with)->withCount("wordSorts")->first();
     }
 
     public function createPackage(User $user, array $data)
@@ -107,110 +107,5 @@ class PackageService
             $this->createSystemPackageActivity($user, $package, EUserActivityAction::DELETE);
             return $package->delete();
         });
-    }
-
-    public function getSortById(int $id, $with = [ "word" ])
-    {
-        return Sort::with($with)->find($id);
-    }
-
-    public function getSortByIdLoaded(int $id)
-    {
-        $sort = $this->getSortById($id);
-
-        if (is_null($sort)) {
-            return null;
-        }
-
-        $word = Word::with([
-            "mainDetail",
-            "images",
-            "synonyms",
-            "definitionSentences",
-            "imaginationSentences"
-        ])
-            ->find($sort->word_id);
-
-        $sort->setRelation("word", $word);
-
-        return $sort;
-    }
-
-    public function getSortByIdInclude(int $id, array $include = [])
-    {
-        $sort = $this->getSortById($id);
-
-        if (is_null($sort)) {
-            return null;
-        }
-
-        $with = [];
-
-        if (in_array("images", $include)) {
-            array_push($with, "images");
-        }
-
-        if (in_array("mainDetail", $include)) {
-            array_push($with, "mainDetail");
-        }
-
-        if (in_array("synonyms", $include)) {
-            array_push($with, "synonyms");
-        }
-
-        if (in_array("imaginations", $include)) {
-            array_push($with, "imaginationSentences");
-        }
-
-        if (in_array("examples", $include)) {
-            array_push($with, "definitionSentences");
-        }
-
-        $word = Word::with($with)->find($sort->word_id);
-
-        $sort->setRelation("word", $word);
-
-        return $sort;
-    }
-
-    public function getPackagesSorts(Collection|array $packages)
-    {
-        if ($packages instanceof Collection) {
-            $ids = $packages->pluck("id")->toArray();
-        } else {
-            $ids = $packages;
-        }
-        return Sort::with("word")->whereIn("baseklass_id", $ids)->get();
-    }
-
-    public function getSortsWithSimplePage(array $filters)
-    {
-        $filterModel = [
-            "search" => [
-                [ "whereHas" ],
-                [
-                    [
-                        "name" => "word",
-                        "value" => fn ($query) => $query->whereLike("word", $filters["search"])
-                    ]
-                ],
-            ],
-            "language" => [ "where", "language_id" ],
-            "package" => [ "where", "baseklass_id" ],
-            "id_in" => [ "whereIn",  ]
-        ];
-
-        return filter_query_with_model(Sort::with("word.mainDetail", "package")->byType(EPackageType::DEFAULT)->active(), $filterModel, $filters)->orderBy("id", "desc")->simplePaginate(page_size());
-    }
-
-    public function getMemorizedWords(User $user)
-    {
-        $activitiesWithSorts = $this->userActivityService->getUserActivitiesByTypeWithPage($user, EUserActivityType::USER_WORD, [ "object.word.mainDetail", "object.package" ]);
-
-        $activitiesWithSortsCollection = $activitiesWithSorts->getCollection();
-
-        $activitiesWithSorts->setCollection($activitiesWithSortsCollection->pluck("object"));
-
-        return $activitiesWithSorts;
     }
 }

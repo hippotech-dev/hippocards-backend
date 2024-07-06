@@ -36,7 +36,7 @@ use Illuminate\Support\Facades\DB;
 
 class CourseService
 {
-    public function __construct(private AssetService $assetService, private PackageService $packageService)
+    public function __construct(private AssetService $assetService, private PackageService $packageService, private WordSortService $wordSortService)
     {
     }
 
@@ -274,7 +274,7 @@ class CourseService
 
         $block->setRelation(
             "wordSort",
-            $this->packageService->getSortByIdLoaded($block->sort_id)
+            $this->wordSortService->getSortByIdLoaded($block->sort_id)
         );
 
         return $block;
@@ -284,7 +284,7 @@ class CourseService
     {
         $count = $group->blocks()->count();
         if (array_key_exists("sort_id", $data)) {
-            $sort = $this->packageService->getSortById($data["sort_id"]);
+            $sort = $this->wordSortService->getSortById($data["sort_id"]);
             if (is_null($sort) || is_null($sort->word)) {
                 throw new AppException("Invalid sort!");
             }
@@ -305,7 +305,7 @@ class CourseService
     public function updateGroupBlock(CourseGroupBlock $block, array $data)
     {
         if (array_key_exists("sort_id", $data)) {
-            $sort = $this->packageService->getSortById($data["sort_id"]);
+            $sort = $this->wordSortService->getSortById($data["sort_id"]);
             if (is_null($sort) || is_null($sort->word)) {
                 throw new AppException("Invalid sort!");
             }
@@ -511,7 +511,7 @@ class CourseService
 
     public function importWordImagesToBlock(CourseGroupBlock $block)
     {
-        $blockSort = $this->packageService->getSortByIdInclude($block->sort_id, [
+        $blockSort = $this->wordSortService->getSortByIdInclude($block->sort_id, [
             "images"
         ]);
 
@@ -538,7 +538,7 @@ class CourseService
 
     public function importWordSentencesToBlock(CourseGroupBlock $block)
     {
-        $blockSort = $this->packageService->getSortByIdInclude($block->sort_id, [
+        $blockSort = $this->wordSortService->getSortByIdInclude($block->sort_id, [
             "examples"
         ]);
 
@@ -578,7 +578,7 @@ class CourseService
             throw new AppException("Packages are not added!");
         }
 
-        $packageSorts = $this->packageService->getPackagesSorts($packages);
+        $packageSorts = $this->wordSortService->getPackagesSorts($packages);
 
         $courseGroups = $this->createManyCourseGroups($course);
 

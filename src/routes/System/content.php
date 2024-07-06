@@ -3,7 +3,7 @@
 use App\Http\Controllers\System\Content\SubscriptionController;
 use App\Http\Controllers\System\Content\UserController;
 use App\Http\Controllers\System\Content\PackageController;
-use App\Http\Controllers\System\Content\WordController;
+use App\Http\Controllers\System\Content\WordSortController;
 use App\Http\Controllers\System\Utility\CategoryController;
 use App\Http\Controllers\System\Utility\LanguageController;
 use App\Http\Controllers\System\Utility\SubscriptionPlanController;
@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::apiResources([
     "package" => PackageController::class,
-    "word" => WordController::class,
+    "word" => WordSortController::class,
     "account/user" => UserController::class,
     "utility/subscription-plan" => SubscriptionPlanController::class,
     "utility/language" => LanguageController::class,
@@ -46,6 +46,6 @@ Route::prefix("package")->group(function () {
 
 Route::prefix("word")->group(function () {
     Route::prefix("action")->group(function () {
-        Route::get("search", [ WordController::class, "search" ]);
+        Route::get("search", [ WordSortController::class, "index" ]);
     });
 });
