@@ -47,9 +47,9 @@ class PackageService
         return $this->userActivityService->createObjectActivity($user, $object, EUserActivityType::SYSTEM_PACKAGE, $action);
     }
 
-    public function getPackages(array $filters)
+    public function getPackages(array $filters, $orderBy = [ "field" => "id", "value" => "desc" ])
     {
-        return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->withCount("wordSorts")->get();
+        return filter_query_with_model(Baseklass::query(), $this->getFilterModel($filters), $filters)->withCount("wordSorts")->orderBy($orderBy["field"], $orderBy["value"])->get();
     }
 
     public function getPackagesWithPage(array $filters, array $with = [], $orderBy = [ "field" => "id", "value" => "desc" ])
@@ -94,6 +94,10 @@ class PackageService
     public function updatePackage(User $user, Baseklass $package, array $data)
     {
         return DB::transaction(function () use ($user, $package, $data) {
+            if (array_key_exists("v3_thumbnail_asset_id", $data)) {
+                $data["thumbnail_path"] = $this->assetService->getAssetPath($data["v3_thumbnail_asset_id"]);
+            }
+
             $this->createSystemPackageActivity($user, $package, EUserActivityAction::UPDATE);
             return $package->update(array_merge(
                 $data

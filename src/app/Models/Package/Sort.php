@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Sort extends Model
 {
     protected $table = 'sort';
-    public $timestamps = false;
 
     protected $fillable = [
         'word_id',

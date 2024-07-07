@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Mobile\Hippocards;
+namespace App\Http\Resources\System\Content;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -21,9 +21,7 @@ class WordSortResource extends JsonResource
             "language_id" => $this->language_id,
             "sort_word" => $this->sort_word,
             "word" => new WordResource($this->whenLoaded("word")),
-            "package" => new PackageResource($this->whenLoaded("package")),
-            "created_at" => $this->created_at,
-            "updated_at" => $this->updated_at
+            "package" => new PackageResource($this->whenLoaded("package"))
         ];
     }
 }

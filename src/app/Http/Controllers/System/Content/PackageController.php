@@ -4,6 +4,7 @@ namespace App\Http\Controllers\System\Content;
 
 use App\Enums\EPackageType;
 use App\Enums\EPermissionScope;
+use App\Enums\EStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\System\Content\PackageResource;
 use App\Http\Services\PackageService;
@@ -115,18 +116,31 @@ class PackageController extends Controller
             $request->only(
                 "name",
                 "description",
-                "icon_id",
+                "v3_thumbnail_asset_id",
+                "main_category_id",
                 "for_kids",
+                "type",
                 "foreign_name",
-                "language_id"
+                "type",
+                "language_id",
+                "status",
             ),
             [
-                "name" => "required|string|max:128",
-                "language_id" => "required|integer",
-                "description" => "required|string|max:256",
-                "for_kids" => "required|boolean",
+                "name" => "sometimes|string|max:128",
+                "language_id" => "sometimes|integer",
+                "description" => "sometimes|string|max:256",
+                "for_kids" => "sometimes|boolean",
+                "main_category_id" => "sometimes|integer",
+                "type" => [
+                    "sometimes",
+                    Rule::in(EPackageType::ARTICLE->value, EPackageType::DEFAULT->value, EPackageType::BOOK->value)
+                ],
                 "foreign_name" => "sometimes|string|max:128",
-                "icon_id" => "sometimes|integer",
+                "v3_thumbnail_asset_id" => "sometimes|integer",
+                "status" => [
+                    "sometimes",
+                    Rule::in(EStatus::PENDING->value, EStatus::PACKAGE_PUBLISHED->value)
+                ],
             ]
         )
             ->validate();

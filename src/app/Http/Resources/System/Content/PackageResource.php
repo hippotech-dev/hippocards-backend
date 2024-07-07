@@ -2,13 +2,11 @@
 
 namespace App\Http\Resources\System\Content;
 
-use App\Enums\EPackageType;
 use App\Http\Resources\System\Content\UserResource;
 use App\Http\Resources\Utility\CategoryResource;
 use App\Http\Resources\Utility\LanguageResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Config;
 
 class PackageResource extends JsonResource
 {
@@ -25,6 +23,7 @@ class PackageResource extends JsonResource
             "foreign_name" => $this->foreign_name,
             "description" => $this->description,
             "for_kids" => $this->for_kids,
+            "main_category_id" => $this->main_category_id,
             "word_count" => is_null($this->word_sorts_count) ? 0 : $this->word_sorts_count,
             "language_id" => $this->language_id,
             "is_free" => boolval($this->is_free),

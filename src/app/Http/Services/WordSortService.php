@@ -15,6 +15,24 @@ class WordSortService
     {
     }
 
+    protected function getFilterModel(array $filters)
+    {
+        return [
+            "search" => [
+                [ "whereHas" ],
+                [
+                    [
+                        "name" => "word",
+                        "value" => fn ($query) => $query->whereLike("word", $filters["search"])
+                    ]
+                ],
+            ],
+            "language" => [ "where", "language_id" ],
+            "package" => [ "where", "baseklass_id" ],
+            "id_in" => [ "whereIn",  ]
+        ];
+    }
+
     public function getSortById(int $id, $with = [ "word" ])
     {
         return Sort::with($with)->find($id);
@@ -89,24 +107,16 @@ class WordSortService
         return Sort::with("word")->whereIn("baseklass_id", $ids)->get();
     }
 
-    public function getSortsWithSimplePage(array $filters)
+    public function getSortsWithSimplePage(array $filters, array $with = [], $orderBy = [ "field" => "id", "value" => "desc" ])
     {
-        $filterModel = [
-            "search" => [
-                [ "whereHas" ],
-                [
-                    [
-                        "name" => "word",
-                        "value" => fn ($query) => $query->whereLike("word", $filters["search"])
-                    ]
-                ],
-            ],
-            "language" => [ "where", "language_id" ],
-            "package" => [ "where", "baseklass_id" ],
-            "id_in" => [ "whereIn",  ]
-        ];
+        $orderBy = get_sort_info($orderBy);
+        return filter_query_with_model(Sort::with($with), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->simplePaginate(page_size());
+    }
 
-        return filter_query_with_model(Sort::with("word.mainDetail", "package")->whereHas("package", fn ($query) => $query->byType(EPackageType::DEFAULT))->active(), $filterModel, $filters)->orderBy("id", "desc")->simplePaginate(page_size());
+    public function getSortsWithPage(array $filters, array $with, $orderBy = [ "field" => "id", "value" => "desc" ])
+    {
+        $orderBy = get_sort_info($orderBy);
+        return filter_query_with_model(Sort::with($with), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->paginate(page_size());
     }
 
     public function getMemorizedWords(User $user)
