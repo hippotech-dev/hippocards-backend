@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::apiResources([
     "package" => PackageController::class,
-    "word" => WordSortController::class,
+    "sort" => WordSortController::class,
     "account/user" => UserController::class,
     "utility/subscription-plan" => SubscriptionPlanController::class,
     "utility/language" => LanguageController::class,

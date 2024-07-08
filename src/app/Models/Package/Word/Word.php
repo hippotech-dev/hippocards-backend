@@ -7,15 +7,19 @@ use App\Models\Package\WordDetail;
 use App\Models\Package\WordImage;
 use App\Models\Utility\Sentence;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Word extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'word';
     protected $fillable = [
         'word',
         'sort',
         'sort2',
         'is_active',
+        "update_type",
         "sound",
         "mp3"
     ];
@@ -37,6 +41,11 @@ class Word extends Model
     public function synonyms()
     {
         return $this->hasMany(WordSynonym::class, "word_id");
+    }
+
+    public function sentences()
+    {
+        return $this->morphMany(Sentence::class, "object", "object_type", "object_id");
     }
 
     public function definitionSentences()

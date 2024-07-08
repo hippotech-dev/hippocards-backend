@@ -1,13 +1,15 @@
 <?php
 
 use App\Http\Controllers\Utility\AudioController;
+use App\Http\Controllers\Utility\SentenceController;
 use App\Http\Controllers\Utility\UploadController;
 use App\Http\Controllers\Utility\UserActivityController;
 use App\Http\Controllers\Utility\UtilityController;
 use Illuminate\Support\Facades\Route;
 
 Route::apiResources([
-    "user-activity" => UserActivityController::class
+    "user-activity" => UserActivityController::class,
+    "sentence" => SentenceController::class
 ]);
 
 Route::prefix("upload")->group(function () {

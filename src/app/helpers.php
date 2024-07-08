@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Package\Word\Word;
 use App\Util\Constant;
 use Illuminate\Support\Str;
 use GuzzleHttp\Client;
@@ -363,5 +364,20 @@ if (!function_exists("get_role_middleware")) {
         }
 
         return "role";
+    }
+}
+
+if (!function_exists("get_class_map_object")) {
+    function get_class_map_object(int $objectId, string $type)
+    {
+        try {
+            if (!array_key_exists($type, Constant::CLASS_MAP)) {
+                return null;
+            }
+            $className = Constant::CLASS_MAP[$type];
+            return $className::find($objectId);
+        } catch (Exception $err) {
+            return null;
+        }
     }
 }

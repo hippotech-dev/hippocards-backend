@@ -19,16 +19,3 @@ use Illuminate\Support\Facades\DB;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
-
-Artisan::command('custom:add-sort-to-baseklass', function () {
-    DB::transaction(function () {
-        $oldPackages = DB::table("v0_baseklass")->where("sort", ">", 0)->get();
-        foreach ($oldPackages as $package) {
-            DB::table("baseklass")->where("id", $package->id)->update([
-                "sort" => $package->sort
-            ]);
-        }
-    });
-
-
-})->purpose('Display an inspiring quote');

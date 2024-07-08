@@ -5,6 +5,8 @@ namespace App\Util;
 use App\Enums\EPartOfSpeech;
 use App\Enums\EPermissionScope;
 use App\Enums\EUserRole;
+use App\Models\Package\Baseklass;
+use App\Models\Package\Word\Word;
 
 class Constant
 {
@@ -53,5 +55,10 @@ class Constant
             EPermissionScope::UPDATE_WORD,
             EPermissionScope::DELETE_WORD,
         ],
+    ];
+
+    public const CLASS_MAP = [
+        "baseklass" => Baseklass::class,
+        "word" => Word::class,
     ];
 }

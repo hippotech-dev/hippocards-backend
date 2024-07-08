@@ -4,9 +4,12 @@ namespace App\Models\Package;
 
 use App\Models\Package\Word\Word;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Sort extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'sort';
 
     protected $fillable = [
