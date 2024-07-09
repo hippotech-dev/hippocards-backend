@@ -148,7 +148,7 @@ class WordSortService
     public function createSort(User $user, Baseklass $package, array $data)
     {
         DB::transaction(function () use ($user, $package, $data) {
-            $wordCheck = $this->getSort([ "search" => $data["word"] ]);
+            $wordCheck = $this->getSort([ "search" => $data["word"], "package" => $package->id ]);
 
             if (!is_null($wordCheck)) {
                 throw new AppException("Word already exists in the package!");
@@ -211,5 +211,10 @@ class WordSortService
 
             return $word->delete();
         });
+    }
+
+    public function createUpdateWordDetail(Word $word, array $data)
+    {
+        return $word->mainDetail()->updateOrCreate([], $data);
     }
 }

@@ -73,7 +73,13 @@ class WordSortController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $sort = $this->service->getSortByIdLoaded($id);
+
+        if (is_null($sort)) {
+            throw new NotFoundHttpException("Sort does not exist!");
+        }
+
+        return new WordSortResource($sort);
     }
 
     /**
