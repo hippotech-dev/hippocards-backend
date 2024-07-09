@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Enums\ECourseBlockImageType;
 use App\Enums\ECourseBlockType;
+use App\Enums\ECourseBlockVideoTimestampType;
 use App\Enums\ECourseBlockVideoType;
 use App\Enums\ECourseExamType;
 use App\Enums\ESentenceType;
@@ -637,7 +638,7 @@ class CourseService
 
     public function createVideoTimestamp(CourseBlockVideo $video, array $data)
     {
-        $checkTimestamp = $video->videoTimestamps()->where("end", ">", $data["start"])->where("start", "<", $data["end"])->first();
+        $checkTimestamp = $video->videoTimestamps()->where("type", $data["type"])->where("end", ">", $data["start"])->where("start", "<", $data["end"])->first();
 
         if (!is_null($checkTimestamp)) {
             throw new AppException("Timestamp is overlapping with other timestamp");
