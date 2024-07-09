@@ -44,7 +44,7 @@ class WordDetailController extends Controller
                 "pronunciation" => "nullable|string",
                 "keyword" => "nullable|string",
                 "hiragana" => "nullable|string",
-                "part_of_speech" => "nullable|string"
+                "part_of_speech" => "nullable|integer"
             ]
         )
             ->validate();

@@ -14,6 +14,16 @@ class SentenceResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            "id" => $this->id,
+            "value" => $this->value,
+            "translation" => $this->translation,
+            "pronunciation" => $this->pronunciation,
+            "latin" => $this->latin,
+            "type" => $this->type,
+            "order" => $this->order,
+            "v3_audio_asset_id" => $this->v3_audio_asset_id,
+            "language_id" => $this->language_id,
+        ];
     }
 }

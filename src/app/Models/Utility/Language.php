@@ -24,4 +24,9 @@ class Language extends Model
         "placement_time",
         "is_hiragana"
     ];
+
+    protected $casts = [
+        "is_hiragana" => "boolean",
+        "is_active" => "boolean"
+    ];
 }
