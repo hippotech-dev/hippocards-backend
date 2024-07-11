@@ -217,4 +217,17 @@ class WordSortService
     {
         return $word->mainDetail()->updateOrCreate([], $data);
     }
+
+    public function createWordImage(Word $word, array $data)
+    {
+        return $word->images()->updateOrCreate(
+            [
+                "type" => $data["type"],
+            ],
+            [
+                "path" => $this->assetService->getAssetPath($data["v3_asset_id"]),
+                "v3_asset_id" => $data["v3_asset_id"]
+            ]
+        );
+    }
 }

@@ -118,6 +118,22 @@ class AssetService
         ]);
     }
 
+    public function createAssetFromURL(string $url, string $filename)
+    {
+        $file = file_get_contents($url);
+        $folder = "v3/unsplash/" . date("Y-m");
+        $filename = $this->generateRandomFilename($filename);
+        $path = $folder . "/" . $filename;
+
+        Storage::disk("s3-tokyo")->put($path, (string) $file);
+
+        return Asset::create([
+            "path" => $path,
+            "size" => strlen($file),
+            "mime_type" => "image/jpeg",
+        ]);
+    }
+
     public function deleteAssetById(int $id)
     {
         $asset = $this->getAssetById($id);

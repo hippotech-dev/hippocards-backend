@@ -14,6 +14,7 @@ Route::apiResources([
 
 Route::prefix("upload")->group(function () {
     Route::post("file", [ UploadController::class, "uploadFile" ]);
+    Route::post("url", [ UploadController::class, "uploadFileWithURL" ]);
     Route::post("video/url", [ UploadController::class, "getVideoSignedUrl" ]);
     Route::post("video/job/submit", [ UploadController::class, "setTranscoderJob" ]);
     Route::post("video/job/complete", [ UploadController::class, "completeTranscoderJob" ]);

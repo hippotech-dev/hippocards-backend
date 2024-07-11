@@ -39,6 +39,30 @@ class UploadController extends Controller
     }
 
     /**
+     * Upload file
+     */
+    public function uploadFileWithURL(Request $request)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "url",
+                "filename"
+            ),
+            [
+                "url" => "required|string|max:512",
+                "filename" => "required|string|max:512"
+            ]
+        )->validate();
+
+        $asset = $this->service->createAssetFromURL(
+            $validatedData["url"],
+            $validatedData["filename"]
+        );
+
+        return new AssetResource($asset);
+    }
+
+    /**
      * Get signed url
      */
     public function getVideoSignedUrl(Request $request)
