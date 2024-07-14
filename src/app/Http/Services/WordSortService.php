@@ -227,7 +227,7 @@ class WordSortService
                 "type" => $data["type"],
             ],
             [
-                "name" => $asset->name,
+                "name" => $asset->name ?? "none",
                 "path" => $asset->path,
                 "v3_asset_id" => $asset->id
             ]

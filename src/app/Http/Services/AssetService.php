@@ -129,6 +129,7 @@ class AssetService
 
         return Asset::create([
             "path" => $path,
+            "name" => $filename,
             "size" => strlen($file),
             "mime_type" => "image/jpeg",
         ]);
