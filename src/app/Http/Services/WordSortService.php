@@ -220,13 +220,16 @@ class WordSortService
 
     public function createWordImage(Word $word, array $data)
     {
+        $asset = $this->assetService->getAssetById($data["v3_asset_id"]);
+
         return $word->images()->updateOrCreate(
             [
                 "type" => $data["type"],
             ],
             [
-                "path" => $this->assetService->getAssetPath($data["v3_asset_id"]),
-                "v3_asset_id" => $data["v3_asset_id"]
+                "name" => $asset->name,
+                "path" => $asset->path,
+                "v3_asset_id" => $asset->id
             ]
         );
     }
