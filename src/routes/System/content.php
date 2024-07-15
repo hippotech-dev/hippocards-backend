@@ -6,6 +6,7 @@ use App\Http\Controllers\System\Content\PackageController;
 use App\Http\Controllers\System\Content\WordDetailController;
 use App\Http\Controllers\System\Content\WordImageController;
 use App\Http\Controllers\System\Content\WordSortController;
+use App\Http\Controllers\System\Content\WordSynonymController;
 use App\Http\Controllers\System\Utility\CategoryController;
 use App\Http\Controllers\System\Utility\LanguageController;
 use App\Http\Controllers\System\Utility\SubscriptionPlanController;
@@ -27,6 +28,7 @@ Route::apiResources([
     "sort" => WordSortController::class,
     "word.detail" => WordDetailController::class,
     "word.image" => WordImageController::class,
+    "word/synonym" => WordSynonymController::class,
     "account/user" => UserController::class,
     "utility/subscription-plan" => SubscriptionPlanController::class,
     "utility/language" => LanguageController::class,

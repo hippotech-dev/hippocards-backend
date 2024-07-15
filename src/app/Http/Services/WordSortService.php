@@ -9,6 +9,7 @@ use App\Exceptions\AppException;
 use App\Models\Package\Baseklass;
 use App\Models\Package\Sort;
 use App\Models\Package\Word\Word;
+use App\Models\Package\Word\WordSynonym;
 use App\Models\User\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -122,6 +123,11 @@ class WordSortService
         return filter_query_with_model(Sort::with($with), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->first();
     }
 
+    public function getWordById(int $id, array $with = [])
+    {
+        return Word::with($with)->find($id);
+    }
+
     public function getSortsWithSimplePage(array $filters, array $with = [], $orderBy = [ "field" => "id", "value" => "desc" ])
     {
         $orderBy = get_sort_info($orderBy);
@@ -232,5 +238,21 @@ class WordSortService
                 "v3_asset_id" => $asset->id
             ]
         );
+    }
+
+    public function createWordSynonym(Word $word, array $data)
+    {
+        $data["language_id"] = 0;
+        return $word->synonyms()->create($data);
+    }
+
+    public function updateWordSynonym(WordSynonym $wordSynonym, array $data)
+    {
+        return $wordSynonym->update($data);
+    }
+
+    public function deleteWordSynonym(WordSynonym $wordSynonym)
+    {
+        return $wordSynonym->delete();
     }
 }
