@@ -59,13 +59,13 @@ class AssetService
         ]);
     }
 
-    public function createAudioAsset(mixed $contents)
+    public function createAudioAsset(mixed $contents, string $customPath = null)
     {
-        $folder = "v3/audio/" . date("Y-m");
+        $folder = "v2/audio/" . date("Y-m");
         $filename = $this->generateRandomFilename("audio.mp3");
-        $path = $folder . "/" . $filename;
+        $path = is_null($customPath) ? $folder . "/" . $filename : $customPath . "/" . $filename;
 
-        Storage::disk("s3-tokyo")->put($path, $contents);
+        Storage::disk("s3")->put($path, $contents);
 
         return Asset::create([
             "path" => $path,

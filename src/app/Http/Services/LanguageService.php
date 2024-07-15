@@ -13,6 +13,11 @@ class LanguageService
         ];
     }
 
+    public function getLanguageById(int $id)
+    {
+        return Language::find($id);
+    }
+
     public function getLanguages(array $filters = [], array $with = [])
     {
         return filter_query_with_model(Language::query(), $this->getFilterModel($filters), $filters)->with($with)->get();

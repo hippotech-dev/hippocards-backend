@@ -2,6 +2,7 @@
 
 namespace App\Models\Utility;
 
+use App\Enums\ELocale;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -27,6 +28,7 @@ class Language extends Model
 
     protected $casts = [
         "is_hiragana" => "boolean",
-        "is_active" => "boolean"
+        "is_active" => "boolean",
+        "azure" => ELocale::class
     ];
 }

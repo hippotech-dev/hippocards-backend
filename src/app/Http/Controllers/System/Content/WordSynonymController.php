@@ -5,7 +5,6 @@ namespace App\Http\Controllers\System\Content;
 use App\Enums\EWordSimilarType;
 use App\Http\Controllers\Controller;
 use App\Http\Services\WordSortService;
-use App\Models\Package\Word\Word;
 use App\Models\Package\Word\WordSynonym;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;

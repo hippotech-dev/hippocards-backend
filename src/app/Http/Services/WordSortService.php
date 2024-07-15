@@ -2,22 +2,29 @@
 
 namespace App\Http\Services;
 
+use App\Enums\ELocale;
 use App\Enums\EPackageType;
 use App\Enums\EUserActivityAction;
 use App\Enums\EUserActivityType;
 use App\Exceptions\AppException;
+use App\Jobs\GenerateWordAudioJob;
 use App\Models\Package\Baseklass;
 use App\Models\Package\Sort;
 use App\Models\Package\Word\Word;
 use App\Models\Package\Word\WordSynonym;
 use App\Models\User\User;
+use App\Util\AudioConfig;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class WordSortService
 {
-    public function __construct(private UserActivityService $userActivityService, private AssetService $assetService)
-    {
+    public function __construct(
+        private UserActivityService $userActivityService,
+        private AssetService $assetService,
+        private AudioService $audioService,
+        private LanguageService $languageService
+    ) {
     }
 
     protected function getFilterModel(array $filters)
@@ -169,6 +176,7 @@ class WordSortService
                 "user_id" => $user->id,
             ]);
 
+            $this->createWordAudio($sort);
             $this->createWordSortActivity($user, $sort, EUserActivityAction::CREATE);
 
             return $sort;
@@ -254,5 +262,28 @@ class WordSortService
     public function deleteWordSynonym(WordSynonym $wordSynonym)
     {
         return $wordSynonym->delete();
+    }
+
+    public function createWordAudio(Sort $sort)
+    {
+        return GenerateWordAudioJob::dispatch($sort);
+    }
+
+    public function generateSortAudio(Sort $sort)
+    {
+        $word = $this->getWordById($sort->word_id);
+        $language = $this->languageService->getLanguageById($sort->language_id);
+        if (is_null($word)) {
+            throw new AppException("Sort word is empty!");
+        }
+        $asset = $this->audioService->generateAudio(
+            $word->word,
+            new AudioConfig($language->azure ?? ELocale::ENGLISH),
+            "power-vocabs/sound"
+        );
+
+        $word->update([
+            "mp3" => $asset->name
+        ]);
     }
 }

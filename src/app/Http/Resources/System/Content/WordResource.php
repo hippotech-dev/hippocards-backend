@@ -62,7 +62,7 @@ class WordResource extends JsonResource
             "similars" => $this->whenLoaded("synonyms", function () {
                 return $this->synonyms->where("type", EWordSimilarType::SIMILAR)->sortBy("id")->toArray();
             }),
-            "audio" => "https://cdn.hippo.cards/storage/power-vocabs/sound/" . $this->id . ".m4a",
+            "audio" => is_null($this->mp3) ? null : append_s3_path("power-vocabs/sound/" . $this->mp3),
         ];
     }
 }

@@ -54,7 +54,7 @@ class AudioService
         );
     }
 
-    public function generateAudio(string $text, AudioConfig $config)
+    public function generateAudio(string $text, AudioConfig $config, string $customFilePath = null)
     {
         $data = "
             <speak version='1.0' xml:lang='" . $config->getLocale() . "'><voice xml:lang='" . $config->getLocale() . "' xml:gender='" . $config->getGender() . "'
@@ -82,6 +82,6 @@ class AudioService
         $context = stream_context_create($options);
         $fileContents = file_get_contents(Config::get("credentials.azure.PATH", ""), false, $context);
 
-        return $this->assetService->createAudioAsset($fileContents);
+        return $this->assetService->createAudioAsset($fileContents, $customFilePath);
     }
 }
