@@ -7,7 +7,9 @@ use App\Enums\EPermissionScope;
 use App\Enums\EStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\System\Content\PackageResource;
+use App\Http\Resources\System\Content\WordSortResource;
 use App\Http\Services\PackageService;
+use App\Http\Services\WordSortService;
 use App\Models\Package\Baseklass;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -16,7 +18,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PackageController extends Controller
 {
-    public function __construct(private PackageService $service)
+    public function __construct(private PackageService $service, private WordSortService $wordSortService)
     {
         $this->middleware("jwt.auth");
         $this->middleware(get_role_middleware(EPermissionScope::READ_PACKAGE))->only("index", "show");
@@ -161,5 +163,19 @@ class PackageController extends Controller
         $this->service->deletePackage($requestUser, $package);
 
         return response()->success();
+    }
+
+    /**
+     * Get package sorts
+     */
+    public function getPackageSorts(Request $request, Baseklass $package)
+    {
+        $filters = $request->only("search", "language", "word");
+
+        $filters["package"] = $package->id;
+
+        $sorts = $this->wordSortService->getSortsWithPage($filters, [ "word" ]);
+
+        return WordSortResource::collection($sorts);
     }
 }

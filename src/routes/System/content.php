@@ -45,6 +45,7 @@ Route::prefix("account")->group(function () {
 });
 
 Route::prefix("package")->group(function () {
+    Route::get("{package}/sort", [ PackageController::class, "getPackageSorts" ]);
     Route::prefix("action")->group(function () {
         Route::get("search", [ PackageController::class, "search" ]);
     });
