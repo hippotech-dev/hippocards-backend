@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\System\Content;
 
+use App\Enums\EStatus;
 use App\Enums\EWordImageType;
 use App\Enums\EWordSimilarType;
 use App\Http\Resources\Utility\SentenceResource;

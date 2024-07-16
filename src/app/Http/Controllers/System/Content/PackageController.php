@@ -172,9 +172,7 @@ class PackageController extends Controller
     {
         $filters = $request->only("search", "language", "word");
 
-        $filters["package"] = $package->id;
-
-        $sorts = $this->wordSortService->getSortsWithPage($filters, [ "word" ]);
+        $sorts = $this->wordSortService->getPackageSorts($package, $filters, [ "word", "word.mainDetail", "word.images", "word.synonyms", "word.definitionSentences", "word.imaginationSentences" ]);
 
         return WordSortResource::collection($sorts);
     }

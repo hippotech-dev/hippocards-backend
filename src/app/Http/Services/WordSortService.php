@@ -147,6 +147,12 @@ class WordSortService
         return filter_query_with_model(Sort::with($with), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->cursorPaginate(page_size());
     }
 
+    public function getPackageSorts(Baseklass $package, array $filters, array $with = [], $orderBy = [ "field" => "id", "value" => "desc" ])
+    {
+        $orderBy = get_sort_info($orderBy);
+        return filter_query_with_model(Sort::with($with)->where("baseklass_id", $package->id), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->get();
+    }
+
     public function getSortsWithPage(array $filters, array $with = [], $orderBy = [ "field" => "id", "value" => "desc" ])
     {
         $orderBy = get_sort_info($orderBy);
