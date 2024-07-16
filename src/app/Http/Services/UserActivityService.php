@@ -10,6 +10,7 @@ use App\Exceptions\AppException;
 use App\Models\Package\Baseklass;
 use App\Models\Package\Sort;
 use App\Models\User\User;
+use App\Models\Utility\UserActivity;
 
 class UserActivityService
 {
@@ -24,19 +25,25 @@ class UserActivityService
         ];
     }
 
-    public function getUserActivities(User $user, array $filters, array $with = [], array $order = [ "column" => "updated_at", "value" => "desc" ])
+    public function getUserActivities(User $user, array $filters, array $with = [], array $orderBy = [ "field" => "updated_at", "value" => "desc" ])
     {
-        return filter_query_with_model($user->activities()->with($with), $this->getFilterModel($filters), $filters)->orderBy($order["column"], $order["value"])->get();
+        return filter_query_with_model($user->activities()->with($with), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->get();
     }
 
-    public function getUserActivitiesWithPage(User $user, array $filters, array $with = [], array $order = [ "column" => "updated_at", "value" => "desc" ])
+    public function getUserActivitiesWithPage(User $user, array $filters, array $with = [], array $orderBy = [ "field" => "updated_at", "value" => "desc" ])
     {
-        return filter_query_with_model($user->activities()->with($with), $this->getFilterModel($filters), $filters)->orderBy($order["column"], $order["value"])->simplePaginate(page_size());
+        return filter_query_with_model($user->activities()->with($with), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->simplePaginate(page_size());
     }
 
-    public function getUserActivitiesByTypeWithPage(User $user, EUserActivityType $type, array $with = [], array $order = [ "column" => "updated_at", "value" => "desc" ])
+    public function getUserActivitiesByTypeWithPage(User $user, EUserActivityType $type, array $with = [], array $orderBy = [ "field" => "updated_at", "value" => "desc" ])
     {
-        return $user->activities()->with($with)->where("type", $type)->orderBy($order["column"], $order["value"])->simplePaginate(page_size());
+        return $user->activities()->with($with)->where("type", $type)->orderBy($orderBy["field"], $orderBy["value"])->simplePaginate(page_size());
+    }
+
+    public function getUserActivitiesByTypeWithCursor(User $user, EUserActivityType $type, array $with = [], array $orderBy = [ "field" => "updated_at", "value" => "desc" ])
+    {
+        $orderBy = get_sort_info($orderBy);
+        return UserActivity::with($with)->where("user_id", $user->id)->where("type", $type)->orderBy($orderBy["field"], $orderBy["value"])->cursorPaginate(page_size());
     }
 
     public function getUserActivity(User $user, array $filters, array $with = [])

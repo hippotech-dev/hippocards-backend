@@ -35,9 +35,9 @@ class WordSortController extends Controller
             ->validate();
 
         $resource = Cache::remember(
-            cache_key("search-words", array_merge($filters, [ $request->get("page", 1) ])),
-            60 * 5,
-            fn () => WordSortResource::collection($this->service->getSortsWithSimplePage($filters))
+            cache_key("search-words", array_merge($filters, [ $request->get("cursor", 1) ])),
+            3600,
+            fn () => WordSortResource::collection($this->service->getSortsWithCursor($filters, [ "word", "package" ]))
         );
 
         return $resource;
@@ -63,21 +63,5 @@ class WordSortController extends Controller
         );
 
         return $sort;
-    }
-
-    /**
-     * Get memorized words
-     */
-    public function getMemorizedWords(Request $request)
-    {
-        $requestUser = auth()->user();
-        $page = $request->get("page", 1);
-        $resource = Cache::remember(
-            cache_key("memorized-words", [ $requestUser->id, $page, 1 ]),
-            300,
-            fn () => WordSortResource::collection($this->service->getMemorizedWords($requestUser))
-        );
-
-        return $resource;
     }
 }

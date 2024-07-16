@@ -6,12 +6,12 @@ use App\Http\Controllers\Mobile\Hippocards\WordSortController;
 use Illuminate\Support\Facades\Route;
 
 Route::apiResources([
-    "word" => WordSortController::class,
+    "sort" => WordSortController::class,
     "package" => PackageController::class
 ]);
 
-Route::prefix("word")->group(function () {
-    Route::get("action/memorized-words", [ PackageController::class, "getMemorizedWords" ]);
+Route::prefix("sort")->group(function () {
+    Route::get("action/memorized-words", [ WordSortController::class, "getMemorizedSorts" ]);
 });
 
 Route::prefix("account")->group(function () {

@@ -141,21 +141,16 @@ class WordSortService
         return filter_query_with_model(Sort::with($with), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->simplePaginate(page_size());
     }
 
+    public function getSortsWithCursor(array $filters, array $with = [], $orderBy = [ "field" => "id", "value" => "desc" ])
+    {
+        $orderBy = get_sort_info($orderBy);
+        return filter_query_with_model(Sort::with($with), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->cursorPaginate(page_size());
+    }
+
     public function getSortsWithPage(array $filters, array $with = [], $orderBy = [ "field" => "id", "value" => "desc" ])
     {
         $orderBy = get_sort_info($orderBy);
         return filter_query_with_model(Sort::with($with), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->paginate(page_size());
-    }
-
-    public function getMemorizedWords(User $user)
-    {
-        $activitiesWithSorts = $this->userActivityService->getUserActivitiesByTypeWithPage($user, EUserActivityType::USER_WORD, [ "object.word.mainDetail", "object.package" ]);
-
-        $activitiesWithSortsCollection = $activitiesWithSorts->getCollection();
-
-        $activitiesWithSorts->setCollection($activitiesWithSortsCollection->pluck("object"));
-
-        return $activitiesWithSorts;
     }
 
     public function createSort(User $user, Baseklass $package, array $data)
