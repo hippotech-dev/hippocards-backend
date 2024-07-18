@@ -83,4 +83,16 @@ class AccountService
             ]
         );
     }
+
+    public function changeUserPassword(User $user, string $currentPassword, string $newPassword)
+    {
+        if (!auth()->attempt([
+            "id" => $user->id,
+            "password" => $currentPassword
+        ])) {
+            throw new AppException("Invalid password!");
+        }
+
+        return $this->updateUser($user, [ "password" => $newPassword ]);
+    }
 }

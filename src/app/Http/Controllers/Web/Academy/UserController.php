@@ -11,12 +11,7 @@ class UserController extends Controller
 {
     public function __construct(private AccountService $service)
     {
-        $this->middleware("jwt.auth", [
-            "except" => [
-                "index",
-                "show",
-            ]
-        ]);
+        $this->middleware("jwt.auth");
     }
 
     /**
@@ -49,6 +44,30 @@ class UserController extends Controller
         $requestUser = auth()->user();
 
         $this->service->updateUser($requestUser, $validatedData);
+
+        return response()->success();
+    }
+
+    /**
+     * Change password
+     */
+    public function changePassword(Request $request)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "current_password",
+                "password"
+            ),
+            [
+                "current_password" => "required|string|max:32",
+                "password" => "required|string|max:32",
+            ]
+        )
+            ->validate();
+
+        $requestUser = auth()->user();
+
+        $this->service->changeUserPassword($requestUser, $validatedData["current_password"], $validatedData["password"]);
 
         return response()->success();
     }

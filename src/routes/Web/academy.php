@@ -50,5 +50,6 @@ Route::prefix("course")->group(function () {
 
 Route::prefix("account")->group(function () {
     Route::get("purchased-course", [ CourseController::class, "getUserPurchasedCourses" ]);
-    Route::store("update-credentials", [ UserController::class, "update" ]);
+    Route::put("credentials", [ UserController::class, "update" ]);
+    Route::put("password", [ UserController::class, "changePassword" ]);
 });
