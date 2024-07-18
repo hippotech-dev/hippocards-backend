@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Config;
 
 class AccountService
 {
-    public function __construct(private UserService $userService, private AssetService $assetService)
+    public function __construct(private UserService $userService, private AssetService $assetService, private ConfirmationService $confirmationService)
     {
     }
 
@@ -39,6 +39,20 @@ class AccountService
             }
         }
 
+        if (array_key_exists("phone_verification_id", $data)) {
+            $confirmation = $this->confirmationService->checkConfirmationValidity($data["phone_verification_id"]);
+            if (!is_null($confirmation)) {
+                $data["phone"] = $confirmation->email;
+            }
+        }
+
+        if (array_key_exists("email_verification_id", $data)) {
+            $confirmation = $this->confirmationService->checkConfirmationValidity($data["email_verification_id"]);
+            if (!is_null($confirmation)) {
+                $data["email"] = $confirmation->email;
+            }
+        }
+
         if (array_key_exists("email", $data) && $user->email !== $data["email"]) {
             $checkUser = $this->userService->getUser([ "email" => $data["email"] ]);
             if (!is_null($checkUser)) {
@@ -51,6 +65,10 @@ class AccountService
             if (!is_null($checkUser)) {
                 throw new AppException("Phone number is already registered!");
             }
+        }
+
+        if (array_key_exists("password", $data)) {
+            $data["password"] = bcrypt($data["password"]);
         }
 
         return $this->userService->updateUser($user->id, $data);

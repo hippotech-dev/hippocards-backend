@@ -25,7 +25,6 @@ Route::apiResources([
     "course.block" => CourseBlockController::class,
     "course.completion" => CourseCompletionController::class,
     "user/certificate" => CertificateController::class,
-    "account/user" => UserController::class,
 ]);
 
 Route::prefix("course")->group(function () {
@@ -51,4 +50,5 @@ Route::prefix("course")->group(function () {
 
 Route::prefix("account")->group(function () {
     Route::get("purchased-course", [ CourseController::class, "getUserPurchasedCourses" ]);
+    Route::store("update-credentials", [ UserController::class, "update" ]);
 });

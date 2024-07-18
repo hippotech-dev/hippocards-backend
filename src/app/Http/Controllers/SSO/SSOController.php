@@ -21,6 +21,7 @@ class SSOController extends Controller
 {
     public function __construct(private SSOService $service, private ConfirmationService $confirmationService)
     {
+        $this->middleware("throttle:user:1", [ "only" => [ "verifyCredential" ] ]);
     }
 
     /**

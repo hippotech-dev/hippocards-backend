@@ -22,24 +22,26 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function store(Request $request)
+    public function update(Request $request)
     {
         $validatedData = Validator::make(
             $request->only(
                 "name",
-                "email",
-                "phone",
                 "sex",
+                "password",
                 "birth_year",
-                "v3_asset_id"
+                "v3_asset_id",
+                "phone_verification_id",
+                "email_verification_id"
             ),
             [
                 "name" => "sometimes|string|max:128",
-                "email" => "sometimes|string|max:128",
-                "phone" => "sometimes|string|max:32",
                 "sex" => "sometimes|integer",
+                "password",
                 "birth_year" => "sometimes|date",
-                "v3_asset_id" => "sometimes|exists:v3_assets,id"
+                "v3_asset_id" => "sometimes|exists:v3_assets,id",
+                "phone_verification_id" => "sometimes|integer",
+                "email_verification_id" => "sometimes|integer",
             ]
         )
             ->validate();

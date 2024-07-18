@@ -16,9 +16,9 @@ class ConfirmationService
     {
     }
 
-    public function getConfirmationByFilter($filters)
+    protected function getFilterModel($filters)
     {
-        $filterModel = [
+        return [
             "id" => [ "where", "id" ],
             "user_id" => [ "where", "user_id" ],
             "code" => [ "where", "code" ],
@@ -27,8 +27,11 @@ class ConfirmationService
             "email" => [ "where", "email" ],
             "created_at_lte" => [ "where", ">=", "created_at" ],
         ];
+    }
 
-        return filter_query_with_model(EmailConfirmation::query(), $filterModel, $filters)->first();
+    public function getConfirmationByFilter($filters)
+    {
+        return filter_query_with_model(EmailConfirmation::query(), $this->getFilterModel($filters), $filters)->first();
     }
 
     public function generateUniqueOTPCode(string $value)
@@ -117,7 +120,7 @@ class ConfirmationService
 
     public function checkConfirmationValidity(string $confirmationId)
     {
-        $minuteBefore = date("Y-m-d H:i:s", strtotime("-500 minute"));
+        $minuteBefore = date("Y-m-d H:i:s", strtotime("-10 minute"));
 
         $check = $this->getConfirmationByFilter([
             "id" => $confirmationId,
