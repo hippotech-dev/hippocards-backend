@@ -10,7 +10,7 @@ use App\Models\Package\Word\Word;
 
 class Constant
 {
-    public const DEFAULT_PAGINATION = 1;
+    public const DEFAULT_PAGINATION = 20;
 
     public const ROLE_SCOPES = [
         EUserRole::SUPERADMIN->value => [
