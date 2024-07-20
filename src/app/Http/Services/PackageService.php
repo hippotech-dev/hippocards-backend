@@ -112,4 +112,11 @@ class PackageService
             return $package->delete();
         });
     }
+
+    public function resetPackageWordCount(Baseklass $package)
+    {
+        return $package->update([
+            "word_count" => $package->wordSorts()->count()
+        ]);
+    }
 }

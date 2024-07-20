@@ -381,3 +381,41 @@ if (!function_exists("get_class_map_object")) {
         }
     }
 }
+
+if (!function_exists('check_const_level')) {
+    function check_const_level($id)
+    {
+        switch ($id) {
+            case "1":
+                return [
+                    "id" => 1,
+                    "name" => "Анхан түвшин",
+                    "color" => "#6172e2",
+                ];
+                break;
+            case "2":
+                return [
+                    "id" => 2,
+                    "name" => "Дунд түвшин",
+                    "color" => "#fe6289",
+                ];
+                break;
+            case "3":
+                return [
+                    "id" => 3,
+                    "name" => "Ахисан түвшин",
+                    "color" => "#afd325",
+                ];
+                break;
+            case "4":
+                return [
+                    "id" => 4,
+                    "name" => "Бүх түвшин",
+                    "color" => "#afd325",
+                ];
+                break;
+            default:
+                return ["message" => "err"];
+        }
+    }
+}

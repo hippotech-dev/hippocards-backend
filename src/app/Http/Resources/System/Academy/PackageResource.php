@@ -24,7 +24,7 @@ class PackageResource extends JsonResource
             "foreign_name" => $this->foreign_name,
             "description" => $this->description,
             "for_kids" => $this->for_kids,
-            "word_count" => is_null($this->word_sorts_count) ? 0 : $this->word_sorts_count,
+            "word_count" => $this->word_count,
             "language_id" => $this->language_id,
             "is_free" => boolval($this->is_free),
             "thumbnail_path" => append_s3_path($this->thumbnail_path),

@@ -21,7 +21,7 @@ class PackageResource extends JsonResource
             "name" => $this->name,
             "foreign_name" => $this->foreign_name,
             "description" => $this->description,
-            "word_count" => is_null($this->word_sorts_count) ? 0 : $this->word_sorts_count,
+            "word_count" => $this->word_count,
             "language_id" => $this->language_id,
             "is_free" => boolval($this->is_free),
             "preview" => $this->prepare_see,

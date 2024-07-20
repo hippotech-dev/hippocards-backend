@@ -22,8 +22,6 @@ class WordSortResource extends JsonResource
             "sort_word" => $this->sort_word,
             "word" => new WordResource($this->whenLoaded("word")),
             "package" => new PackageResource($this->whenLoaded("package")),
-            "created_at" => $this->created_at,
-            "updated_at" => $this->updated_at
         ];
     }
 }

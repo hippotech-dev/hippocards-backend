@@ -21,6 +21,7 @@ class WordSortService
 {
     public function __construct(
         private UserActivityService $userActivityService,
+        private PackageService $packageService,
         private AssetService $assetService,
         private AudioService $audioService,
         private LanguageService $languageService
@@ -179,6 +180,7 @@ class WordSortService
 
             $this->createWordAudio($sort);
             $this->createWordSortActivity($user, $sort, EUserActivityAction::CREATE);
+            $this->packageService->resetPackageWordCount($package);
 
             return $sort;
         });
@@ -199,8 +201,9 @@ class WordSortService
     public function deleteSort(User $user, Sort $sort)
     {
         DB::transaction(function () use ($user, $sort) {
-
+            $package = $sort->package()->first();
             $this->createWordSortActivity($user, $sort, EUserActivityAction::DELETE);
+            $this->packageService->resetPackageWordCount($package);
 
             return $sort->delete();
         });
