@@ -34,7 +34,7 @@ class Favorite extends Model
 
     public function scopePackage($query)
     {
-        return $query->with([ "object" ]);
+        return $query->with([ "object.category" ]);
     }
 
     public function scopeSort($query)

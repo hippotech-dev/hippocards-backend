@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Mobile\Hippocards;
 
+use App\Http\Resources\Utility\CategoryResource;
 use App\Http\Resources\Utility\LanguageResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -26,7 +27,11 @@ class PackageResource extends JsonResource
             "is_free" => boolval($this->is_free),
             "preview" => $this->prepare_see,
             "is_book" => boolval($this->is_book),
+            "star_count" => 0,
+            "category_color" => $this->whenLoaded("category", fn () => $this->category->color ?? null),
+            "icon_path" => append_s3_path($this->thumbnail_path),
             "thumbnail_path" => append_s3_path($this->thumbnail_path),
+            "category" => new CategoryResource($this->whenLoaded("category")),
             "language" => new LanguageResource($this->whenLoaded("language")),
         ];
     }

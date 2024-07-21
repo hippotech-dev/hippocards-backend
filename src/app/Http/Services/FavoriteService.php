@@ -36,35 +36,56 @@ class FavoriteService
 
     public function getFavoritePackages(User $user, array $filters = [])
     {
-        return filter_query_with_model(Favorite::package(), $this->getFilterModel($filters), $filters)
+        $results = filter_query_with_model(Favorite::package(), $this->getFilterModel($filters), $filters)
             ->where("type", EFavoriteType::PACKAGE)
             ->where("user_id", $user->id)
             ->whereHas("object")
             ->orderBy("id", "desc")
             ->cursorPaginate(page_size())
             ->withQueryString();
+
+        $total = $user->favorites()->whereHas("object")->where("type", EFavoriteType::PACKAGE)->count();
+
+        return [
+            "results" => $results,
+            "total" => $total,
+        ];
     }
 
     public function getFavoriteSorts(User $user, array $filters = [])
     {
-        return filter_query_with_model(Favorite::sort(), $this->getFilterModel($filters), $filters)
+        $results = filter_query_with_model(Favorite::sort(), $this->getFilterModel($filters), $filters)
             ->where("type", EFavoriteType::WORD)
             ->where("user_id", $user->id)
             ->whereHas("object")
             ->orderBy("id", "desc")
             ->cursorPaginate(page_size())
             ->withQueryString();
+
+        $total = $user->favorites()->whereHas("object")->where("type", EFavoriteType::WORD)->count();
+
+        return [
+            "results" => $results,
+            "total" => $total,
+        ];
     }
 
     public function getFavoriteArticles(User $user, array $filters = [])
     {
-        return filter_query_with_model(Favorite::article(), $this->getFilterModel($filters), $filters)
+        $results = filter_query_with_model(Favorite::article(), $this->getFilterModel($filters), $filters)
             ->where("type", EFavoriteType::ARTICLE)
             ->where("user_id", $user->id)
             ->whereHas("object")
             ->orderBy("id", "desc")
             ->cursorPaginate(page_size())
             ->withQueryString();
+
+        $total = $user->favorites()->whereHas("object")->where("type", EFavoriteType::ARTICLE)->count();
+
+        return [
+            "results" => $results,
+            "total" => $total,
+        ];
     }
 
     public function createFavoriteSort(User $user, Sort $sort, bool $value)

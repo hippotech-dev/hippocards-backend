@@ -29,13 +29,13 @@ class FavoriteController extends Controller
 
         $requestUser = auth()->user();
 
-        $favorites = Cache::remember(
+        [ "results" => $favorites, "total" => $total ] = Cache::remember(
             cache_key("list-favorite-packages", [ $requestUser->id, $filters["language"] ?? 0, $request->get("cursor", 0) ]),
             600,
             fn () => $this->service->getFavoritePackages($requestUser, $filters)
         );
 
-        return FavoriteResource::collection($favorites);
+        return FavoriteResource::collection($favorites)->additional([ "additional" => [ "total_count" => $total ] ]);
     }
 
     /**
@@ -47,13 +47,13 @@ class FavoriteController extends Controller
 
         $requestUser = auth()->user();
 
-        $favorites = Cache::remember(
+        [ "results" => $favorites, "total" => $total ] = Cache::remember(
             cache_key("list-favorite-sorts", [ $requestUser->id, $filters["language"] ?? 0, $request->get("cursor", 0) ]),
             600,
             fn () => $this->service->getFavoriteSorts($requestUser, $filters)
         );
 
-        return FavoriteResource::collection($favorites);
+        return FavoriteResource::collection($favorites)->additional([ "additional" => [ "total_count" => $total ] ]);
     }
 
     /**
@@ -64,13 +64,13 @@ class FavoriteController extends Controller
         $filters = $request->only("language");
 
         $requestUser = auth()->user();
-        $favorites = Cache::remember(
+        [ "results" => $favorites, "total" => $total ] = Cache::remember(
             cache_key("list-favorite-articles", [ $requestUser->id, $filters["language"] ?? 0, $request->get("cursor", 0) ]),
             600,
             fn () => $this->service->getFavoriteArticles($requestUser, $filters)
         );
 
-        return FavoriteResource::collection($favorites);
+        return FavoriteResource::collection($favorites)->additional([ "additional" => [ "total_count" => $total ] ]);
     }
 
     /**
