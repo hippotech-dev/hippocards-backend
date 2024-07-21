@@ -97,7 +97,7 @@ class FavoriteService
         if ($value && is_null($favorite)) {
             $favorite = $this->createFavorite(
                 $user,
-                [ "object_id" => $sort->id, "object_type" => Sort::class, "language_id" => $sort->language_id, "type" => EFavoriteType::WORD ]
+                [ "object_id" => $sort->id, "object_type" => "App\\Models\\Sort", "language_id" => $sort->language_id, "type" => EFavoriteType::WORD ]
             );
         }
 
@@ -113,7 +113,7 @@ class FavoriteService
         if ($value && is_null($favorite)) {
             $favorite = $this->createFavorite(
                 $user,
-                [ "object_id" => $package->id, "object_type" => Baseklass::class, "language_id" => $package->language_id, "type" => EFavoriteType::PACKAGE ]
+                [ "object_id" => $package->id, "object_type" => "App\\Models\\Baseklass", "language_id" => $package->language_id, "type" => EFavoriteType::PACKAGE ]
             );
         }
 
@@ -129,7 +129,7 @@ class FavoriteService
         if ($value && is_null($favorite)) {
             $favorite = $this->createFavorite(
                 $user,
-                [ "object_id" => $article->id, "object_type" => Article::class, "language_id" => $article->language_id ?? 1, "type" => EFavoriteType::ARTICLE ]
+                [ "object_id" => $article->id, "object_type" => "App\\Models\\Article\\Article", "language_id" => $article->language_id ?? 1, "type" => EFavoriteType::ARTICLE ]
             );
         }
 
