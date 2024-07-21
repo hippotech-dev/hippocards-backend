@@ -59,7 +59,7 @@ class FavoriteService
             ->where("user_id", $user->id)
             ->whereHas("object")
             ->orderBy("id", "desc")
-            ->cursorPaginate(page_size())
+            ->cursorPaginate(50)
             ->withQueryString();
 
         $total = $user->favorites()->whereHas("object")->where("type", EFavoriteType::WORD)->count();
