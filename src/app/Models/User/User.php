@@ -9,6 +9,7 @@ use App\Models\Payment\PaymentInvoice;
 use App\Models\Payment\PaymentOrder;
 use App\Models\SSO\OAuthAuthenticationAttempt;
 use App\Models\Subscription\SubUser;
+use App\Models\Utility\Favorite;
 use App\Models\Utility\UserActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -111,6 +112,11 @@ class User extends Authenticatable implements JWTSubject
     public function activities()
     {
         return $this->hasMany(UserActivity::class);
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
     }
 
     /**

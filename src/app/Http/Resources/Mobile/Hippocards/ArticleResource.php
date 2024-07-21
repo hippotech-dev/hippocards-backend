@@ -30,7 +30,7 @@ class ArticleResource extends JsonResource
             "is_featured" => $this->is_featured,
             "questions_count" => $this->morph_questions_count,
             "favorite" => !is_null($this->favorites_count) && $this->favorites_count > 0,
-            "package_word_count" => $this->relationLoaded("package") && !is_null($this->package) ? $this->package->word_sorts_count : 0,
+            "package_word_count" => $this->relationLoaded("package") && !is_null($this->package) ? $this->package->word_count : 0,
             "category" => new CategoryResource($this->whenLoaded("category")),
             "author" => new UserResource($this->whenLoaded('user')),
             "language" => new LanguageResource($this->whenLoaded("language")),

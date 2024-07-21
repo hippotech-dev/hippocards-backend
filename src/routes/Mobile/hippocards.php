@@ -16,9 +16,17 @@ Route::prefix("package")->group(function () {
 });
 
 Route::prefix("favorite")->group(function () {
-    Route::get("action/package", [ FavoriteController::class, "getFavoritePackages" ]);
-    Route::get("action/sort", [ FavoriteController::class, "getFavoriteSorts" ]);
-    Route::get("action/article", [ FavoriteController::class, "getFavoriteArticles" ]);
+    Route::prefix("action")->group(function () {
+        Route::get("package", [ FavoriteController::class, "getFavoritePackages" ]);
+        Route::get("sort", [ FavoriteController::class, "getFavoriteSorts" ]);
+        Route::get("article", [ FavoriteController::class, "getFavoriteArticles" ]);
+
+        Route::post("package", [ FavoriteController::class, "createOrDeleteFavoritePackage" ]);
+        Route::post("sort", [ FavoriteController::class, "createOrDeleteFavoriteSort" ]);
+        Route::post("article", [ FavoriteController::class, "createOrDeleteFavoriteArticle" ]);
+
+        Route::delete("delete", [ FavoriteController::class, "deleteFavorites" ]);
+    });
 });
 
 Route::prefix("sort")->group(function () {

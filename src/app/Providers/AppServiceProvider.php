@@ -27,6 +27,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Relation::morphMap([
+            'App\\Models\\Package\\Baseklass' => Baseklass::class,
+            'App\\Models\\Package\\Sort' => Sort::class,
             'App\\Models\\Baseklass' => Baseklass::class,
             'App\\Models\\Sort' => Sort::class,
             'App\\Models\\Article\\Article' => Article::class,

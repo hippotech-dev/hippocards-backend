@@ -34,7 +34,7 @@ class Favorite extends Model
 
     public function scopePackage($query)
     {
-        return $query->with([ "object" => fn ($query) => $query->withCount("wordSorts") ]);
+        return $query->with([ "object" ]);
     }
 
     public function scopeSort($query)
@@ -44,6 +44,6 @@ class Favorite extends Model
 
     public function scopeArticle($query)
     {
-        return $query->with([ "object.package" => fn ($query) => $query->withCount("wordSorts") ]);
+        return $query->with([ "object" ]);
     }
 }
