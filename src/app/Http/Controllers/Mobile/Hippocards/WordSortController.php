@@ -35,9 +35,9 @@ class WordSortController extends Controller
             ->validate();
 
         $resource = Cache::remember(
-            cache_key("search-words", array_merge($filters, [ $request->get("cursor", 1) ])),
+            cache_key("search-words", array_merge($filters, [ $request->get("cursor", 0) ])),
             300,
-            fn () => WordSortResource::collection($this->service->getSortsWithCursor($filters, [ "word", "package" ]))
+            fn () => WordSortResource::collection($this->service->getSortsWithCursor($filters, [ "word.mainDetail", "package" ]))
         );
 
         return $resource;
