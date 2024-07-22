@@ -13,6 +13,11 @@ Route::apiResources([
 
 Route::prefix("package")->group(function () {
     Route::get("{package}/sort", [ PackageController::class, "getPackageSorts" ]);
+    Route::post("{package}/progress", [ PackageController::class, "submitPackageProgress" ]);
+
+    Route::prefix("action")->group(function () {
+        Route::get("recent", [ PackageController::class, "getRecentLearningPackages" ]);
+    });
 });
 
 Route::prefix("favorite")->group(function () {

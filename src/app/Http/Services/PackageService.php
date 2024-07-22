@@ -2,12 +2,15 @@
 
 namespace App\Http\Services;
 
+use App\Enums\EPackageExamType;
 use App\Enums\EPackageType;
 use App\Enums\EStatus;
 use App\Enums\EUserActivityAction;
 use App\Enums\EUserActivityType;
 use App\Models\Package\Baseklass;
+use App\Models\Package\ExamResult;
 use App\Models\Package\Sort;
+use App\Models\Package\UserPackageProgress;
 use App\Models\Package\Word\Word;
 use App\Models\User\User;
 use Illuminate\Support\Collection;
@@ -118,5 +121,48 @@ class PackageService
         return $package->update([
             "word_count" => $package->wordSorts()->count()
         ]);
+    }
+
+    public function getUserPackageProgress(User $user, Baseklass $package)
+    {
+        return UserPackageProgress::where("user_id", $user->id)->where("package_id", $package->id)->first();
+    }
+
+    public function createOrUpdateUserProgress(User $user, Baseklass $package, array $data)
+    {
+        return UserPackageProgress::updateOrCreate([
+            "user_id" => $user->id,
+            "package_id" => $package->id,
+        ], $data);
+    }
+
+    public function submitPackageProgress(User $user, Baseklass $package, EPackageExamType $type)
+    {
+        $correctExamCount = ExamResult::where("user_id", $user->id)->where("baseklass_id", $package->id)->where("status", EStatus::SUCCESS)->count();
+
+        $userProgress = $this->getUserPackageProgress($user, $package);
+
+        $totalExamCount = $userProgress->total_exam_count ?? 0;
+        $totalFinalExamCount = $userProgress->total_final_exam_count ?? 0;
+
+        $this->createOrUpdateUserProgress(
+            $user,
+            $package,
+            [
+                "progress" => $correctExamCount,
+                "package_word_count" => $package->word_count,
+                "total_exam_count" => $type === EPackageExamType::EXAM && $correctExamCount > $totalExamCount
+                    ? $totalExamCount + 1
+                    : $totalExamCount,
+                "total_final_exam_count" => $type === EPackageExamType::FINAL_EXAM && $correctExamCount > $totalFinalExamCount
+                    ? $totalFinalExamCount + 1
+                    : $totalFinalExamCount,
+            ]
+        );
+    }
+
+    public function getRecentLearningPackagesWithCursor(User $user)
+    {
+        return UserPackageProgress::with("package.category")->where("user_id", $user->id)->whereHas("package", fn ($query) => $query->active())->whereColumn("progress", "<", "package_word_count")->orderBy("id", "desc")->cursorPaginate(page_size());
     }
 }

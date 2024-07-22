@@ -5,6 +5,7 @@ namespace App\Models\User;
 use App\Enums\EUserLoginType;
 use App\Enums\EUserRole;
 use App\Models\Course\CourseCertificate;
+use App\Models\Package\UserPackageProgress;
 use App\Models\Payment\PaymentInvoice;
 use App\Models\Payment\PaymentOrder;
 use App\Models\SSO\OAuthAuthenticationAttempt;

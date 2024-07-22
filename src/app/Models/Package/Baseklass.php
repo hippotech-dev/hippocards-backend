@@ -70,6 +70,11 @@ class Baseklass extends Model
         return $this->belongsTo(User::class, "created_by");
     }
 
+    public function userProgresses()
+    {
+        return $this->hasMany(UserPackageProgress::class, "package_id");
+    }
+
     /**
      * Scopes
      */
