@@ -37,10 +37,10 @@ class WordSortController extends Controller
         $resource = Cache::remember(
             cache_key("search-words", array_merge($filters, [ $request->get("cursor", 0) ])),
             300,
-            fn () => WordSortResource::collection($this->service->getSortsWithCursor($filters, [ "word.mainDetail", "package" ]))
+            fn () => $this->service->getSortsWithCursor($filters, [ "word.mainDetail", "package" ])
         );
 
-        return $resource;
+        return WordSortResource::collection($resource);
     }
 
     /**
@@ -48,18 +48,16 @@ class WordSortController extends Controller
      */
     public function show(string $id)
     {
-        $sort = $this->service->getSortByIdLoaded($id);
+        $sort = Cache::remember(
+            cache_key("get-word-overview", [ $id ]),
+            3600,
+            fn () => $this->service->getSortByIdLoaded($id)
+        );
 
         if (is_null($sort)) {
             throw new NotFoundHttpException("Sort not found!");
         }
 
-        $sort = Cache::remember(
-            cache_key("get-word-overview", [ $id ]),
-            3600,
-            fn () => new WordSortResource($sort)
-        );
-
-        return $sort;
+        return new WordSortResource($sort);
     }
 }

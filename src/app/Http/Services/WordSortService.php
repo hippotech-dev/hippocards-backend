@@ -139,13 +139,13 @@ class WordSortService
     public function getSortsWithSimplePage(array $filters, array $with = [], $orderBy = [ "field" => "id", "value" => "desc" ])
     {
         $orderBy = get_sort_info($orderBy);
-        return filter_query_with_model(Sort::with($with), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->simplePaginate(page_size());
+        return filter_query_with_model(Sort::with($with), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->simplePaginate(page_size())->withQueryString();
     }
 
     public function getSortsWithCursor(array $filters, array $with = [], $orderBy = [ "field" => "id", "value" => "desc" ])
     {
         $orderBy = get_sort_info($orderBy);
-        return filter_query_with_model(Sort::with($with), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->cursorPaginate(page_size());
+        return filter_query_with_model(Sort::with($with), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->cursorPaginate(page_size())->withQueryString();
     }
 
     public function getPackageSorts(Baseklass $package, array $filters, array $with = [], $orderBy = [ "field" => "id", "value" => "desc" ])
@@ -157,7 +157,7 @@ class WordSortService
     public function getSortsWithPage(array $filters, array $with = [], $orderBy = [ "field" => "id", "value" => "desc" ])
     {
         $orderBy = get_sort_info($orderBy);
-        return filter_query_with_model(Sort::with($with), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->paginate(page_size());
+        return filter_query_with_model(Sort::with($with), $this->getFilterModel($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->paginate(page_size())->withQueryString();
     }
 
     public function createSort(User $user, Baseklass $package, array $data)

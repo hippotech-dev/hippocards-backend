@@ -44,6 +44,6 @@ class Favorite extends Model
 
     public function scopeArticle($query)
     {
-        return $query->with([ "object" ]);
+        return $query->with([ "object.package" ]);
     }
 }
