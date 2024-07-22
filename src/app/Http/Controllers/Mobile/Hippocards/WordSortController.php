@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Mobile\Hippocards;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Mobile\Hippocards\ExamResultResource;
 use App\Http\Resources\Mobile\Hippocards\WordResource;
 use App\Http\Resources\Mobile\Hippocards\WordSortResource;
 use App\Http\Services\WordSortService;
@@ -59,5 +60,19 @@ class WordSortController extends Controller
         }
 
         return new WordSortResource($sort);
+    }
+
+    /**
+     * Get recent learning words
+     */
+    public function getRecentLearningWords(Request $request)
+    {
+        $filters = $request->only("language");
+
+        $user = auth()->user();
+
+        $words = $this->service->getRecentLearningWords($user, $filters);
+
+        return ExamResultResource::collection($words);
     }
 }

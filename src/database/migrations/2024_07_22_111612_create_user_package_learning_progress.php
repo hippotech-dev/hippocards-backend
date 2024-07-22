@@ -14,6 +14,7 @@ return new class () extends Migration {
             $table->id();
             $table->unsignedInteger("user_id")->index();
             $table->integer("package_id")->index();
+            $table->integer("language_id")->index();
             $table->integer("progress")->default(0);
             $table->integer("package_word_count")->default(0);
             $table->integer("total_exam_count")->default(0);
@@ -23,6 +24,10 @@ return new class () extends Migration {
             $table->foreign("user_id")
                 ->references("id")
                 ->on("users")
+                ->cascadeOnDelete();
+            $table->foreign("language_id")
+                ->references("id")
+                ->on("language")
                 ->cascadeOnDelete();
             $table->foreign("package_id")
                 ->references("id")

@@ -17,6 +17,7 @@ Route::prefix("package")->group(function () {
 
     Route::prefix("action")->group(function () {
         Route::get("recent", [ PackageController::class, "getRecentLearningPackages" ]);
+
     });
 });
 
@@ -36,6 +37,10 @@ Route::prefix("favorite")->group(function () {
 
 Route::prefix("sort")->group(function () {
     Route::get("action/memorized-words", [ WordSortController::class, "getMemorizedSorts" ]);
+});
+
+Route::prefix("word")->group(function () {
+    Route::get("action/recent", [ WordSortController::class, "getRecentLearningWords" ]);
 });
 
 Route::prefix("account")->group(function () {

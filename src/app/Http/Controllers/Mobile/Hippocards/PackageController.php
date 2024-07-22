@@ -66,11 +66,13 @@ class PackageController extends Controller
     /**
      * Get Recent learning pacakges
      */
-    public function getRecentLearningPackages()
+    public function getRecentLearningPackages(Request $request)
     {
+        $filters = $request->only("language");
+
         $requestUser = auth()->user();
 
-        $packages = $this->service->getRecentLearningPackagesWithCursor($requestUser);
+        $packages = $this->service->getRecentLearningPackagesWithCursor($requestUser, $filters);
 
         return PackageProgressResource::collection($packages);
     }

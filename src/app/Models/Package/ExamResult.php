@@ -2,6 +2,7 @@
 
 namespace App\Models\Package;
 
+use App\Models\Package\Word\Word;
 use Illuminate\Database\Eloquent\Model;
 
 class ExamResult extends Model
@@ -20,4 +21,13 @@ class ExamResult extends Model
         'type'
     ];
 
+    public function word()
+    {
+        return $this->belongsTo(Word::class);
+    }
+
+    public function package()
+    {
+        return $this->belongsTo(Baseklass::class, "baseklass_id");
+    }
 }

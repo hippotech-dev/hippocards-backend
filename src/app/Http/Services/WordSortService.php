@@ -9,6 +9,7 @@ use App\Enums\EUserActivityType;
 use App\Exceptions\AppException;
 use App\Jobs\GenerateWordAudioJob;
 use App\Models\Package\Baseklass;
+use App\Models\Package\ExamResult;
 use App\Models\Package\Sort;
 use App\Models\Package\Word\Word;
 use App\Models\Package\Word\WordSynonym;
@@ -289,5 +290,10 @@ class WordSortService
         $word->update([
             "mp3" => $asset->name
         ]);
+    }
+
+    public function getRecentLearningWords(User $user, array $filters = [])
+    {
+        return ExamResult::with("word.images")->whereHas("package", fn ($query) => filter_query_with_model($query, [ "language" => [ "where", "language_id" ] ], $filters))->where("user_id", $user->id)->orderBy("id", "desc")->cursorPaginate(page_size());
     }
 }

@@ -161,8 +161,12 @@ class PackageService
         );
     }
 
-    public function getRecentLearningPackagesWithCursor(User $user)
+    public function getRecentLearningPackagesWithCursor(User $user, array $filters = [])
     {
-        return UserPackageProgress::with("package.category")->where("user_id", $user->id)->whereHas("package", fn ($query) => $query->active())->whereColumn("progress", "<", "package_word_count")->orderBy("id", "desc")->cursorPaginate(page_size());
+        return filter_query_with_model(UserPackageProgress::with("package.category"), [ "language" => [ "where", "language_id" ] ], $filters)
+            ->where("user_id", $user->id)
+            ->whereHas("package", fn ($query) => $query->active())
+            ->whereColumn("progress", "<", "package_word_count")->orderBy("id", "desc")
+            ->cursorPaginate(page_size());
     }
 }
