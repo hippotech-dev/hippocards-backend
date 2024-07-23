@@ -151,6 +151,7 @@ class PackageService
             [
                 "progress" => $correctExamCount,
                 "package_word_count" => $package->word_count,
+                "language_id" => $package->language_id,
                 "total_exam_count" => $type === EPackageExamType::EXAM && $correctExamCount > $totalExamCount
                     ? $totalExamCount + 1
                     : $totalExamCount,
