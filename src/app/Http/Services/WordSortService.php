@@ -294,6 +294,14 @@ class WordSortService
 
     public function getRecentLearningWords(User $user, array $filters = [])
     {
-        return ExamResult::with("word.images")->whereHas("package", fn ($query) => filter_query_with_model($query, [ "language" => [ "where", "language_id" ] ], $filters))->where("user_id", $user->id)->orderBy("id", "desc")->cursorPaginate(page_size());
+        $query = ExamResult::with("word.images")
+            ->whereHas("package", fn ($query) => filter_query_with_model($query, [ "language" => [ "where", "language_id" ] ], $filters))
+            ->where("user_id", $user->id)
+            ->orderBy("id", "desc");
+
+        return [
+            "results" => $query->cursorPaginate(page_size()),
+            "total" => $query->count(),
+        ];
     }
 }

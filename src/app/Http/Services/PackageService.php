@@ -164,10 +164,21 @@ class PackageService
 
     public function getRecentLearningPackagesWithCursor(User $user, array $filters = [])
     {
-        return filter_query_with_model(UserPackageProgress::with("package.category"), [ "language" => [ "where", "language_id" ] ], $filters)
+        $query = filter_query_with_model(UserPackageProgress::with("package.category"), [ "language" => [ "where", "language_id" ] ], $filters)
             ->where("user_id", $user->id)
             ->whereHas("package", fn ($query) => $query->active())
-            ->whereColumn("progress", "<", "package_word_count")->orderBy("id", "desc")
-            ->cursorPaginate(page_size());
+            ->whereColumn("progress", "<", "package_word_count")->orderBy("id", "desc");
+
+        return [
+            "results" => $query->cursorPaginate(page_size()),
+            "total" => $query->count()
+        ];
+    }
+
+    public function getPackageWordsProgress(User $user, Baseklass $package)
+    {
+        $examResults = ExamResult::where("user_id", $user->id)->where("baseklass_id", $package->id)->get();
+
+        return array_column($examResults->toArray(), "status", "word_id");
     }
 }

@@ -71,8 +71,8 @@ class WordSortController extends Controller
 
         $user = auth()->user();
 
-        $words = $this->service->getRecentLearningWords($user, $filters);
+        [ "results" => $words, "total" => $total ] = $this->service->getRecentLearningWords($user, $filters);
 
-        return ExamResultResource::collection($words);
+        return ExamResultResource::collection($words)->additional([ "total_count" => $total ]);
     }
 }

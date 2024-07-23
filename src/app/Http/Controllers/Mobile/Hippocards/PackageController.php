@@ -28,13 +28,17 @@ class PackageController extends Controller
      */
     public function getPackageSorts(Baseklass $package)
     {
+        $user = auth()->user();
+
         $sorts = Cache::remember(
             cache_key("package-sort", [ $package->id ]),
             3600,
             fn () => $this->wordSortService->getPackageSorts($package, [], [ "word", "word.images" ], [ "field" => "sort_word", "value" => "asc" ])
         );
 
-        return WordSortResource::collection($sorts);
+        $packageProgress = $this->service->getPackageWordsProgress($user, $package);
+
+        return WordSortResource::collection($sorts)->additional([ "word_progresses" => $packageProgress ]);
     }
 
     /**
@@ -72,8 +76,8 @@ class PackageController extends Controller
 
         $requestUser = auth()->user();
 
-        $packages = $this->service->getRecentLearningPackagesWithCursor($requestUser, $filters);
+        [ "results" => $packages, "total" => $total ] = $this->service->getRecentLearningPackagesWithCursor($requestUser, $filters);
 
-        return PackageProgressResource::collection($packages);
+        return PackageProgressResource::collection($packages)->additional([ "total_count" => $total ]);
     }
 }
