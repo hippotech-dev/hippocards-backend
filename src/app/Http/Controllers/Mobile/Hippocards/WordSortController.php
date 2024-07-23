@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Mobile\Hippocards;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Mobile\Hippocards\ExamResultResource;
-use App\Http\Resources\Mobile\Hippocards\WordResource;
 use App\Http\Resources\Mobile\Hippocards\WordSortResource;
 use App\Http\Services\WordSortService;
 use Illuminate\Http\Request;
@@ -16,6 +15,7 @@ class WordSortController extends Controller
 {
     public function __construct(private WordSortService $service)
     {
+        $this->middleware("jwt.auth", [ "only" => "getRecentLearningWords" ]);
     }
 
     /**
