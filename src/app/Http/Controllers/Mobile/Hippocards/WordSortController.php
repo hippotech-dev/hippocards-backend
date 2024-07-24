@@ -49,6 +49,8 @@ class WordSortController extends Controller
      */
     public function show(string $id)
     {
+        $requestUser = auth()->user();
+
         $sort = Cache::remember(
             cache_key("get-word-overview", [ $id ]),
             3600,
@@ -59,7 +61,9 @@ class WordSortController extends Controller
             throw new NotFoundHttpException("Sort not found!");
         }
 
-        return new WordSortResource($sort);
+        $sortFavorite = $this->service->getSortFavorite($requestUser, $sort);
+
+        return resource_append_additional(new WordSortResource($sort), [ "favorite" => !is_null($sortFavorite) ]);
     }
 
     /**
@@ -73,6 +77,6 @@ class WordSortController extends Controller
 
         [ "results" => $words, "total" => $total ] = $this->service->getRecentLearningWords($user, $filters);
 
-        return ExamResultResource::collection($words)->additional([ "total_count" => $total ]);
+        return resource_append_additional(ExamResultResource::collection($words), [ "total_count" => $total ]);
     }
 }

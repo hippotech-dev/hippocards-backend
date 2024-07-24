@@ -38,7 +38,7 @@ class PackageController extends Controller
 
         $packageProgress = $this->service->getPackageWordsProgress($user, $package);
 
-        return WordSortResource::collection($sorts)->additional([ "word_progresses" => $packageProgress ]);
+        return resource_append_additional(WordSortResource::collection($sorts), [ "word_progresses" => $packageProgress ]);
     }
 
     /**
@@ -78,6 +78,6 @@ class PackageController extends Controller
 
         [ "results" => $packages, "total" => $total ] = $this->service->getRecentLearningPackagesWithCursor($requestUser, $filters);
 
-        return PackageProgressResource::collection($packages)->additional([ "total_count" => $total ]);
+        return resource_append_additional(PackageProgressResource::collection($packages), [ "total_count" => $total ]);
     }
 }

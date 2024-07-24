@@ -35,7 +35,7 @@ class FavoriteController extends Controller
             fn () => $this->service->getFavoritePackages($requestUser, $filters)
         );
 
-        return FavoriteResource::collection($favorites)->additional([ "additional" => [ "total_count" => $total ] ]);
+        return resource_append_additional(FavoriteResource::collection($favorites), [ "additional" => [ "total_count" => $total ] ]);
     }
 
     /**
@@ -53,7 +53,7 @@ class FavoriteController extends Controller
             fn () => $this->service->getFavoriteSorts($requestUser, $filters)
         );
 
-        return FavoriteResource::collection($favorites)->additional([ "additional" => [ "total_count" => $total ] ]);
+        return resource_append_additional(FavoriteResource::collection($favorites), [ "additional" => [ "total_count" => $total ] ]);
     }
 
     /**
@@ -70,7 +70,7 @@ class FavoriteController extends Controller
             fn () => $this->service->getFavoriteArticles($requestUser, $filters)
         );
 
-        return FavoriteResource::collection($favorites)->additional([ "additional" => [ "total_count" => $total ] ]);
+        return resource_append_additional(FavoriteResource::collection($favorites), [ "additional" => [ "total_count" => $total ] ]);
     }
 
     /**

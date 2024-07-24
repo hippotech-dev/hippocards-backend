@@ -3,6 +3,7 @@
 namespace App\Models\Package;
 
 use App\Models\Package\Word\Word;
+use App\Models\Utility\Favorite;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -32,6 +33,11 @@ class Sort extends Model
     public function package()
     {
         return $this->belongsTo(Baseklass::class, "baseklass_id");
+    }
+
+    public function favorites()
+    {
+        return $this->morphMany(Favorite::class, "object", "object_type", "object_id");
     }
 
     /**

@@ -419,3 +419,10 @@ if (!function_exists('check_const_level')) {
         }
     }
 }
+
+if (!function_exists('resource_append_additional')) {
+    function resource_append_additional(mixed $resource, array $additionalValue, string $keyName = "additional")
+    {
+        return ($resource)->additional([ $keyName => $additionalValue ]);
+    }
+}

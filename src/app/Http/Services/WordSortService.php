@@ -304,4 +304,9 @@ class WordSortService
             "total" => $query->count(),
         ];
     }
+
+    public function getSortFavorite(User $user, Sort $sort)
+    {
+        return $sort->favorites()->where("user_id", $user->id)->first();
+    }
 }
