@@ -8,10 +8,11 @@ enum EUserRole: int
 {
     use EnumWithValues;
 
-    case UNKNOWN = 0;
+    case USER = 0;
     case SUPERADMIN = 1;
-    case MANAGER = 4;
-    case USER = 5;
+    case UNKNOWN = 2;
+    case OLD_CONTENT_MANAGER = 3;
+    case OLD_CONTENT_CREATOR = 4;
     case CONTENT_CREATOR = 6;
     case CONTENT_MANAGER = 7;
 }
