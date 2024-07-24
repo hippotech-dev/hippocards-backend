@@ -20,6 +20,7 @@ class FavoriteController extends Controller
     {
         $this->middleware("jwt.auth");
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -29,11 +30,7 @@ class FavoriteController extends Controller
 
         $requestUser = auth()->user();
 
-        [ "results" => $favorites, "total" => $total ] = Cache::remember(
-            cache_key("list-favorite-packages", [ $requestUser->id, $filters["language"] ?? 0, $request->get("cursor", 0) ]),
-            600,
-            fn () => $this->service->getFavoritePackages($requestUser, $filters)
-        );
+        [ "results" => $favorites, "total" => $total ] = $this->service->getFavoritePackages($requestUser, $filters);
 
         return resource_append_additional(FavoriteResource::collection($favorites), [ "additional" => [ "total_count" => $total ] ]);
     }
@@ -47,11 +44,7 @@ class FavoriteController extends Controller
 
         $requestUser = auth()->user();
 
-        [ "results" => $favorites, "total" => $total ] = Cache::remember(
-            cache_key("list-favorite-sorts", [ $requestUser->id, $filters["language"] ?? 0, $request->get("cursor", 0) ]),
-            600,
-            fn () => $this->service->getFavoriteSorts($requestUser, $filters)
-        );
+        [ "results" => $favorites, "total" => $total ] = $this->service->getFavoriteSorts($requestUser, $filters);
 
         return resource_append_additional(FavoriteResource::collection($favorites), [ "additional" => [ "total_count" => $total ] ]);
     }
@@ -64,11 +57,7 @@ class FavoriteController extends Controller
         $filters = $request->only("language");
 
         $requestUser = auth()->user();
-        [ "results" => $favorites, "total" => $total ] = Cache::remember(
-            cache_key("list-favorite-articles", [ $requestUser->id, $filters["language"] ?? 0, $request->get("cursor", 0) ]),
-            600,
-            fn () => $this->service->getFavoriteArticles($requestUser, $filters)
-        );
+        [ "results" => $favorites, "total" => $total ] = $this->service->getFavoriteArticles($requestUser, $filters);
 
         return resource_append_additional(FavoriteResource::collection($favorites), [ "additional" => [ "total_count" => $total ] ]);
     }
@@ -97,7 +86,6 @@ class FavoriteController extends Controller
             throw new NotFoundHttpException("Package not found!");
         }
         $this->service->createOrDeleteFavoriteByType($requestUser, EFavoriteType::PACKAGE, $package, $validatedData["favorite"]);
-        Cache::forget(cache_key("list-favorite-packages", [ $requestUser->id, $package->language_id, 0 ]));
 
         return response()->success();
     }
@@ -125,8 +113,8 @@ class FavoriteController extends Controller
         if (is_null($sort)) {
             throw new NotFoundHttpException("Sort not found!");
         }
+
         $this->service->createOrDeleteFavoriteByType($requestUser, EFavoriteType::WORD, $sort, $validatedData["favorite"]);
-        Cache::forget(cache_key("list-favorite-sorts", [ $requestUser->id, $sort->language_id, 0 ]));
 
         return response()->success();
     }
@@ -154,8 +142,8 @@ class FavoriteController extends Controller
         if (is_null($article)) {
             throw new NotFoundHttpException("Article not found!");
         }
+
         $this->service->createOrDeleteFavoriteByType($requestUser, EFavoriteType::ARTICLE, $article, $validatedData["favorite"]);
-        Cache::forget(cache_key("list-favorite-articles", [ $requestUser->id, $article->language_id, 0 ]));
 
         return response()->success();
     }
@@ -177,16 +165,11 @@ class FavoriteController extends Controller
 
         $requestUser = auth()->user();
         $initialFavorite = $this->service->getFavoriteById($validatedData["favorites"][0] ?? 0);
-
         if (is_null($initialFavorite)) {
             throw new NotFoundHttpException("Invalid favorite in array!");
         }
 
         $this->service->deleteFavorites($requestUser, $validatedData["favorites"]);
-
-        $initialFavorite->type === EFavoriteType::ARTICLE && Cache::forget(cache_key("list-favorite-articles", [ $requestUser->id, $initialFavorite->language_id, 0 ]));
-        $initialFavorite->type === EFavoriteType::PACKAGE && Cache::forget(cache_key("list-favorite-packages", [ $requestUser->id, $initialFavorite->language_id, 0 ]));
-        $initialFavorite->type === EFavoriteType::WORD && Cache::forget(cache_key("list-favorite-sorts", [ $requestUser->id, $initialFavorite->language_id, 0 ]));
 
         return response()->success();
     }
