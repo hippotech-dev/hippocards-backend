@@ -33,7 +33,7 @@ class PackageController extends Controller
         $sorts = Cache::remember(
             cache_key("package-sort", [ $package->id ]),
             3600,
-            fn () => $this->wordSortService->getPackageSorts($package, [], [ "word", "word.images" ], [ "field" => "sort_word", "value" => "asc" ])
+            fn () => $this->wordSortService->getPackageSorts($package, [], [ "word", "word.mainDetail",  "word.images" ], [ "field" => "sort_word", "value" => "asc" ])
         );
 
         $packageProgress = $this->service->getPackageWordsProgress($user, $package);

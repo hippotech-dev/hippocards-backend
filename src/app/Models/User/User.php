@@ -5,6 +5,7 @@ namespace App\Models\User;
 use App\Enums\EUserLoginType;
 use App\Enums\EUserRole;
 use App\Models\Course\CourseCertificate;
+use App\Models\Package\UserCustomWordDetail;
 use App\Models\Payment\PaymentInvoice;
 use App\Models\Payment\PaymentOrder;
 use App\Models\SSO\OAuthAuthenticationAttempt;
@@ -117,6 +118,11 @@ class User extends Authenticatable implements JWTSubject
     public function favorites()
     {
         return $this->hasMany(Favorite::class);
+    }
+
+    public function customWordDetails()
+    {
+        return $this->hasMany(UserCustomWordDetail::class, "user_id");
     }
 
     /**

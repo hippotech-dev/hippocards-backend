@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Mobile\Hippocards\ExamResultResource;
 use App\Http\Resources\Mobile\Hippocards\WordSortResource;
 use App\Http\Services\WordSortService;
+use App\Models\Package\Sort;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
@@ -15,7 +16,7 @@ class WordSortController extends Controller
 {
     public function __construct(private WordSortService $service)
     {
-        $this->middleware("jwt.auth", [ "only" => "getRecentLearningWords" ]);
+        $this->middleware("jwt.auth", [ "only" => [ "getRecentLearningWords", "createCustomKeywordForSort" ] ]);
     }
 
     /**
@@ -49,7 +50,7 @@ class WordSortController extends Controller
 
         $sort = Cache::remember(
             cache_key("get-word-overview", [ $id ]),
-            3600,
+            600,
             fn () => $this->service->getSortByIdLoaded($id)
         );
 
@@ -58,8 +59,9 @@ class WordSortController extends Controller
         }
 
         $sortFavorite = $this->service->getSortFavorite($requestUser, $sort);
+        $sortCustomDetail = $this->service->getUserCustomWordDetail($requestUser, $sort);
 
-        return resource_append_additional(new WordSortResource($sort), [ "favorite" => !is_null($sortFavorite) ]);
+        return resource_append_additional(new WordSortResource($sort), [ "favorite" => !is_null($sortFavorite), "custom_detail" => $sortCustomDetail ]);
     }
 
     /**
@@ -74,5 +76,27 @@ class WordSortController extends Controller
         [ "results" => $words, "total" => $total ] = $this->service->getRecentLearningWords($user, $filters);
 
         return resource_append_additional(ExamResultResource::collection($words), [ "total_count" => $total ]);
+    }
+
+    /**
+     * Add custom keyword for sort
+     */
+    public function createCustomKeywordForSort(Request $request, Sort $sort)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "keywords"
+            ),
+            [
+                "keywords" => "nullable|array",
+                "keywords.*" => "string",
+            ]
+        )
+            ->validate();
+
+        $requestUser = auth()->user();
+        $this->service->createOrUpdateUserCustomSortDetail($requestUser, $sort, $validatedData);
+
+        return response()->success();
     }
 }

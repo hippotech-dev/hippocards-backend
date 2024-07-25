@@ -36,7 +36,11 @@ Route::prefix("favorite")->group(function () {
 });
 
 Route::prefix("sort")->group(function () {
-    Route::get("action/memorized-words", [ WordSortController::class, "getMemorizedSorts" ]);
+    Route::post("{sort}/custom-detail", [ WordSortController::class, "createCustomKeywordForSort" ]);
+
+    Route::prefix("action")->group(function () {
+        Route::get("memorized-words", [ WordSortController::class, "getMemorizedSorts" ]);
+    });
 });
 
 Route::prefix("word")->group(function () {

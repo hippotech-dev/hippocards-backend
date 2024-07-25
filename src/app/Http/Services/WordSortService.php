@@ -309,4 +309,25 @@ class WordSortService
     {
         return $sort->favorites()->where("user_id", $user->id)->first();
     }
+
+    public function getUserCustomWordDetail(User $user, Sort $sort)
+    {
+        $customDetail =  $user->customWordDetails()->where("sort_id", $sort->id)->first();
+
+        return [
+            "keywords" => $customDetail->keywords ?? []
+        ];
+    }
+
+    public function createOrUpdateUserCustomSortDetail(User $user, Sort $sort, array $data)
+    {
+        return $user->customWordDetails()->updateOrCreate(
+            [
+                "sort_id" => $sort->id,
+                "package_id" => $sort->baseklass_id,
+                "word_id" => $sort->word_id,
+            ],
+            $data
+        );
+    }
 }
