@@ -2,6 +2,7 @@
 
 use App\Http\Services\PackageService;
 use App\Http\Services\SentenceService;
+use App\Models\Utility\Language;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -22,5 +23,11 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Artisan::command('custom:generate-sentence-audio', function (SentenceService $service) {
-    $service->generateAudioForAllSentences();
+    $service->generateAudioForAllSentences(Language::find(1), 1000);
+    // $service->generateAudioForAllSentences(Language::find(2));
+    // $service->generateAudioForAllSentences(Language::find(3));
+    // $service->generateAudioForAllSentences(Language::find(4));
+    // $service->generateAudioForAllSentences(Language::find(5));
+    // $service->generateAudioForAllSentences(Language::find(9));
+    // $service->generateAudioForAllSentences(Language::find(13));
 })->purpose('Display an inspiring quote');

@@ -59,11 +59,10 @@ class SentenceService
         });
     }
 
-    public function generateAudioForAllSentences()
+    public function generateAudioForAllSentences(Language $language, int $limit = 500)
     {
-        Log::channel("custom")->info("Sentence AUDIO Generate START");
-        $sentences = Sentence::where("language_id", 1)->where("type", ESentenceType::DEFINITION)->whereNull("v3_audio_asset_id")->inRandomOrder()->limit(5000)->get();
-        $language = Language::find(1);
+        Log::channel("custom")->info(date("Y-m-d H:i:s") . " Sentence AUDIO Generate START");
+        $sentences = Sentence::where("language_id", $language->id)->where("type", ESentenceType::DEFINITION)->whereNull("v3_audio_asset_id")->limit($limit)->get();
         foreach ($sentences as $sentence) {
             $asset = $this->audioService->generateAudio(
                 $sentence->value,
@@ -74,6 +73,6 @@ class SentenceService
                 "v3_audio_asset_id" => $asset->id
             ]);
         }
-        Log::channel("custom")->info("Sentence AUDIO Generate FINISH " . " TOTAL: " . count($sentences));
+        Log::channel("custom")->info(date("Y-m-d H:i:s") . " Sentence AUDIO Generate FINISH " . " TOTAL: " . count($sentences));
     }
 }
