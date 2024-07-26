@@ -47,6 +47,23 @@ services:
     depends_on:
       - redis
       - hippo-api
+  scheduler:
+    image: ghcr.io/hippotech-dev/hippocards-backend:main
+    build:
+      context: .
+      dockerfile: ./src/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./src/storage/logs:/var/www/html/storage/logs
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+    env_file: ./src/.env.production
+    environment:
+      - CONTAINER_ROLE=cron
+    depends_on:
+      - redis
+      - hippo-api
   nginx:
     image: nginx:latest
     ports:

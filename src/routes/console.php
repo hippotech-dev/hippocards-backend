@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Services\PackageService;
+use App\Http\Services\SentenceService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -18,4 +19,8 @@ use Illuminate\Support\Facades\DB;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
+})->purpose('Display an inspiring quote');
+
+Artisan::command('custom:generate-sentence-audio', function (SentenceService $service) {
+    $service->generateAudioForAllSentences();
 })->purpose('Display an inspiring quote');

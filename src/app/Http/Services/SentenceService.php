@@ -2,11 +2,20 @@
 
 namespace App\Http\Services;
 
+use App\Enums\ELocale;
+use App\Enums\ESentenceType;
+use App\Models\Utility\Language;
 use App\Models\Utility\Sentence;
+use App\Util\AudioConfig;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SentenceService
 {
+    public function __construct(private AudioService $audioService)
+    {
+    }
+
     public function createSentences(mixed $object, array $sentences)
     {
         return $object->sentences()->createMany($sentences);
@@ -48,5 +57,23 @@ class SentenceService
                 $object->sentences()->create($sentence);
             };
         });
+    }
+
+    public function generateAudioForAllSentences()
+    {
+        Log::channel("custom")->info("Sentence AUDIO Generate START");
+        $sentences = Sentence::where("language_id", 1)->where("type", ESentenceType::DEFINITION)->whereNull("v3_audio_asset_id")->inRandomOrder()->limit(5000)->get();
+        $language = Language::find(1);
+        foreach ($sentences as $sentence) {
+            $asset = $this->audioService->generateAudio(
+                $sentence->value,
+                new AudioConfig($language->azure ?? ELocale::ENGLISH)
+            );
+
+            $sentence->update([
+                "v3_audio_asset_id" => $asset->id
+            ]);
+        }
+        Log::channel("custom")->info("Sentence AUDIO Generate FINISH " . " TOTAL: " . count($sentences));
     }
 }
