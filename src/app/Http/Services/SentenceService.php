@@ -7,6 +7,7 @@ use App\Enums\ESentenceType;
 use App\Models\Utility\Language;
 use App\Models\Utility\Sentence;
 use App\Util\AudioConfig;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -64,15 +65,20 @@ class SentenceService
         Log::channel("custom")->info(date("Y-m-d H:i:s") . " Sentence AUDIO Generate START");
         $sentences = Sentence::where("language_id", $language->id)->where("type", ESentenceType::DEFINITION)->whereNull("v3_audio_asset_id")->limit($limit)->get();
         foreach ($sentences as $sentence) {
-            $asset = $this->audioService->generateAudio(
-                $sentence->value,
-                new AudioConfig($language->azure ?? ELocale::ENGLISH)
-            );
+            try {
+                $asset = $this->audioService->generateAudio(
+                    $sentence->value,
+                    new AudioConfig($language->azure ?? ELocale::ENGLISH)
+                );
 
-            $sentence->update([
-                "v3_audio_asset_id" => $asset->id
-            ]);
-            sleep(1);
+                $sentence->update([
+                    "v3_audio_asset_id" => $asset->id
+                ]);
+            } catch (Exception $err) {
+                Log::channel("custom")->error(date("Y-m-d H:i:s") . " Sentence AUDIO Generate ERROR " . " Sentence ID: " . $sentence->id, [
+                    "error" => $err
+                ]);
+            }
         }
         Log::channel("custom")->info(date("Y-m-d H:i:s") . " Sentence AUDIO Generate FINISH " . " TOTAL: " . count($sentences));
     }
