@@ -72,6 +72,7 @@ class SentenceService
             $sentence->update([
                 "v3_audio_asset_id" => $asset->id
             ]);
+            sleep(1);
         }
         Log::channel("custom")->info(date("Y-m-d H:i:s") . " Sentence AUDIO Generate FINISH " . " TOTAL: " . count($sentences));
     }
