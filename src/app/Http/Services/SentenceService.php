@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Enums\ELocale;
 use App\Enums\ESentenceType;
+use App\Jobs\GenerateSentenceAudioJob;
 use App\Models\Utility\Language;
 use App\Models\Utility\Sentence;
 use App\Util\AudioConfig;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 
 class SentenceService
 {
-    public function __construct(private AudioService $audioService)
+    public function __construct(private AudioService $audioService, private LanguageService $languageService, private AssetService $assetService)
     {
     }
 
@@ -24,11 +25,18 @@ class SentenceService
 
     public function createSentence(mixed $object, array $data)
     {
-        return $object->sentences()->create($data);
+        $sentence = $object->sentences()->create($data);
+        $this->createSentenceAudio($sentence);
+
+        return $sentence;
     }
 
     public function updateSentence(Sentence $sentence, array $data)
     {
+        if (array_key_exists("value", $data) && $sentence->value !== $data["value"]) {
+            $this->createSentenceAudio($sentence);
+        }
+
         return $sentence->update($data);
     }
 
@@ -55,9 +63,32 @@ class SentenceService
                     continue;
                 }
 
-                $object->sentences()->create($sentence);
+                $sentence = $object->sentences()->create($sentence);
             };
         });
+    }
+
+    public function createSentenceAudio(Sentence $sentence)
+    {
+        return GenerateSentenceAudioJob::dispatch($sentence);
+    }
+
+    public function generateSentenceAudio(Sentence $sentence)
+    {
+        if (!is_null($sentence->v3_audio_asset_id)) {
+            $this->assetService->deleteAssetById($sentence->v3_audio_asset_id);
+        }
+
+        $language = $this->languageService->getLanguageById($sentence->language_id);
+
+        $asset = $this->audioService->generateAudio(
+            $sentence->value,
+            new AudioConfig($language->azure ?? ELocale::ENGLISH)
+        );
+
+        return $sentence->update([
+            "v3_audio_asset_id" => $asset->id
+        ]);
     }
 
     public function generateAudioForAllSentences(Language $language, int $limit = 500)
