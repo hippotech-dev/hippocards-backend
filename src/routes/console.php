@@ -25,7 +25,7 @@ Artisan::command('inspire', function () {
 Artisan::command('custom:generate-sentence-audio', function (SentenceService $service) {
     $service->generateAudioForAllSentences(Language::find(1), 1000);
     // $service->generateAudioForAllSentences(Language::find(2));
-    // $service->generateAudioForAllSentences(Language::find(3));
+    // $service->generateAudioForAllSentences(Language::fin3d(3));
     // $service->generateAudioForAllSentences(Language::find(4));
     // $service->generateAudioForAllSentences(Language::find(5));
     // $service->generateAudioForAllSentences(Language::find(9));

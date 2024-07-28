@@ -69,8 +69,8 @@ class WordSortService
             "mainDetail",
             "images",
             "synonyms",
-            "definitionSentences",
-            "imaginationSentences"
+            "definitionSentences.audioAsset",
+            "imaginationSentences.audioAsset"
         ])
             ->find($sort->word_id);
 

@@ -24,6 +24,7 @@ class SentenceResource extends JsonResource
             "order" => $this->order,
             "v3_audio_asset_id" => $this->v3_audio_asset_id,
             "language_id" => $this->language_id,
+            "audio" => new AssetResource($this->whenLoaded("audioAsset"))
         ];
     }
 }
