@@ -12,7 +12,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('custom:generate-sentence-audio')->hourly();
         $schedule->command('custom:generate-sentence-audio-3')->hourly();
         $schedule->command('custom:generate-sentence-audio-4')->hourly();
     }

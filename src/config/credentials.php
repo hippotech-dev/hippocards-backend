@@ -24,7 +24,7 @@ return [
         "API_KEY" => env('VDO_CIPHER_API_KEY', "")
     ],
     'azure' => [
-        'API_KEY' => "4ed45cda4d8c4bb28d094a3e2921663a",
+        'API_KEY' => env('AZURE_KEY'),
         "PATH" => "https://eastus.tts.speech.microsoft.com/cognitiveservices/v1",
         "NAME" => "TTSPHP"
     ]
