@@ -125,6 +125,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(UserCustomWordDetail::class, "user_id");
     }
 
+    public function preferences()
+    {
+        return $this->hasMany(UserPreference::class, "user_id");
+    }
+
     /**
      * Scopes
      */

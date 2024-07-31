@@ -3,6 +3,7 @@
 use App\Http\Controllers\Mobile\Hippocards\FavoriteController;
 use App\Http\Controllers\Mobile\Hippocards\PackageController;
 use App\Http\Controllers\Mobile\Hippocards\UserController;
+use App\Http\Controllers\Mobile\Hippocards\UserPreferenceController;
 use App\Http\Controllers\Mobile\Hippocards\WordSortController;
 use Illuminate\Support\Facades\Route;
 
@@ -49,4 +50,10 @@ Route::prefix("word")->group(function () {
 
 Route::prefix("account")->group(function () {
     Route::delete("delete-user", [ UserController::class, "deleteUserData" ]);
+    Route::post("preference", [ UserPreferenceController::class, "store" ]);
+});
+
+
+Route::prefix("utility")->group(function () {
+    Route::get("onboarding-preferences", [ UserPreferenceController::class, "getOnboardingPreferencesData" ]);
 });

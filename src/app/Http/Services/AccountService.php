@@ -2,8 +2,10 @@
 
 namespace App\Http\Services;
 
+use App\Enums\EUserPreferenceType;
 use App\Exceptions\AppException;
 use App\Models\User\User;
+use App\Models\User\UserPreference;
 use Exception;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Facades\Config;
@@ -94,5 +96,29 @@ class AccountService
         }
 
         return $this->updateUser($user, [ "password" => $newPassword ]);
+    }
+
+    public function createUpdateUserPreference(User $user, EUserPreferenceType|null $type, mixed $value)
+    {
+        if (is_null($type)) {
+            return null;
+        }
+
+        return $user->preferences()->updateOrCreate(
+            [
+                "type" => $type,
+            ],
+            [
+
+                "value" => $value
+            ]
+        );
+    }
+
+    public function createUpdateUserPreferences(User $user, array $preferences)
+    {
+        foreach ($preferences as $preference) {
+            $this->createUpdateUserPreference($user, EUserPreferenceType::tryFrom($preference["type"]), $preference["value"]);
+        }
     }
 }
