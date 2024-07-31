@@ -21,16 +21,18 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Artisan::command('custom:generate-sentence-audio', function (SentenceService $service) {
-    $service->generateAudioForAllSentences(Language::find(5), 1000);
+    $service->generateAudioForAllSentences(Language::find(8), 1000);
 })->purpose('Display an inspiring quote');
 
 Artisan::command('custom:generate-sentence-audio-3', function (SentenceService $service) {
     sleep(10);
-    $service->generateAudioForAllSentences(Language::find(6), 1000);
+    $service->generateAudioForAllSentences(Language::find(11), 1000);
 })->purpose('Display an inspiring quote');
 
 
 Artisan::command('custom:generate-sentence-audio-4', function (SentenceService $service) {
     sleep(10);
-    $service->generateAudioForAllSentences(Language::find(9), 1000);
+    $service->generateAudioForAllSentences(Language::find(12), 1000);
+    sleep(10);
+    $service->generateAudioForAllSentences(Language::find(13), 1000);
 })->purpose('Display an inspiring quote');
