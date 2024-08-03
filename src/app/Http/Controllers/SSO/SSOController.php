@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SSO;
 use App\Enums\ECodeChallengeMethod;
 use App\Enums\EConfirmationType;
 use App\Http\Controllers\Controller;
+use App\Http\Services\AccountService;
 use App\Http\Services\ConfirmationService;
 use App\Http\Services\GoogleService;
 use App\Http\Services\SSOService;
@@ -15,9 +16,10 @@ use Illuminate\Validation\Rules\Enum;
 
 class SSOController extends Controller
 {
-    public function __construct(private SSOService $service, private ConfirmationService $confirmationService)
+    public function __construct(private SSOService $service, private ConfirmationService $confirmationService, private AccountService $accountService)
     {
-        $this->middleware("throttle:user:1", [ "only" => [ "verifyCredential" ] ]);
+        $this->middleware("throttle:user:10", [ "only" => [ "verifyCredential" ] ]);
+        $this->middleware("jwt.auth", [ "only" => "updateUserCredentials" ]);
     }
 
     /**
@@ -250,6 +252,66 @@ class SSOController extends Controller
         }
 
         $this->service->forgotPassword($confirmation, $validatedData["password"]);
+
+        return response()->success();
+    }
+
+    /**
+     * Update phone
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateUserPhone(Request $request)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "phone_confirmation_id",
+            ),
+            [
+                "phone_confirmation_id" => "required|integer",
+            ]
+        )
+            ->validate();
+
+        $confirmation = $this->confirmationService->checkConfirmationValidity($validatedData["phone_confirmation_id"]);
+
+        if (is_null($confirmation)) {
+            return response()->fail("Confirmation is expired!");
+        }
+
+        $requestUser = auth()->user();
+        $this->accountService->updateUser($requestUser, $validatedData);
+
+        return response()->success();
+    }
+
+    /**
+     * Update email
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateUserEmail(Request $request)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "email_confirmation_id",
+            ),
+            [
+                "email_confirmation_id" => "required|integer",
+            ]
+        )
+            ->validate();
+
+        $confirmation = $this->confirmationService->checkConfirmationValidity($validatedData["email_confirmation_id"]);
+
+        if (is_null($confirmation)) {
+            return response()->fail("Confirmation is expired!");
+        }
+
+        $requestUser = auth()->user();
+        $this->accountService->updateUser($requestUser, $validatedData);
 
         return response()->success();
     }

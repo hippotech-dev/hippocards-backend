@@ -48,7 +48,7 @@ class UserService
 
     public function getUser(array $filters, array $with = [])
     {
-        return filter_query_with_model(User::query(), $this->getFilterModels($filters), $filters)->with($with)->where("is_guest", false)->first();
+        return filter_query_with_model(User::query(), $this->getFilterModels($filters), $filters)->with($with)->first();
     }
 
     public function createNormalUser(array $userData)

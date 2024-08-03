@@ -29,6 +29,9 @@ Route::post("forgot/password", [ SSOController::class, "forgotPassword" ]);
 Route::post("confirmation/verify", [ SSOController::class, "verifyCredential" ]);
 Route::post("confirmation/approve", [ SSOController::class, "approveConfirmation" ]);
 
+Route::post("/account/email", [ SSOController::class, "updateUserEmail" ]);
+Route::post("/account/phone", [ SSOController::class, "updateUserPhone" ]);
+
 Route::post("check/value", [ SSOController::class, "checkUserCredential" ]);
 
 Route::prefix("social")->group(function () {

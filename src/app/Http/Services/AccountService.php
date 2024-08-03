@@ -41,18 +41,22 @@ class AccountService
             }
         }
 
-        if (array_key_exists("phone_verification_id", $data)) {
-            $confirmation = $this->confirmationService->checkConfirmationValidity($data["phone_verification_id"]);
+        if (array_key_exists("phone_confirmation_id", $data)) {
+            $confirmation = $this->confirmationService->checkConfirmationValidity($data["phone_confirmation_id"]);
             if (!is_null($confirmation)) {
                 $data["phone"] = $confirmation->email;
             }
+
+            unset($data["phone_confirmation_id"]);
         }
 
-        if (array_key_exists("email_verification_id", $data)) {
-            $confirmation = $this->confirmationService->checkConfirmationValidity($data["email_verification_id"]);
+        if (array_key_exists("email_confirmation_id", $data)) {
+            $confirmation = $this->confirmationService->checkConfirmationValidity($data["email_confirmation_id"]);
             if (!is_null($confirmation)) {
                 $data["email"] = $confirmation->email;
             }
+
+            unset($data["email_confirmation_id"]);
         }
 
         if (array_key_exists("email", $data) && $user->email !== $data["email"]) {

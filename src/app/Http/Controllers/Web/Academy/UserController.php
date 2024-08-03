@@ -26,8 +26,8 @@ class UserController extends Controller
                 "password",
                 "birth_year",
                 "v3_asset_id",
-                "phone_verification_id",
-                "email_verification_id"
+                "phone_confirmation_id",
+                "email_confirmation_id"
             ),
             [
                 "name" => "sometimes|string|max:128",
@@ -36,7 +36,7 @@ class UserController extends Controller
                 "birth_year" => "sometimes|date",
                 "v3_asset_id" => "sometimes|exists:v3_assets,id",
                 "phone_verification_id" => "sometimes|integer",
-                "email_verification_id" => "sometimes|integer",
+                "email_confirmation_id" => "sometimes|integer",
             ]
         )
             ->validate();
