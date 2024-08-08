@@ -72,12 +72,14 @@ class UploadController extends Controller
             [
                 "filename" => "required|string|max:32",
                 "object_type" => "required|string|max:128",
+                "is_drm_protected" => "sometimes|boolean"
             ]
         )->validate();
 
         $asset = $this->service->createNonuploadedAssetByObject(
             $validatedData["object_type"],
-            $validatedData["filename"]
+            $validatedData["filename"],
+            $validatedData["is_drm_protected"] ?? true
         );
         $url = $this->service->createVideoUploadUrl($asset, [
             "asset_id" => $asset->id,
@@ -109,7 +111,9 @@ class UploadController extends Controller
 
         $this->service->setTranscoderJob($asset, $validatedData["job_id"]);
 
-        $this->service->uploadToDRMProvider($asset);
+        if ($asset->metadata["is_drm_protected"] ?? true) {
+            $this->service->uploadToDRMProvider($asset);
+        }
 
         return response()->success();
     }

@@ -90,7 +90,7 @@ class AssetService
         ]);
     }
 
-    public function createNonuploadedAssetByObject(string $objectType, string $filename)
+    public function createNonuploadedAssetByObject(string $objectType, string $filename, bool $isDRMProtected = true)
     {
         $path = "v3/upload/" . $objectType . "/" . $this->generateRandomFilename(
             $filename
@@ -101,6 +101,9 @@ class AssetService
             "name" => $filename,
             "size" => 0,
             "mime_type" => "unknown",
+            "metadata" => [
+                "is_drm_protected" => $isDRMProtected
+            ]
         ]);
     }
 

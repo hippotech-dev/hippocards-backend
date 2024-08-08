@@ -148,6 +148,10 @@ class CourseService
 
     public function createOrUpdateDetail(Course $course, array $data)
     {
+        if (array_key_exists("v3_about_video_asset_id", $data)) {
+            $data["about_video_path"] = $this->assetService->getAssetPath($data["v3_about_video_asset_id"]);
+        }
+
         array_key_exists("price", $data)
             && $data["price_string"] = number_format($data["price"]);
         return $course->detail()->updateOrCreate([], $data);

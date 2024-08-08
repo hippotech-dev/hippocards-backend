@@ -19,15 +19,3 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
-
-
-Artisan::command('custom:generate-sentence-audio-3', function (SentenceService $service) {
-    sleep(10);
-    $service->generateAudioForAllSentences(Language::find(13), 1000);
-})->purpose('Display an inspiring quote');
-
-
-Artisan::command('custom:generate-sentence-audio-4', function (SentenceService $service) {
-    sleep(10);
-    $service->generateAudioForAllSentences(Language::find(12), 1000);
-})->purpose('Display an inspiring quote');

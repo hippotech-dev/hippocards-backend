@@ -35,6 +35,7 @@ class CourseDetailController extends Controller
                 "price",
                 "price_string",
                 "duration_days",
+                "v3_about_video_asset_id"
             ),
             [
                 "content" => "required|array",
@@ -43,6 +44,7 @@ class CourseDetailController extends Controller
                 "content.*.index" => "required|integer",
                 "price" => "required|integer",
                 "duration_days" => "required|integer",
+                "v3_about_video_asset_id" => "nullable|integer"
             ]
         )
             ->validate();
