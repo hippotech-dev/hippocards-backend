@@ -17,7 +17,8 @@ class CourseCompletion extends Model
         "current_group_id",
         "current_block_id",
         "progress",
-        "is_final_exam_finished"
+        "is_final_exam_finished",
+        "is_introduction_completed"
     ];
 
     protected $casts = [

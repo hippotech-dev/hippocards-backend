@@ -75,7 +75,7 @@ class CourseController extends Controller
      */
     public function show(int $id)
     {
-        $course = $this->service->getCourseById($id);
+        $course = $this->service->getCourseByIdLoaded($id);
 
         if (is_null($course)) {
             throw new NotFoundHttpException();

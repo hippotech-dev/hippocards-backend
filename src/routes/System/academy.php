@@ -5,6 +5,7 @@ use App\Http\Controllers\System\Academy\BlockVideoController;
 use App\Http\Controllers\System\Academy\CourseController;
 use App\Http\Controllers\System\Academy\CourseDetailController;
 use App\Http\Controllers\System\Academy\CourseGroupController;
+use App\Http\Controllers\System\Academy\CourseIntroductionController;
 use App\Http\Controllers\System\Academy\CoursePackageController;
 use App\Http\Controllers\System\Academy\GroupBlockController;
 use App\Http\Controllers\System\Academy\VideoTimestampController;
@@ -24,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 Route::apiResources([
     "course" => CourseController::class,
     "course.detail" => CourseDetailController::class,
+    "course.introduction" => CourseIntroductionController::class,
     "course.package" => CoursePackageController::class,
     "course.group" => CourseGroupController::class,
     "group.block" => GroupBlockController::class,

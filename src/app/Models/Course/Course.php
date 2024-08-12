@@ -67,4 +67,9 @@ class Course extends Model
     {
         return $this->hasMany(CourseCompletion::class, "v3_course_id");
     }
+
+    public function introduction()
+    {
+        return $this->hasOne(CourseIntroduction::class, "v3_course_id");
+    }
 }

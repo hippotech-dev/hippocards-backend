@@ -64,9 +64,14 @@ class CourseService
         return filter_query_with_model(Course::with($with)->latest(), $this->getFilterModels($filters), $filters)->paginate($size);
     }
 
-    public function getCourseById(int $id, array $with = [ "groups", "detail", "packages", "groups" ])
+    public function getCourseById(int $id, array $with = [])
     {
         return Course::with($with)->withCount("blocks")->find($id);
+    }
+
+    public function getCourseByIdLoaded(int $id)
+    {
+        return Course::with([ "detail", "introduction", "packages", "groups" ])->withCount("blocks")->find($id);
     }
 
     public function createCourse(array $data)
@@ -146,15 +151,29 @@ class CourseService
         return $course->detail()->first();
     }
 
+    public function getCourseIntroduction(Course $course)
+    {
+        return $course->introduction()->first();
+    }
+
     public function createOrUpdateDetail(Course $course, array $data)
     {
-        if (array_key_exists("v3_about_video_asset_id", $data)) {
+        if (array_key_exists("v3_about_video_asset_id", $data) && !is_null($data["v3_about_video_asset_id"])) {
             $data["about_video_path"] = $this->assetService->getAssetPath($data["v3_about_video_asset_id"]);
         }
 
         array_key_exists("price", $data)
             && $data["price_string"] = number_format($data["price"]);
         return $course->detail()->updateOrCreate([], $data);
+    }
+
+    public function createOrUpdateIntroduction(Course $course, array $data)
+    {
+        if (array_key_exists("v3_video_asset_id", $data) && !is_null($data["v3_video_asset_id"])) {
+            $data["video_asset_path"] = $this->assetService->getAssetPath($data["v3_video_asset_id"]);
+        }
+
+        return $course->introduction()->updateOrCreate([], $data);
     }
 
     public function attachPackagesToCourse(Course $course, array $data)

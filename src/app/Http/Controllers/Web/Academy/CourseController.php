@@ -49,7 +49,7 @@ class CourseController extends Controller
         $course = Cache::remember(
             cache_key("show-course", [ $id ]),
             3600,
-            fn () => $this->service->getCourseById($id)
+            fn () => $this->service->getCourseByIdLoaded($id)
         );
         return new CourseResource($course);
     }
