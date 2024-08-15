@@ -171,7 +171,7 @@ class AssetService
             return false;
         }
 
-        return $this->vdoService->deleteVideo([
+        return $this->vdoService->deleteVideos([
             $videoId
         ]);
     }
@@ -193,6 +193,7 @@ class AssetService
 
     public function generateRandomFilename(string $filename)
     {
+        $filename = str_replace(" ", "_", $filename);
         return bin2hex(random_bytes(16)) . (($filename[0] ?? "") === "." ? $filename : '-' . $filename);
     }
 

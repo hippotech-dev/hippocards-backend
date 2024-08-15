@@ -60,19 +60,16 @@ class VDOCipherService
         }
     }
 
-    public function deleteVideo(array $videoIds)
+    public function deleteVideos(array $videoIds)
     {
         try {
             $response = fetch_url(
-                "https://dev.vdocipher.com/api/videos",
+                "https://dev.vdocipher.com/api/videos?" . implode(",", $videoIds),
                 "DELETE",
                 [
                     "headers" => [
                         "Authorization" => "Apisecret " . Config::get("credentials.vdoCipher.API_KEY", "")
                     ],
-                    RequestOptions::JSON => [
-                        "videos" => $videoIds
-                    ]
                 ]
             );
             Log::channel("custom")->info("VDO Delete Success", [
@@ -85,4 +82,6 @@ class VDOCipherService
             return null;
         }
     }
+
+    
 }
