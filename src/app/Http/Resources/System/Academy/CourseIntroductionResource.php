@@ -18,8 +18,8 @@ class CourseIntroductionResource extends JsonResource
         return [
             "id" => $this->id,
             "content" => $this->content ?? [],
-            "about_video_path" => append_s3_path($this->about_video_path),
-            "about_video_asset" => new AssetResource($this->whenLoaded("aboutVideoAsset")),
+            "video_asset_path" => append_s3_path($this->video_asset_path),
+            "video_asset" => new AssetResource($this->whenLoaded("videoAsset")),
         ];
     }
 }

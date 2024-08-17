@@ -5,6 +5,7 @@ namespace App\Http\Resources\Web\Academy;
 use App\Enums\EStatus;
 use App\Http\Resources\System\Academy\CourseDetailResource;
 use App\Http\Resources\System\Academy\CourseGroupResource;
+use App\Http\Resources\System\Academy\CourseIntroductionResource;
 use App\Http\Resources\System\Academy\PackageResource;
 use App\Http\Resources\Utility\LanguageResource;
 use Illuminate\Http\Request;
@@ -29,6 +30,7 @@ class CourseResource extends JsonResource
             "status" => $this->status ?? EStatus::PENDING,
             "total_block" => $this->blocks_count,
             "detail" => new CourseDetailResource($this->whenLoaded("detail")),
+            "introduction" => new CourseIntroductionResource($this->whenLoaded("introduction")),
             "language" => new LanguageResource($this->whenLoaded("language")),
             "groups" => CourseGroupResource::collection($this->whenLoaded("groups")),
             "packages" => PackageResource::collection($this->whenLoaded("packages")),
