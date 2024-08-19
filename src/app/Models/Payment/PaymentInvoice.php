@@ -4,6 +4,7 @@ namespace App\Models\Payment;
 
 use App\Enums\EPaymentMethodType;
 use App\Enums\EStatus;
+use App\Models\Utility\PromoCode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,7 +24,8 @@ class PaymentInvoice extends Model
         "user_id",
         "merchant_payment_id",
         "merchant_invoice_id",
-        "redirect_uri"
+        "redirect_uri",
+        "v3_promo_code_id"
     ];
 
     protected $casts = [
@@ -39,5 +41,10 @@ class PaymentInvoice extends Model
     public function responses()
     {
         return $this->hasMany(PaymentInvoiceResponse::class, "v3_payment_invoice_id");
+    }
+
+    public function promoCode()
+    {
+        return $this->belongsTo(PromoCode::class, "v3_payment_invoice_id");
     }
 }
