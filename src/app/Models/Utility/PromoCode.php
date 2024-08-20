@@ -7,6 +7,7 @@ use App\Enums\EPromoContextType;
 use App\Enums\EPromoType;
 use App\Enums\EPromoUsageType;
 use App\Enums\EStatus;
+use App\Models\Payment\PaymentInvoice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -46,5 +47,10 @@ class PromoCode extends Model
     public function object()
     {
         return $this->morphTo("object", "object_type", "object_id");
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(PaymentInvoice::class, "v3_promo_code_id");
     }
 }

@@ -4,9 +4,12 @@ namespace App\Util;
 
 use App\Enums\EPartOfSpeech;
 use App\Enums\EPermissionScope;
+use App\Enums\EPromoType;
 use App\Enums\EUserRole;
+use App\Models\Course\Course;
 use App\Models\Package\Baseklass;
 use App\Models\Package\Word\Word;
+use App\Models\Subscription\SubPlan;
 
 class Constant
 {
@@ -60,5 +63,7 @@ class Constant
     public const CLASS_MAP = [
         "baseklass" => Baseklass::class,
         "word" => Word::class,
+        "plan" => SubPlan::class,
+        "course" => Course::class,
     ];
 }

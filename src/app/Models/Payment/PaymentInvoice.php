@@ -20,12 +20,13 @@ class PaymentInvoice extends Model
         "total_paid_amount",
         "payment_method",
         "status",
-        "v3_payment_order_id",
         "user_id",
         "merchant_payment_id",
         "merchant_invoice_id",
         "redirect_uri",
-        "v3_promo_code_id"
+        "v3_payment_order_id",
+        "v3_promo_code_id",
+        "v3_promo_code_value"
     ];
 
     protected $casts = [

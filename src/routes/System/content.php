@@ -3,6 +3,7 @@
 use App\Http\Controllers\System\Content\SubscriptionController;
 use App\Http\Controllers\System\Content\UserController;
 use App\Http\Controllers\System\Content\PackageController;
+use App\Http\Controllers\System\Content\PromoController;
 use App\Http\Controllers\System\Content\WordDetailController;
 use App\Http\Controllers\System\Content\WordImageController;
 use App\Http\Controllers\System\Content\WordSortController;
@@ -24,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::apiResources([
+    "promo" => PromoController::class,
     "package" => PackageController::class,
     "sort" => WordSortController::class,
     "word.detail" => WordDetailController::class,
