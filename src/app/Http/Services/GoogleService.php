@@ -21,7 +21,7 @@ class GoogleService
     {
         $this->redirectUri = url("/v1/sso/social/google/callback");
         $this->client = new Google_Client();
-        $this->client->setAuthConfig("client_secret.json");
+        $this->client->setAuthConfig(public_path("client_secret.json"));
         $this->client->setScopes([ Oauth2::USERINFO_EMAIL, Oauth2::USERINFO_PROFILE ]);
         $this->client->setRedirectUri($this->redirectUri);
         $this->client->setAccessType('offline');
