@@ -237,9 +237,7 @@ class AssetService
 
         $videoId = $asset->vdo_drm_video_id;
 
-        $otp =  Cache::remember(cache_key("vdo-video-otp-playback-v1", [ $videoId ]), 55 * 60, function () use ($videoId) {
-            return $this->vdoService->getVideoOTP($videoId);
-        });
+        $otp = $this->vdoService->getVideoOTP($videoId);
 
         if (is_null($otp)) {
             throw new AppException("Video is not protected!");
