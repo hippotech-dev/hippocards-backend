@@ -20,6 +20,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./src/storage/logs:/var/www/html/storage/logs
+      - ./src/public/client_secret.json:./src/public/client_secret.json
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - app-network
