@@ -15,6 +15,7 @@ class PromoService
     public function getFilterModel()
     {
         return [
+            "filter" => [ "whereLike", "code" ],
             "code" => [ "where", "code" ],
             "type" => [ "where", "type" ],
             "usage_type" => [ "where", "usage_type" ],

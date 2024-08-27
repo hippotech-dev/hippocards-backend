@@ -27,9 +27,9 @@ class PromoController extends Controller
      */
     public function index(Request $request)
     {
-        $filters = $request->only("name", "dwq");
+        $filters = $request->only("type", "filter", "status");
 
-        $promos = $this->service->getPromosWithPage($filters);
+        $promos = $this->service->getPromosWithPage($filters, [ "object" ]);
 
         return PromoResource::collection($promos);
     }
