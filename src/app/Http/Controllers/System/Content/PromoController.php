@@ -11,7 +11,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Utility\PromoResource;
 use App\Http\Services\PromoService;
 use App\Models\Utility\PromoCode;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -49,13 +48,15 @@ class PromoController extends Controller
                 "description",
                 "amount",
                 "amount_type",
-                "context_type"
+                "context_type",
+                "expires_at"
             ),
             [
                 "object_id" => "nullable|integer",
+                "code" => "nullable|string",
                 "type" => [
                     "required",
-                    Rule::in([ EPromoType::SUBSCIPRIPTION->value, EPromoType::ACADEMY_COURSE->value ])
+                    Rule::in([ EPromoType::SUBSCIPRIPTION->value, EPromoType::GENERAL->value, EPromoType::ACADEMY_COURSE->value ])
                 ],
                 "description" => "required|string",
                 "usage_type" => [
@@ -72,6 +73,7 @@ class PromoController extends Controller
                     "required",
                     Rule::in([ EPromoContextType::HIPPOCARDS->value, EPromoContextType::PROMOTIONAL->value, EPromoContextType::INFLUENCER->value ]),
                 ],
+                "expires_at" => "nullable|date"
             ]
         )
             ->validate();
@@ -104,6 +106,7 @@ class PromoController extends Controller
                 "data.description",
                 "data.amount",
                 "data.amount_type",
+                "data.expires_in",
             ]
         )
             ->validate();

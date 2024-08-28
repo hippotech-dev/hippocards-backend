@@ -31,13 +31,13 @@ class PromoResource extends JsonResource
             "amount" => $this->amount,
             "amount_type" => $this->amount_type,
             "context_type" => $this->context_type,
+            "expires_at" => $this->expires_at,
             "object" => $this->whenLoaded("object", function () {
                 if (is_null($this->object)) {
                     return null;
                 }
                 switch ($this->type) {
                     case EPromoType::ACADEMY_COURSE:
-
                         return new CourseResource($this->object);
                     case EPromoType::SUBSCIPRIPTION:
                         return new SubscriptionPlanResource($this->object);

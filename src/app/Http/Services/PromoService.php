@@ -68,15 +68,13 @@ class PromoService
                 $object = get_class_map_object($data["object_id"], "plan");
                 break;
             case EPromoType::ACADEMY_COURSE->value:
-
                 $object = get_class_map_object($data["object_id"], "course");
+                break;
+            case EPromoType::GENERAL->value:
+                $object = null;
                 break;
             default:
                 throw new AppException("Invalid type!");
-        }
-
-        if (is_null($object)) {
-            throw new AppException("Invalid object!");
         }
 
         if (!array_key_exists("code", $data) || is_null($data["code"])) {
@@ -87,8 +85,10 @@ class PromoService
             $data["total_quantity"] = 0;
         }
 
-        $data["object_id"] = $object->id;
-        $data["object_type"] = get_class($object);
+        if (!is_null($object)) {
+            $data["object_id"] = $object->id;
+            $data["object_type"] = get_class($object);
+        }
         $data["status"] = EStatus::PENDING;
 
         return PromoCode::create($data);
