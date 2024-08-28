@@ -54,7 +54,7 @@ class CourseGroupController extends Controller
      */
     public function show(Course $course, string $id)
     {
-        $group = $this->service->getCourseGroupById($course, $id);
+        $group = $this->service->getCourseGroupById($id);
         return new CourseGroupResource($group);
     }
 

@@ -198,9 +198,9 @@ class CourseService
         return $course->groups()->with($with)->orderBy("order", "asc")->get();
     }
 
-    public function getCourseGroupById(Course $course, int $id, array $with = [])
+    public function getCourseGroupById(int $id, array $with = [])
     {
-        return $course->groups()->with($with)->where("id", $id)->first();
+        return CourseGroup::with($with)->where("id", $id)->first();
     }
 
     public function createCourseGroup(Course $course, array $data)
@@ -364,7 +364,7 @@ class CourseService
         if ($group->id !== $block->v3_course_group_id) {
             throw new UnauthorizedException("Invalid object!");
         }
-        $count = $group->blocks()->count();
+        $count = CourseGroup::where("id", $newGroup)->count();
         if ($newPosition > $count) {
             throw new AppException("New order is exceeding the current number of blocks!");
         }
