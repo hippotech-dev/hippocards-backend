@@ -28,7 +28,8 @@ class PromoCode extends Model
         "description",
         "amount",
         "amount_type",
-        "context_type"
+        "context_type",
+        "expires_at"
     ];
 
     protected $casts = [
