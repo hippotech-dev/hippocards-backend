@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::apiResources([
     "sort" => WordSortController::class,
-    "package" => PackageController::class
+    "package" => PackageController::class,
 ]);
 
 Route::prefix("package")->group(function () {

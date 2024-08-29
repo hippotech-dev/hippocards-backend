@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Mobile\Hippocards;
 
 use App\Enums\ELanguageLevel;
+use App\Enums\EUserPreferenceType;
 use App\Enums\EUserPreferenceValue;
 use App\Http\Controllers\Controller;
 use App\Http\Services\AccountService;
@@ -17,7 +18,7 @@ class UserPreferenceController extends Controller
     }
 
     /**
-     * Create user onboarding preferences
+     * Create user onboarding preferences3
      */
     public function store(Request $request)
     {
@@ -47,7 +48,7 @@ class UserPreferenceController extends Controller
     public function getOnboardingPreferencesData()
     {
         return response()->success([
-            "learning_purposes" => [
+            EUserPreferenceType::LEARNING_PURPOSE => [
                 [
                     "icon" => "",
                     "text" => "Аялал эсвэл гадаадад суралцах",
@@ -79,7 +80,7 @@ class UserPreferenceController extends Controller
                     "value" => EUserPreferenceValue::OTHERS,
                 ]
             ],
-            "how_will_hippo_help_you" => [
+            EUserPreferenceType::HOW_HIPPO_WILL_HELP => [
                 [
                     "icon" => "",
                     "text" => "Ярианы чадвар",
@@ -111,7 +112,7 @@ class UserPreferenceController extends Controller
                     "value" => EUserPreferenceValue::OTHERS,
                 ]
             ],
-            "language_levels" => [
+            EUserPreferenceType::LANGUAGE_LEVEL => [
                 [
                     "icon" => "",
                     "text" => "Түвшин 0",
@@ -143,7 +144,7 @@ class UserPreferenceController extends Controller
                     "value" => ELanguageLevel::ADVANCED,
                 ]
             ],
-            "daily_study_time" => [
+            EUserPreferenceType::STUDY_TIME => [
                 [
                     "icon" => "",
                     "text" => "Өглөө",
@@ -165,7 +166,7 @@ class UserPreferenceController extends Controller
                     "value" => EUserPreferenceValue::OTHERS
                 ],
             ],
-            "study_repetition" => [
+            EUserPreferenceType::STUDY_REPETITION => [
                 [
                     "icon" => "",
                     "text" => "Өдөр бүр",
