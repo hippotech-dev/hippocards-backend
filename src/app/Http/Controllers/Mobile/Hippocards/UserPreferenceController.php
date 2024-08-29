@@ -48,7 +48,7 @@ class UserPreferenceController extends Controller
     public function getOnboardingPreferencesData()
     {
         return response()->success([
-            EUserPreferenceType::LEARNING_PURPOSE => [
+            EUserPreferenceType::LEARNING_PURPOSE->value => [
                 [
                     "icon" => "",
                     "text" => "Аялал эсвэл гадаадад суралцах",
@@ -80,7 +80,7 @@ class UserPreferenceController extends Controller
                     "value" => EUserPreferenceValue::OTHERS,
                 ]
             ],
-            EUserPreferenceType::HOW_HIPPO_WILL_HELP => [
+            EUserPreferenceType::HOW_HIPPO_WILL_HELP->value => [
                 [
                     "icon" => "",
                     "text" => "Ярианы чадвар",
@@ -112,7 +112,7 @@ class UserPreferenceController extends Controller
                     "value" => EUserPreferenceValue::OTHERS,
                 ]
             ],
-            EUserPreferenceType::LANGUAGE_LEVEL => [
+            EUserPreferenceType::LANGUAGE_LEVEL->value => [
                 [
                     "icon" => "",
                     "text" => "Түвшин 0",
@@ -144,7 +144,7 @@ class UserPreferenceController extends Controller
                     "value" => ELanguageLevel::ADVANCED,
                 ]
             ],
-            EUserPreferenceType::STUDY_TIME => [
+            EUserPreferenceType::STUDY_TIME->value => [
                 [
                     "icon" => "",
                     "text" => "Өглөө",
@@ -166,7 +166,7 @@ class UserPreferenceController extends Controller
                     "value" => EUserPreferenceValue::OTHERS
                 ],
             ],
-            EUserPreferenceType::STUDY_REPETITION => [
+            EUserPreferenceType::STUDY_REPETITION->value => [
                 [
                     "icon" => "",
                     "text" => "Өдөр бүр",
