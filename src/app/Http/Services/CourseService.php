@@ -364,7 +364,7 @@ class CourseService
         if ($group->id !== $block->v3_course_group_id) {
             throw new UnauthorizedException("Invalid object!");
         }
-        $count = CourseGroup::where("id", $newGroup)->count();
+        $count = CourseGroupBlock::where("v3_course_group_id", $newGroup)->count() ?? 0;
         if ($newPosition > $count) {
             throw new AppException("New order is exceeding the current number of blocks!");
         }
