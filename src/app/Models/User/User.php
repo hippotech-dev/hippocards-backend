@@ -47,6 +47,7 @@ class User extends Authenticatable implements JWTSubject
         "code_push",
         "verify",
         "apl_tkn",
+        "is_preference_complete",
     ];
 
     protected $hidden = [

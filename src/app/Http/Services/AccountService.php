@@ -129,5 +129,7 @@ class AccountService
         foreach ($preferences as $preference) {
             $this->createUpdateUserPreference($user, EUserPreferenceType::tryFrom($preference["type"]), $preference["value"]);
         }
+
+        $user->update([ "is_preference_complete" => true ]);
     }
 }
