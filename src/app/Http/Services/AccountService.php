@@ -119,6 +119,11 @@ class AccountService
         );
     }
 
+    public function getUserPreferences(User $user)
+    {
+        return $user->preferences()->get();
+    }
+
     public function createUpdateUserPreferences(User $user, array $preferences)
     {
         foreach ($preferences as $preference) {

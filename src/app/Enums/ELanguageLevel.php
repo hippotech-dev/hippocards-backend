@@ -13,4 +13,5 @@ enum ELanguageLevel: string
     case INTERMIDIATE = "INTERMIDIATE";
     case UPPER_INTERMIDIATE = "UPPER_INTERMIDIATE";
     case ADVANCED = "ADVANCED";
+    case UPPER_ADVANCED = "UPPER_ADVANCED";
 }

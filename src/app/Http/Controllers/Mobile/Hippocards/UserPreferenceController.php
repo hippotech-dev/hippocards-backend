@@ -6,6 +6,7 @@ use App\Enums\ELanguageLevel;
 use App\Enums\EUserPreferenceType;
 use App\Enums\EUserPreferenceValue;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Utility\UserPreferenceResource;
 use App\Http\Services\AccountService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -18,7 +19,19 @@ class UserPreferenceController extends Controller
     }
 
     /**
-     * Create user onboarding preferences3
+     * List user onboarding preferences
+     */
+    public function index(Request $request)
+    {
+        $requestUser = auth()->user();
+
+        $preferences = $this->service->getUserPreferences($requestUser);
+
+        return UserPreferenceResource::collection($preferences);
+    }
+
+    /**
+     * Create user onboarding preferences
      */
     public function store(Request $request)
     {
@@ -61,17 +74,17 @@ class UserPreferenceController extends Controller
                 ],
                 [
                     "icon" => "",
-                    "text" => "Өөрийгөө сайжруулах",
-                    "value" => EUserPreferenceValue::OBJECTIVE_SELF_IMPROVEMENT,
-                ],
-                [
-                    "icon" => "",
                     "text" => "Карьертаа хөрөнгө оруулах",
                     "value" => EUserPreferenceValue::OBJECTIVE_CARRER_ADVANCEMENT,
                 ],
                 [
                     "icon" => "",
-                    "text" => "Аялал эсвэл гадаадад суралцах",
+                    "text" => "Өөрийгөө сайжруулах",
+                    "value" => EUserPreferenceValue::OBJECTIVE_SELF_IMPROVEMENT,
+                ],
+                [
+                    "icon" => "",
+                    "text" => "Хүүхдүүдтэйгээ англиар харилцах",
                     "value" => EUserPreferenceValue::OBJECTIVE_KIDS_COMMUNICATION,
                 ],
                 [
@@ -103,7 +116,12 @@ class UserPreferenceController extends Controller
                 ],
                 [
                     "icon" => "",
-                    "text" => "Хэрэгтэй үгс",
+                    "text" => "Дүрмийн чадвар",
+                    "value" => EUserPreferenceValue::SKILL_GRAMMAR,
+                ],
+                [
+                    "icon" => "",
+                    "text" => "Үгийн баялаг",
                     "value" => EUserPreferenceValue::SKILL_VOCABULARY,
                 ],
                 [
@@ -115,33 +133,39 @@ class UserPreferenceController extends Controller
             EUserPreferenceType::LANGUAGE_LEVEL->value => [
                 [
                     "icon" => "",
-                    "text" => "Түвшин 0",
+                    "text" => "A1 анхан",
                     "sub_text" => "Хэдэн үгний мэдлэгтэй.",
                     "value" => ELanguageLevel::BEGINNER,
                 ],
                 [
                     "icon" => "",
-                    "text" => "Түвшин 1",
+                    "text" => "A2 ахисан анхан",
                     "sub_text" => "Хэдэн үгний мэдлэгтэй.",
                     "value" => ELanguageLevel::UPPER_BEGINNER,
                 ],
                 [
                     "icon" => "",
-                    "text" => "Түвшин 2",
+                    "text" => "B1 дунд",
                     "sub_text" => "Хэдэн үгний мэдлэгтэй.",
                     "value" => ELanguageLevel::INTERMIDIATE,
                 ],
                 [
                     "icon" => "",
-                    "text" => "Түвшин 3",
+                    "text" => "B2 ахисан дунд",
                     "sub_text" => "Хэдэн үгний мэдлэгтэй.",
                     "value" => ELanguageLevel::UPPER_INTERMIDIATE,
                 ],
                 [
                     "icon" => "",
-                    "text" => "Түвшин 4",
+                    "text" => "C1 сайн",
                     "sub_text" => "Хэдэн үгний мэдлэгтэй.",
                     "value" => ELanguageLevel::ADVANCED,
+                ],
+                [
+                    "icon" => "",
+                    "text" => "C2 нилээд сайн",
+                    "sub_text" => "Хэдэн үгний мэдлэгтэй.",
+                    "value" => ELanguageLevel::UPPER_ADVANCED,
                 ]
             ],
             EUserPreferenceType::STUDY_TIME->value => [
@@ -169,23 +193,18 @@ class UserPreferenceController extends Controller
             EUserPreferenceType::STUDY_REPETITION->value => [
                 [
                     "icon" => "",
-                    "text" => "Өдөр бүр",
-                    "value" => EUserPreferenceValue::STUDY_REPETITION_DAILY
-                ],
-                [
-                    "icon" => "",
-                    "text" => "Долоо хоног бүр",
+                    "text" => "Долоо хоногт цөөн өдөр",
                     "value" => EUserPreferenceValue::STUDY_REPETITION_WEEKLY
                 ],
                 [
                     "icon" => "",
-                    "text" => "Сар бүр",
-                    "value" => EUserPreferenceValue::STUDY_REPETITION_MONTHLY
+                    "text" => "Долоо хоногт олон өдөр",
+                    "value" => EUserPreferenceValue::STUDY_REPETITION_DAILY
                 ],
                 [
                     "icon" => "",
-                    "text" => "Бусад",
-                    "value" => EUserPreferenceValue::OTHERS
+                    "text" => "Хэсэг идэвхитэй нүдэж байгаад завсарлана",
+                    "value" => EUserPreferenceValue::STUDY_REPETITION_SELDOM
                 ],
             ],
         ]);

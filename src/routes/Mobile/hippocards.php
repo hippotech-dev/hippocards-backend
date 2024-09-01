@@ -50,6 +50,7 @@ Route::prefix("word")->group(function () {
 
 Route::prefix("account")->group(function () {
     Route::delete("delete-user", [ UserController::class, "deleteUserData" ]);
+    Route::get("preference", [ UserPreferenceController::class, "index" ]);
     Route::post("preference", [ UserPreferenceController::class, "store" ]);
 });
 
