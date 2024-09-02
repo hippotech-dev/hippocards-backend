@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Enums\EAssetUploadType;
 use App\Enums\EStatus;
 use App\Exceptions\AppException;
 use App\Models\Utility\Asset;
@@ -132,9 +133,29 @@ class AssetService
 
         return Asset::create([
             "path" => $path,
+            "upload_type" => EAssetUploadType::URL,
             "name" => $filename,
             "size" => strlen($file),
             "mime_type" => "image/jpeg",
+        ]);
+    }
+
+    public function createUnsplashAssetFromUrls(array $urls, string $filename)
+    {
+        $file = file_get_contents($urls["regular"]);
+        $folder = "v3/unsplash/" . date("Y-m");
+        $filename = $this->generateRandomFilename($filename);
+        $path = $folder . "/" . $filename;
+
+        Storage::disk("s3-tokyo")->put($path, (string) $file);
+
+        return Asset::create([
+            "path" => $path,
+            "name" => $filename,
+            "upload_type" => EAssetUploadType::UNSPLASH,
+            "size" => strlen($file),
+            "mime_type" => "image/jpeg",
+            "metadata" => $urls
         ]);
     }
 

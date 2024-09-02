@@ -63,6 +63,33 @@ class UploadController extends Controller
     }
 
     /**
+     * Upload unsplash urls
+     */
+    public function uploadUnsplashUrls(Request $request)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "urls",
+                "filename"
+            ),
+            [
+                "urls" => "required",
+                "urls.small" => "required|string",
+                "urls.regular" => "required|string",
+                "urls.full" => "required|string",
+                "filename" => "required|string|max:512"
+            ]
+        )->validate();
+
+        $asset = $this->service->createUnsplashAssetFromUrls(
+            $validatedData["urls"],
+            $validatedData["filename"]
+        );
+
+        return new AssetResource($asset);
+    }
+
+    /**
      * Get signed url
      */
     public function getVideoSignedUrl(Request $request)

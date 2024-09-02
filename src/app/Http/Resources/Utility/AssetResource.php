@@ -26,6 +26,7 @@ class AssetResource extends JsonResource
             ],
             "vdo_drm_video_id" => $this->vdo_drm_video_id,
             "vdo_drm_video_status" => $this->vdo_drm_video_status,
+            "upload_type" => $this->upload_type,
         ];
     }
 }
