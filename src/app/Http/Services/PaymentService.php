@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class PaymentService
 {
-    public function __construct(private QPayService $qpayService, private PaymentOrderService $orderService)
+    public function __construct(private QPayService $qpayService, private PaymentOrderService $orderService, private PromoService $promoService)
     {
     }
 
@@ -21,18 +21,22 @@ class PaymentService
         return PaymentInvoice::with($with)->find($id);
     }
 
-    public function createInvoice(User $user, array &$data)
+    public function createInvoice(User $user, array $data)
     {
         return DB::transaction(function () use ($user, $data) {
             $identifier = uniqid(date("Y"));
-            $order = $this->orderService->createOrder($user, $data);
+            $promo = array_key_exists("promo_code_id", $data)
+                ? $this->promoService->checkAndGetPromo($data["promo_code_id"])
+                : null;
+            $order = $this->orderService->createOrder($user, $data, $promo);
             $invoice = $user->invoices()->create([
                 "identifier" => $identifier,
                 "v3_payment_order_id" => $order->id,
+                "v3_promo_code_id" => $order->v3_promo_code_id,
                 "total_amount" => $order->total_amount,
                 "total_pending_amount" => $order->total_amount,
                 "total_paid_amount" => 0,
-                "redirect_url" => $data["redirect_uri"] ?? null
+                "redirect_url" => $data["redirect_uri"] ?? null,
             ]);
             $invoice->setRelation("paymentOrder", $order);
             return $invoice;

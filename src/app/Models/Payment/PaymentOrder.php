@@ -19,7 +19,8 @@ class PaymentOrder extends Model
         "type",
         "total_amount",
         "total_items",
-        "number"
+        "number",
+        "v3_promo_code_id"
     ];
 
     protected $casts = [

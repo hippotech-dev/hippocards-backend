@@ -44,14 +44,16 @@ class PaymentController extends Controller
             $request->only(
                 "type",
                 "items",
-                "redirect_uri"
+                "redirect_uri",
+                "promo_code_id"
             ),
             [
                 "type" => ["required", Rule::in(EPaymentOrderType::cases())],
                 "redirect_uri" => "sometimes|string",
                 "items" => "required|array",
                 "items.*.object_id" => "required|integer",
-                "items.*.object_type" => ["required", Rule::in(EPaymentOrderItemType::cases())]
+                "items.*.object_type" => ["required", Rule::in(EPaymentOrderItemType::cases())],
+                "promo_code_id" => "sometimes|integer"
             ]
         )
             ->validate();

@@ -12,11 +12,12 @@ use App\Models\Payment\PaymentInvoice;
 use App\Models\Payment\PaymentOrder;
 use App\Models\Payment\PaymentOrderItem;
 use App\Models\User\User;
+use App\Models\Utility\PromoCode;
 use Illuminate\Support\Facades\Cache;
 
 class PaymentOrderService
 {
-    public function __construct(private CourseService $courseService)
+    public function __construct(private CourseService $courseService, private PromoService $promoService)
     {
     }
 
@@ -71,16 +72,22 @@ class PaymentOrderService
         return $generatedItemData;
     }
 
-    public function createOrder(User $user, array $data)
+    public function createOrder(User $user, array $data, PromoCode $promo)
     {
         $itemsData = $this->generateOrderItemData($user, $data);
         $totalAmount = array_sum(array_column($itemsData, "amount"));
+        $discountAmount = 0;
+        if (!is_null($promo)) {
+            $discountAmount = $this->promoService->getDiscountPrice($promo, $totalAmount);
+        }
         $order = $user->paymentOrders()->create([
-            "total_amount" => $totalAmount,
+            "total_amount" => $totalAmount - $discountAmount,
+            "discount_amount" => $discountAmount,
             "total_items" => count($itemsData),
             "type" => EPaymentOrderType::from($data["type"]),
             "status" => EStatus::PENDING,
-            "number" => gen_uuid()
+            "number" => gen_uuid(),
+            "v3_promo_code_id" => $promo->id ?? null
         ]);
 
         $order->items()->createMany($itemsData);

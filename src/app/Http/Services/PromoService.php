@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Enums\EPromoAmountType;
 use App\Enums\EPromoType;
 use App\Enums\EPromoUsageType;
 use App\Enums\EStatus;
@@ -136,5 +137,56 @@ class PromoService
     public function deletePromo(PromoCode $promo)
     {
         return $promo->delete();
+    }
+
+    public function checkPromoStatus(PromoCode $promo)
+    {
+        $todayDate = date("Y-m-d");
+
+        if ($promo->status != EStatus::PENDING) {
+            return false;
+        }
+
+        if (!is_null($promo->expires_at) && $promo->expires_at < $todayDate) {
+            return false;
+        }
+
+        $totalUsed = $this->countTotalUsages($promo);
+
+        if ($promo->usage_type == EPromoUsageType::MULTIPLE
+            && $promo->total_quantity != 0
+            && $promo->total_quantity < $totalUsed) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function checkAndGetPromo(int $promoId)
+    {
+        $promo = $this->getPromoById($promoId);
+
+        if (!$this->checkPromoStatus($promo)) {
+            throw new AppException("Promo code cannot be deleted!");
+        }
+
+        return $promo;
+    }
+
+    public function countTotalUsages(PromoCode $promo)
+    {
+        return $promo->usages()->count();
+    }
+
+    public function getDiscountPrice(PromoCode $promo, int $amount)
+    {
+        switch ($promo->amount_type) {
+            case EPromoAmountType::DEFAULT:
+                return min($amount, $promo->amount);
+            case EPromoAmountType::PERCENT:
+                return intval($amount * $promo->amount / 100);
+        }
+
+        return 0;
     }
 }
