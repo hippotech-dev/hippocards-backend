@@ -24,6 +24,7 @@ class PromoCode extends Model
         "type",
         "usage_type",
         "total_quantity",
+        "total_used",
         "status",
         "description",
         "amount",

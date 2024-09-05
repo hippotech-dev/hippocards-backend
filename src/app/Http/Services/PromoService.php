@@ -8,7 +8,9 @@ use App\Enums\EPromoUsageType;
 use App\Enums\EStatus;
 use App\Exceptions\AppException;
 use App\Models\Subscription\SubPlan;
+use App\Models\User\User;
 use App\Models\Utility\PromoCode;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PromoService
@@ -188,5 +190,40 @@ class PromoService
         }
 
         return 0;
+    }
+
+    public function usePromo(User $user, PromoCode $promo)
+    {
+        return DB::transaction(function () use ($user, $promo) {
+            $this->createPromoUsage($user, $promo);
+
+            switch ($promo->usage_type) {
+                case EPromoUsageType::SINGLE:
+                    $this->updatePromo($promo, [
+                        "status" => EStatus::PROMO_USED
+                    ]);
+                    break;
+                case EPromoUsageType::MULTIPLE:
+                    $this->updatePromo($promo, [
+                        "total_used" => $promo->total_used + 1,
+                        "status" => $promo->total_quantity >= 0 && $promo->total_used + 1 > $promo->total_quantity
+                            ? EStatus::PROMO_USED
+                            : $promo->status
+                    ]);
+                    break;
+            }
+        });
+    }
+
+    public function createPromoUsage(User $user, PromoCode $promo, array $additional = [])
+    {
+        return $promo->usages()->create(
+            array_merge(
+                [
+                    "user_id" => $user->id
+                ],
+                $additional
+            )
+        );
     }
 }

@@ -45,7 +45,7 @@ class PaymentController extends Controller
                 "type",
                 "items",
                 "redirect_uri",
-                "promo_code_id"
+                "v3_promo_code_id"
             ),
             [
                 "type" => ["required", Rule::in(EPaymentOrderType::cases())],
@@ -53,7 +53,7 @@ class PaymentController extends Controller
                 "items" => "required|array",
                 "items.*.object_id" => "required|integer",
                 "items.*.object_type" => ["required", Rule::in(EPaymentOrderItemType::cases())],
-                "promo_code_id" => "sometimes|integer"
+                "v3_promo_code_id" => "sometimes|integer"
             ]
         )
             ->validate();

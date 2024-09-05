@@ -14,6 +14,7 @@ use App\Models\Payment\PaymentOrderItem;
 use App\Models\User\User;
 use App\Models\Utility\PromoCode;
 use Illuminate\Support\Facades\Cache;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PaymentOrderService
 {
@@ -57,6 +58,11 @@ class PaymentOrderService
         $generatedItemData = array();
         foreach ($items as $item) {
             $object = $this->getPaymentItemObject($item["object_id"], $item["object_type"]);
+
+            if (is_null($object)) {
+                throw new NotFoundHttpException("Object not found!");
+            }
+
             $amount = $this->getPaymentItemObjectAmount($object);
             array_push(
                 $generatedItemData,
@@ -72,7 +78,7 @@ class PaymentOrderService
         return $generatedItemData;
     }
 
-    public function createOrder(User $user, array $data, PromoCode $promo)
+    public function createOrder(User $user, array $data, PromoCode|null $promo)
     {
         $itemsData = $this->generateOrderItemData($user, $data);
         $totalAmount = array_sum(array_column($itemsData, "amount"));

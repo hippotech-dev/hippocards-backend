@@ -25,14 +25,15 @@ class PaymentService
     {
         return DB::transaction(function () use ($user, $data) {
             $identifier = uniqid(date("Y"));
-            $promo = array_key_exists("promo_code_id", $data)
-                ? $this->promoService->checkAndGetPromo($data["promo_code_id"])
+            $promo = array_key_exists("v3_promo_code_id", $data)
+                ? $this->promoService->checkAndGetPromo($data["v3_promo_code_id"])
                 : null;
             $order = $this->orderService->createOrder($user, $data, $promo);
             $invoice = $user->invoices()->create([
                 "identifier" => $identifier,
                 "v3_payment_order_id" => $order->id,
-                "v3_promo_code_id" => $order->v3_promo_code_id,
+                "v3_promo_code_id" => $promo->id,
+                "v3_promo_code_value" => $promo->code,
                 "total_amount" => $order->total_amount,
                 "total_pending_amount" => $order->total_amount,
                 "total_paid_amount" => 0,
@@ -56,9 +57,24 @@ class PaymentService
 
     public function handleQPayCallback(PaymentInvoice $invoice)
     {
-        [ "data" => $data, "paid_amount" => $paidAmount ] = $this->qpayService->checkInvoiceStatus($invoice);
-        $this->handleCheckInvoice($invoice, $paidAmount, $data);
-        $this->handleSuccessfulInvoice($invoice);
+        DB::transaction(function () use ($invoice) {
+            $user = $invoice->user()->first();
+
+            [ "data" => $data, "paid_amount" => $paidAmount ] = $this->qpayService->checkInvoiceStatus($invoice);
+
+            $this->handleCheckInvoice($invoice, $paidAmount, $data);
+            $this->handleSuccessfulInvoice($invoice);
+            $this->handlePaymentPromo($user, $invoice);
+        });
+    }
+
+    public function handlePaymentPromo(User $user, PaymentInvoice $invoice)
+    {
+        $promo = $invoice->promoCode()->first();
+        if (is_null($promo)) {
+            return;
+        }
+        $this->promoService->usePromo($user, $promo);
     }
 
     public function handleCheckInvoice(PaymentInvoice $invoice, int $paidAmount, array $data)
@@ -67,9 +83,9 @@ class PaymentService
         $this->createInvoiceResponse($invoice, $data);
         $this->setInvoiceStatus($invoice);
 
-        if (!$this->isInvoicePaid($invoice)) {
-            throw new PaymentException($invoice, [ "status" => "Payment not paid!" ]);
-        }
+        // if (!$this->isInvoicePaid($invoice)) {
+        //     throw new PaymentException($invoice, [ "status" => "Payment not paid!" ]);
+        // }
     }
 
     public function handleSuccessfulInvoice(PaymentInvoice $invoice)

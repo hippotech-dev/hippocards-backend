@@ -4,6 +4,7 @@ namespace App\Models\Payment;
 
 use App\Enums\EPaymentMethodType;
 use App\Enums\EStatus;
+use App\Models\User\User;
 use App\Models\Utility\PromoCode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -46,6 +47,11 @@ class PaymentInvoice extends Model
 
     public function promoCode()
     {
-        return $this->belongsTo(PromoCode::class, "v3_payment_invoice_id");
+        return $this->belongsTo(PromoCode::class, "v3_promo_code_id");
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
