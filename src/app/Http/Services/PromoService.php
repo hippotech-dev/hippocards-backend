@@ -164,12 +164,12 @@ class PromoService
         return true;
     }
 
-    public function checkAndGetPromo(int $promoId)
+    public function checkAndGetPromo(int $promoId, array $with = [])
     {
-        $promo = $this->getPromoById($promoId);
+        $promo = $this->getPromoById($promoId, $with);
 
         if (!$this->checkPromoStatus($promo)) {
-            throw new AppException("Promo code cannot be deleted!");
+            throw new AppException("Promo code cannot be used!");
         }
 
         return $promo;

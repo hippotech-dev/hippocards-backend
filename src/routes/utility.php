@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Utility\AudioController;
+use App\Http\Controllers\Utility\PromoController;
 use App\Http\Controllers\Utility\SentenceController;
 use App\Http\Controllers\Utility\UploadController;
 use App\Http\Controllers\Utility\UserActivityController;
@@ -29,3 +30,7 @@ Route::prefix("audio")->group(function () {
 Route::post("webhook/drm-video-ready", [ UploadController::class, "webhookVDOVideoSuccess" ]);
 
 Route::get("version", [ UtilityController::class, "getCodeVersion" ]);
+
+Route::prefix("promo")->group(function () {
+    Route::get("check", [ PromoController::class, "validateAndGetPromoCode" ]);
+});
