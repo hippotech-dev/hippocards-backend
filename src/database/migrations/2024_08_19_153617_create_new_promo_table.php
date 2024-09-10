@@ -55,8 +55,6 @@ return new class () extends Migration {
                 ->references("id")
                 ->on("v3_promo_codes")
                 ->cascadeOnDelete();
-
-            $table->string("v3_promo_code_value")->nullable()->index();
         });
     }
 
@@ -71,7 +69,6 @@ return new class () extends Migration {
 
         Schema::table("v3_payment_invoices", function (Blueprint $table) {
             $table->dropColumn("v3_promo_code_id");
-            $table->dropColumn("v3_promo_code_value");
         });
 
         Schema::dropIfExists('v3_promo_usages');
