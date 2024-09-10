@@ -32,8 +32,8 @@ class PaymentService
             $invoice = $user->invoices()->create([
                 "identifier" => $identifier,
                 "v3_payment_order_id" => $order->id,
-                "v3_promo_code_id" => $promo->id,
-                "v3_promo_code_value" => $promo->code,
+                "v3_promo_code_id" => $promo->id ?? null,
+                "v3_promo_code_value" => $promo->code ?? null,
                 "total_amount" => $order->total_amount,
                 "total_pending_amount" => $order->total_amount,
                 "total_paid_amount" => 0,
