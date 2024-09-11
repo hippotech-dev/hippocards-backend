@@ -19,6 +19,7 @@ class PaymentInvoice extends Model
         "total_amount",
         "total_pending_amount",
         "total_paid_amount",
+        "total_discount_amount",
         "payment_method",
         "status",
         "user_id",

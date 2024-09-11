@@ -39,7 +39,7 @@ class PaymentOrderService
 
     public function getPaymentItemObjectAmount(mixed $object)
     {
-        return 100;
+        // return 100;
         switch (get_class($object)) {
             case Course::class:
                 $detail = $object->detail()->first();
@@ -88,7 +88,7 @@ class PaymentOrderService
         }
         $order = $user->paymentOrders()->create([
             "total_amount" => $totalAmount - $discountAmount,
-            "discount_amount" => $discountAmount,
+            "total_discount_amount" => $discountAmount,
             "total_items" => count($itemsData),
             "type" => EPaymentOrderType::from($data["type"]),
             "status" => EStatus::PENDING,

@@ -32,5 +32,5 @@ Route::post("webhook/drm-video-ready", [ UploadController::class, "webhookVDOVid
 Route::get("version", [ UtilityController::class, "getCodeVersion" ]);
 
 Route::prefix("promo")->group(function () {
-    Route::get("check", [ PromoController::class, "validateAndGetPromoCode" ]);
+    Route::post("check", [ PromoController::class, "validateAndGetPromoCode" ]);
 });

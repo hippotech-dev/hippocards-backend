@@ -18,6 +18,7 @@ class PaymentOrder extends Model
         "status",
         "type",
         "total_amount",
+        "total_discount_amount",
         "total_items",
         "number",
         "v3_promo_code_id"

@@ -36,6 +36,7 @@ class PaymentService
                 "v3_promo_code_value" => $promo->code ?? null,
                 "total_amount" => $order->total_amount,
                 "total_pending_amount" => $order->total_amount,
+                "total_discount_amount" => $order->total_discount_amount,
                 "total_paid_amount" => 0,
                 "redirect_url" => $data["redirect_uri"] ?? null,
             ]);
