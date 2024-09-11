@@ -33,7 +33,7 @@ class CourseController extends Controller
     public function index()
     {
         $courses = Cache::remember(
-            cache_key("list-course-v2"),
+            cache_key("list-course"),
             3600,
             fn () => $this->service->getCourseWithPage([], [ "language", "detail" ], [ "field" => "status", "value" => "desc" ])
         );

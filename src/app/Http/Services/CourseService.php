@@ -61,7 +61,7 @@ class CourseService
     public function getCourseWithPage(array $filters = [], array $with = [ "language", "detail" ], $orderBy = [ "field" => "id", "value" => "desc" ])
     {
         $orderBy = get_sort_info($orderBy);
-        return filter_query_with_model(Course::with($with)->latest(), $this->getFilterModels($filters), $filters)->paginate(page_size());
+        return filter_query_with_model(Course::with($with), $this->getFilterModels($filters), $filters)->orderBy($orderBy["field"], $orderBy["value"])->paginate(page_size());
     }
 
     public function getCourseById(int $id, array $with = [])
