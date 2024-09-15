@@ -754,6 +754,11 @@ class CourseService
         return $generatedData;
     }
 
+    public function getCourseExamInstanceById(int $id, array $with = [])
+    {
+        return CourseExamInstance::with($with)->find($id);
+    }
+
     public function getCourseExamInstance(UserCourse $userCourse, ECourseBlockType $type)
     {
         return CourseExamInstance::where("v3_user_course_id", $userCourse->id)
@@ -769,7 +774,7 @@ class CourseService
             ->first();
     }
 
-    public function getCourseExamInstaceResult(CourseExamInstance $examInstance)
+    public function getCourseExamInstanceResult(CourseExamInstance $examInstance)
     {
         $currentDate = date("Y-m-d H:i:s");
         $examResult = CourseExamResult::where("v3_course_exam_instance_id", $examInstance->id)->first();
@@ -800,7 +805,7 @@ class CourseService
 
     public function finishCourseExam(CourseExamInstance $instance)
     {
-        $result = $this->getCourseExamInstaceResult($instance);
+        $result = $this->getCourseExamInstanceResult($instance);
         $totalReceivedPoints = 0;
         $questions = $instance->questions ?? [];
         $answers = $instance->answers ?? [];
@@ -985,7 +990,7 @@ class CourseService
         }
         $examInstance = $this->getCourseExamInstance($userCourse, ECourseBlockType::FINAL_EXAM);
 
-        return is_null($examInstance) ? null : $this->getCourseExamInstaceResult($examInstance);
+        return is_null($examInstance) ? null : $this->getCourseExamInstanceResult($examInstance);
     }
 
     public function getCourseFinalExamAnswers(UserCourse $userCourse)

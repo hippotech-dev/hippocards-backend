@@ -28,6 +28,8 @@ Route::apiResources([
 ]);
 
 Route::prefix("course")->group(function () {
+    Route::get("final-exam/{examInstance}", [ CourseController::class, "getFinalExamOverview" ]);
+
     Route::prefix("{course}")->group(function () {
         Route::get("learn", [ CourseController::class, "getLearnData" ]);
         Route::get("final-exam", [ CourseController::class, "getFinalExamData" ]);

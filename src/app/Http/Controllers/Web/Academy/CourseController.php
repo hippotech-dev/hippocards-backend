@@ -13,6 +13,7 @@ use App\Models\Course\CourseExamInstance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CourseController extends Controller
 {
@@ -79,6 +80,25 @@ class CourseController extends Controller
     {
         $requestUser = auth()->user();
         $examInstance = $this->service->getCourseFinalExamQuestions($course, $requestUser);
+
+        return new CourseExamInstanceResource($examInstance);
+    }
+
+    /**
+     * Get final exam overview
+     */
+    public function getFinalExamOverview(int $examInstance)
+    {
+        $requestUser = auth()->user();
+
+        $examInstance = $this->service->getCourseExamInstanceById($examInstance);
+
+        if (is_null($examInstance) || $examInstance->user_id != $requestUser->id) {
+            throw new NotFoundHttpException("Exam instance not found!");
+        }
+
+        unset($examInstance->questions);
+        unset($examInstance->answers);
 
         return new CourseExamInstanceResource($examInstance);
     }
