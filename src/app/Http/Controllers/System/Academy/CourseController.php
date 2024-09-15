@@ -26,7 +26,7 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = $this->service->getCourseWithPage([], [ "language", "detail" , [ "field" => "id", "value" => "desc" ]]);
+        $courses = $this->service->getCourseWithPage([], [ "language", "detail" ], [ "field" => "id", "value" => "desc" ]);
 
         return CourseResource::collection($courses);
     }
