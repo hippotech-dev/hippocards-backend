@@ -71,7 +71,7 @@ class CourseService
 
     public function getCourseByIdLoaded(int $id)
     {
-        return Course::with([ "detail", "introduction", "packages", "groups" ])->withCount("blocks")->find($id);
+        return Course::with([ "detail", "introduction", "packages", "groups" ])->withCount(["blocks" => fn ($query) => $query->where("type", ECourseBlockType::LESSON)])->find($id);
     }
 
     public function createCourse(array $data)
