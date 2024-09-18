@@ -712,6 +712,7 @@ class CourseService
 
     public function deleteBlockImage(CourseBlockImage $image)
     {
+        $this->assetService->deleteAssetById($image->v3_asset_id);
         return $image->delete();
     }
 
