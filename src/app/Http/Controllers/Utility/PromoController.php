@@ -23,13 +23,15 @@ class PromoController extends Controller
      */
     public function validateAndGetPromoCode(Request $request)
     {
-        $validateData = Validator::make(
+        $validatedData = Validator::make(
             $request->only([
+                "object_id",
                 "code",
                 "amount",
                 "type"
             ]),
             [
+                "object_id" => "sometimes|integer",
                 "code" => "required|string|max:10",
                 "amount" => "required|integer",
                 "type" => "required|integer"
@@ -37,17 +39,13 @@ class PromoController extends Controller
         )
             ->validate();
 
-        $promo = $this->service->getPromo([ "code" => $validateData["code"] ]);
+        $promo = $this->service->getPromo([ "code" => $validatedData["code"] ]);
 
-        if (is_null($promo) || ($promo->type->value !== $validateData["type"])) {
-            throw new NotFoundHttpException("Промо код олдсонгүй!");
-        }
-
-        $promo = $this->service->checkAndGetPromo($promo->id, [ "object" ]);
+        $promo = $this->service->checkAndGetPromo($promo->id, [ "object" ], $validatedData);
 
         return response()->success([
             "promo" => new PromoResource($promo),
-            "amount" => $this->service->getDiscountPrice($promo, $validateData["amount"])
+            "amount" => $this->service->getDiscountPrice($promo, $validatedData["amount"])
         ]);
     }
 }

@@ -164,9 +164,15 @@ class PromoService
         return true;
     }
 
-    public function checkAndGetPromo(int $promoId, array $with = [])
+    public function checkAndGetPromo(int $promoId, array $with = [], $options = [])
     {
         $promo = $this->getPromoById($promoId, $with);
+
+        if (is_null($promo)
+            || (array_key_exists("type", $options) && $promo->type->value !== $options["type"])
+            || (array_key_exists("object_id", $options) && $promo->type != EPromoType::GENERAL && $options["object_id"] != $promo->object_id)) {
+            throw new AppException("Промо олдсонгүй!");
+        }
 
         if (!$this->checkPromoStatus($promo)) {
             throw new AppException("Promo code cannot be used!");
