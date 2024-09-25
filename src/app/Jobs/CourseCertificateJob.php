@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Typography\FontFactory;
 
@@ -20,6 +21,12 @@ class CourseCertificateJob implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
+
+    private $certificates = [
+        3 => "certificate-1.jpg",
+        4 => "certificate-3.jpg",
+        5 => "certificate-3.jpg",
+    ];
 
     /**
      * Create a new job instance.
@@ -34,9 +41,16 @@ class CourseCertificateJob implements ShouldQueue
      */
     public function handle(AssetService $assetService, CourseService $courseService): void
     {
-        $image = ImageManager::gd()->read(public_path('certificate.png'));
+        if (array_key_exists($this->course->id, $this->certificates)) {
+            $certificateFilename = $this->certificates[$this->course->id];
+        } else {
+            Log::channel("custom")->info("Certificate does not exist!");
+            $certificateFilename = 'certificate.png';
+        }
 
-        $image->text($this->user->name, $image->width() / 2, $image->height() / 2 + 50, function (FontFactory $font) {
+        $image = ImageManager::gd()->read(public_path($certificateFilename));
+
+        $image->text($this->user->name, $image->width() / 2, $image->height() / 2, function (FontFactory $font) {
             $font->color('#333333');
             $font->filename(public_path("fonts/Montserrat-Regular.ttf"));
             $font->size(64);
@@ -44,10 +58,10 @@ class CourseCertificateJob implements ShouldQueue
             $font->valign('center');
         });
 
-        $image->text("Огноо: " . date("Y/m/d"), $image->width() / 2, $image->height() / 2 + 520, function (FontFactory $font) {
+        $image->text("Огноо: " . date("Y/m/d"), $image->width() / 2, $image->height() / 2 + 510, function (FontFactory $font) {
             $font->color('#333333');
             $font->filename(public_path("fonts/Montserrat-Regular.ttf"));
-            $font->size(36);
+            $font->size(18);
             $font->align('center');
             $font->valign('center');
         });
