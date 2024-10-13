@@ -10,11 +10,11 @@ return new class () extends Migration {
      */
     public function up(): void
     {
-        Schema::create("v3_web_devices", function (Blueprint $table) {
+        Schema::create("v3_user_web_browsers", function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger("user_id");
+            $table->unsignedInteger("user_id")->index();
 
-            $table->string("device_id");
+            $table->string("device_id")->index();
             $table->text("user_agent");
             $table->integer("screen_width");
             $table->integer("screen_height");
@@ -26,17 +26,19 @@ return new class () extends Migration {
                 ->cascadeOnDelete();
 
             $table->timestamps();
+
+            $table->unique([ "user_id", "device_id" ]);
         });
 
         Schema::create("v3_user_sessions", function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger("user_id");
-            $table->mediumText("access_token");
+            $table->unsignedInteger("user_id")->index();
+            $table->string("access_token", 96)->unique();
             $table->timestamp("last_access_at");
 
-            $table->foreignId("v3_web_device_id")
+            $table->foreignId("v3_web_browser_id")
                 ->references("id")
-                ->on("v3_web_devices")
+                ->on("v3_user_web_browsers")
                 ->cascadeOnDelete();
             $table->foreign("user_id")
                 ->references("id")
@@ -53,6 +55,6 @@ return new class () extends Migration {
     public function down(): void
     {
         Schema::dropIfExists("v3_user_sessions");
-        Schema::dropIfExists("v3_web_devices");
+        Schema::dropIfExists("v3_user_web_browsers");
     }
 };

@@ -131,6 +131,16 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(UserPreference::class, "user_id");
     }
 
+    public function webBrowsers()
+    {
+        return $this->hasMany(UserWebBrowser::class, "user_id");
+    }
+
+    public function sessions()
+    {
+        return $this->hasMany(UserSession::class, "user_id");
+    }
+
     /**
      * Scopes
      */
