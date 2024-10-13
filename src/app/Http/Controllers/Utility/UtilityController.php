@@ -13,7 +13,7 @@ class UtilityController extends Controller
     public function getCodeVersion()
     {
         return response()->successAppend([
-            "version" => 2
+            "version" => 101
         ]);
     }
 }
