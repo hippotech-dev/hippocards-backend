@@ -58,7 +58,7 @@ class CourseCertificateJob implements ShouldQueue
             $font->valign('center');
         });
 
-        $image->text("Огноо: " . date("Y/m/d"), $image->width() / 2, $image->height() / 2 + 510, function (FontFactory $font) {
+        $image->text("Date: " . date("Y/m/d"), $image->width() / 2, $image->height() / 2 + 510, function (FontFactory $font) {
             $font->color('#333333');
             $font->filename(public_path("fonts/Montserrat-Regular.ttf"));
             $font->size(18);

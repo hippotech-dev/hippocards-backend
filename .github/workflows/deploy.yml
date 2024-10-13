@@ -28,21 +28,6 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      - name: Build and push image
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          context: .
-          file: ./src/Dockerfile
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
       - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
@@ -51,9 +36,8 @@ jobs:
           key: ${{ secrets.HIPPO_SECONDARY_SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            cd hippocards/hippocards-backend
+            cd hippo/hippocards-backend/src
             git pull origin main
-            docker compose pull
-            docker compose down
-            docker compose up -d
-            yes | docker system prune
+            sudo php artisan config:cache
+            sudo php artisan route:cache
+            sudo supervisorctl restart laravel-worker:*
