@@ -11,7 +11,7 @@ class UserSession extends Model
 
     public $table = "v3_user_sessions";
 
-    protected $fillables = [
+    protected $fillable = [
         "user_id",
         "access_token",
         "v3_web_browser_id",

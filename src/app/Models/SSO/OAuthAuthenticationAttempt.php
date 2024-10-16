@@ -21,11 +21,13 @@ class OAuthAuthenticationAttempt extends Model
         "challenge_method",
         "scopes",
         "user_id",
-        "v3_oauth_client_id"
+        "v3_oauth_client_id",
+        "device",
     ];
 
     public $casts = [
         "scopes" => "array",
+        "device" => "array",
         "challenge_method" => ECodeChallengeMethod::class
     ];
 

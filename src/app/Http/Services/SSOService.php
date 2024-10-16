@@ -15,6 +15,7 @@ use Exception;
 use Google\Service\Oauth2\Userinfo;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rules\Unique;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class SSOService
@@ -51,9 +52,10 @@ class SSOService
         return OAuthAuthenticationAttempt::where("code", $code)->first();
     }
 
-    public function createAuthenticationAttempt(User $user, array $validatedData)
+    public function createAuthenticationAttempt(User $user, array $validatedData, array $device)
     {
         $validatedData["code"] = bin2hex(random_bytes(16));
+        $validatedData["device"] = $device;
         return $user->authenticationAttempts()->create($validatedData);
     }
 
@@ -119,7 +121,7 @@ class SSOService
         return false;
     }
 
-    public function authorizeUser(OAuthClient $client, array|User $credentials, array $oauthOptions)
+    public function authorizeUser(OAuthClient $client, array|User $credentials, array $oauthOptions, array $device)
     {
         $oauthOptions["v3_oauth_client_id"] = $client->id;
         if ($credentials instanceof User) {
@@ -127,7 +129,9 @@ class SSOService
         } else {
             $user = $this->checkUserValue($credentials["value"], "login", $credentials["password"]);
         }
-        $attempt = $this->createAuthenticationAttempt($user, $oauthOptions);
+
+        $attempt = $this->createAuthenticationAttempt($user, $oauthOptions, $device);
+
         return [
             "code" => $attempt->code,
             "redirect_uri" =>
@@ -138,12 +142,12 @@ class SSOService
         ];
     }
 
-    public function getToken(OAuthAuthenticationAttempt $attempt)
+    public function getToken(User $user, OAuthAuthenticationAttempt $attempt)
     {
-        $user = $attempt->user()->first();
-        $accessToken = auth()->login($user);
+        $accessToken = JWTAuth::fromUser($user);
         return [
             "access_token" => $accessToken,
+            "jti" => JWTAuth::setToken($accessToken)->getPayload()->get("jti") ?? "-",
             "expires_in" => Config::get("jwt.ttl", 3600),
             "openid" => $user->id
         ];
@@ -152,19 +156,30 @@ class SSOService
     public function getAuthenticationToken(array $validatedData)
     {
         $client = $this->getClientByClientId($validatedData["client_id"]);
-        $attemt = $this->getAuthenticationAttemptByCode($validatedData["code"]);
+        $attempt = $this->getAuthenticationAttemptByCode($validatedData["code"]);
 
         if (is_null($client) || $client->client_secret !== $validatedData["client_secret"]) {
             throw new AppException("Invalid request!");
         }
 
-        if (is_null($attemt) || $attemt->code !== $validatedData["code"] || $attemt->v3_oauth_client_id !== $client->id) {
+        if (is_null($attempt) || is_null($attempt->device) || $attempt->code !== $validatedData["code"] || $attempt->v3_oauth_client_id !== $client->id) {
             throw new AppException("Invalid request!");
         }
 
-        return DB::transaction(function () use ($attemt) {
-            $this->deleteAuthenticationAttempt($attemt->id);
-            return $this->getToken($attemt);
+
+        return DB::transaction(function () use ($attempt) {
+            $user = $attempt->user()->first();
+            $this->deleteAuthenticationAttempt($attempt->id);
+            $token = $this->getToken($user, $attempt);
+            $browser = $this->userService->getOrCreateUserBrowser($user, $attempt->device);
+            $this->userService->createUserSession($user, [
+                "v3_web_browser_id" => $browser->id,
+                "access_token" => $token["jti"],
+                "last_access_at" => date("Y-m-d H:i:s")
+            ]);
+            $this->userService->deleteOldBrowsers($user);
+            $this->userService->deleteOldSessions($user);
+            return $token;
         });
     }
 

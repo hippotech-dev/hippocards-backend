@@ -70,11 +70,14 @@ class SSOController extends Controller
         $validatedData = Validator::make(
             $request->only(
                 "oauth",
-                "credentials"
+                "credentials",
+                "device"
             ),
             [
+                "device" => "required",
                 "oauth" => "required",
                 "credentials" => "required",
+
                 "oauth.response_type" => "required|string|max:24",
                 "oauth.client_id" => "required|string|max:128",
                 "oauth.redirect_uri" => "required|string|max:256",
@@ -82,14 +85,22 @@ class SSOController extends Controller
                 "oauth.state" => "required|string|max:128",
                 "oauth.challenge" => "required|string|max:128",
                 "oauth.challenge_method" => [ "required", Rule::in(ECodeChallengeMethod::PLAIN->value, ECodeChallengeMethod::S256->value)],
+
                 "credentials.value" => "required|string|max:64",
-                "credentials.password" => "required|string|max:32"
+                "credentials.password" => "required|string|max:32",
+
+                "device.device_id" => "required|string|max:256",
+                "device.user_agent" => "required|string|max:256",
+                "device.screen_width" => "required|integer",
+                "device.screen_height" => "required|integer",
+                "device.language" => "required|string|max:16",
             ]
         )
             ->validate();
 
         $oauth = $validatedData["oauth"];
         $credentials = $validatedData["credentials"];
+        $device = $validatedData["device"];
 
         $client = $this->service->getClientByClientId($oauth["client_id"]);
 
@@ -97,7 +108,7 @@ class SSOController extends Controller
             return response()->notFound();
         }
 
-        $result = $this->service->authorizeUser($client, $credentials, $oauth);
+        $result = $this->service->authorizeUser($client, $credentials, $oauth, $device);
 
         return response()->success($result);
     }
@@ -362,8 +373,10 @@ class SSOController extends Controller
     {
         $data = json_decode(base64_decode($request->get("state", "[]")), true);
         $validatedData = Validator::make(
-            $data,
+            array_merge($data, $request->only([ "device" ])),
             [
+                "device" => "required|array",
+
                 "response_type" => "required|string|max:24",
                 "client_id" => "required|string|max:128",
                 "redirect_uri" => "required|string|max:256",
@@ -371,6 +384,12 @@ class SSOController extends Controller
                 "state" => "required|string|max:128",
                 "challenge" => "required|string|max:128",
                 "challenge_method" => [ "required", Rule::in(ECodeChallengeMethod::PLAIN->value, ECodeChallengeMethod::S256->value)],
+
+                "device.device_id" => "required|string|max:256",
+                "device.user_agent" => "required|string|max:256",
+                "device.screen_width" => "required|integer",
+                "device.screen_height" => "required|integer",
+                "device.language" => "required|string|max:16",
             ]
         )
             ->validate();
@@ -384,6 +403,7 @@ class SSOController extends Controller
 
         $userData = $googleService->getUserData($authorizationCode);
         $user = $this->service->getGoogleUser($userData);
+        $device = $validatedData["device"];
 
         $client = $this->service->getClientByClientId($validatedData["client_id"]);
 
@@ -391,7 +411,7 @@ class SSOController extends Controller
             return response()->notFound();
         }
 
-        $result = $this->service->authorizeUser($client, $user, $validatedData);
+        $result = $this->service->authorizeUser($client, $user, $validatedData, $device);
 
         return response()->redirectTo($result["redirect_uri"] . "?" . http_build_query($result));
     }

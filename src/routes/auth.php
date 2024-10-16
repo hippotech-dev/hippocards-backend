@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Route::get("content/identity", [ AuthController::class, "getContentIdentity" ])->middleware(["jwt.auth", "role:" . EUserRole::SUPERADMIN->value]);
-Route::get("system/content/identity", [ AuthController::class, "getContentIdentity" ])->middleware(["jwt.auth"]);
-Route::get("web/academy/identity", [ WebAuthController::class, "getAcademyIdentity" ])->middleware("jwt.auth");
+Route::get("system/content/identity", [ AuthController::class, "getContentIdentity" ])->middleware(["jwt.auth", "session-validate"]);
+Route::get("web/academy/identity", [ WebAuthController::class, "getAcademyIdentity" ])->middleware("jwt.auth", "session-validate");
 Route::get("sso/url", [ AuthController::class, "getSSOUrl" ]);
 Route::post("token", [ AuthController::class, "getSSOToken" ]);

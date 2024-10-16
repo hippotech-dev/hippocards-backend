@@ -47,6 +47,10 @@ return new class () extends Migration {
 
             $table->timestamps();
         });
+
+        Schema::table("v3_oauth_authentication_attempts", function (Blueprint $table) {
+            $table->json("device")->nullable();
+        });
     }
 
     /**
@@ -54,6 +58,10 @@ return new class () extends Migration {
      */
     public function down(): void
     {
+        Schema::table("v3_oauth_authentication_attempts", function (Blueprint $table) {
+            $table->dropColumn("device");
+        });
+
         Schema::dropIfExists("v3_user_sessions");
         Schema::dropIfExists("v3_user_web_browsers");
     }

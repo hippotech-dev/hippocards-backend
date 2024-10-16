@@ -426,3 +426,10 @@ if (!function_exists('resource_append_additional')) {
         return ($resource)->additional([ $keyName => $additionalValue ]);
     }
 }
+
+if (!function_exists('get_token_jti')) {
+    function get_token_jti(mixed $resource, array $additionalValue, string $keyName = "additional")
+    {
+        return ($resource)->additional([ $keyName => $additionalValue ]);
+    }
+}

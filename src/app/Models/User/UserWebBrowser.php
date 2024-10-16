@@ -9,9 +9,9 @@ class UserWebBrowser extends Model
 {
     use HasFactory;
 
-    public $table = "v3_web_browsers";
+    public $table = "v3_user_web_browsers";
 
-    protected $fillables = [
+    protected $fillable = [
         "user_id",
         "device_id",
         "user_agent",

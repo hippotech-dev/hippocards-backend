@@ -27,7 +27,7 @@ class AuthController extends Controller
                 "code",
             ),
             [
-                "code" => "required|string|max:256"
+                "code" => "required|string|max:256",
             ]
         )
             ->validate();
@@ -45,6 +45,9 @@ class AuthController extends Controller
     public function getContentIdentity()
     {
         $requestUser = auth()->user();
+
+
+
         return response()->success([
             "user" => new UserResource($requestUser)
         ]);
