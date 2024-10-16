@@ -427,9 +427,9 @@ if (!function_exists('resource_append_additional')) {
     }
 }
 
-if (!function_exists('get_token_jti')) {
-    function get_token_jti(mixed $resource, array $additionalValue, string $keyName = "additional")
+if (!function_exists('get_custom_namespace')) {
+    function get_custom_namespace()
     {
-        return ($resource)->additional([ $keyName => $additionalValue ]);
+        return request()->getHost();
     }
 }

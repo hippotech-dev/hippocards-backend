@@ -90,10 +90,12 @@ class SSOController extends Controller
                 "credentials.password" => "required|string|max:32",
 
                 "device.device_id" => "required|string|max:256",
+                "device.device_id_signed" => "required|string|max:256",
                 "device.user_agent" => "required|string|max:256",
                 "device.screen_width" => "required|integer",
                 "device.screen_height" => "required|integer",
                 "device.language" => "required|string|max:16",
+                "device.timezone" => "required|string|max:32",
             ]
         )
             ->validate();
@@ -459,5 +461,33 @@ class SSOController extends Controller
         $this->service->checkUserValue($validatedData["value"], $validatedData["type"]);
 
         return response()->success();
+    }
+
+    /**
+     * Get unique browser fingerprint
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUniqueBrowserFingerprint(Request $request)
+    {
+        $validatedData = Validator::make(
+            $request->only(
+                "device",
+            ),
+            [
+                "device" => "required",
+                "device.user_agent" => "required|string|max:256",
+                "device.screen_width" => "required|integer",
+                "device.screen_height" => "required|integer",
+                "device.language" => "required|string|max:16",
+                "device.timezone" => "required|string|max:32",
+            ]
+        )
+            ->validate();
+
+        $fingerprint = $this->service->generateUniqueWebBrowser($validatedData["device"]);
+
+        return response()->success($fingerprint);
     }
 }

@@ -34,6 +34,8 @@ Route::post("/account/phone", [ SSOController::class, "updateUserPhone" ]);
 
 Route::post("check/value", [ SSOController::class, "checkUserCredential" ]);
 
+Route::post("fingerprint", [ SSOController::class, "getUniqueBrowserFingerprint" ]);
+
 Route::prefix("social")->group(function () {
     Route::post("google/auth", [ SSOController::class, "authorizeGmail" ]);
     Route::get("google/callback", [ SSOController::class, "callbackGmail" ]);

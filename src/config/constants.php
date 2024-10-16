@@ -10,6 +10,8 @@ return [
 
     "SSO_ENDPOINT" => env("SSO_ENDPOINT", "http://localhost:3000"),
 
+    "SECRET_KEY" => env("JWT_SECRET", "http://localhost:3000"),
+
     "CATEGORY_COLORS" => [
         "#AFD224",
         "#FFE172",

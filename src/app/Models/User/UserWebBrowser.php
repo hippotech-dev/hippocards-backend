@@ -14,9 +14,12 @@ class UserWebBrowser extends Model
     protected $fillable = [
         "user_id",
         "device_id",
+        "origin",
         "user_agent",
         "screen_width",
         "screen_height",
         "language",
+        "platform",
+        "timezone"
     ];
 }

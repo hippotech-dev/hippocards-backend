@@ -100,7 +100,7 @@ class UserService
 
     public function getUserWebBrowser(User $user, array $filters)
     {
-        return filter_query_with_model($user->webBrowsers(), [ "user_id" => [ "where", "user_id" ], "device_id" => [ "where", "device_id" ] ], $filters)->first();
+        return filter_query_with_model($user->webBrowsers(), [ "user_id" => [ "where", "user_id" ], "device_id" => [ "where", "device_id" ], "origin" => [ "where", "origin" ] ], $filters)->first();
     }
 
     public function getUserSession(User $user, array $filters)

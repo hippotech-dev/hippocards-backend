@@ -13,6 +13,7 @@ class UserSession extends Model
 
     protected $fillable = [
         "user_id",
+        "origin",
         "access_token",
         "v3_web_browser_id",
         "last_access_at",

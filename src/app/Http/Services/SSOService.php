@@ -55,6 +55,7 @@ class SSOService
     public function createAuthenticationAttempt(User $user, array $validatedData, array $device)
     {
         $validatedData["code"] = bin2hex(random_bytes(16));
+        $device["origin"] = get_custom_namespace();
         $validatedData["device"] = $device;
         return $user->authenticationAttempts()->create($validatedData);
     }
@@ -130,6 +131,10 @@ class SSOService
             $user = $this->checkUserValue($credentials["value"], "login", $credentials["password"]);
         }
 
+        if (!$this->checkSignedWebBrowserFingerprint($device["device_id"] ?? "-", $device["device_id_signed"] ?? "--")) {
+            throw new AppException("Invalid device!");
+        }
+
         $attempt = $this->createAuthenticationAttempt($user, $oauthOptions, $device);
 
         return [
@@ -174,6 +179,7 @@ class SSOService
             $browser = $this->userService->getOrCreateUserBrowser($user, $attempt->device);
             $this->userService->createUserSession($user, [
                 "v3_web_browser_id" => $browser->id,
+                "origin" => get_custom_namespace(),
                 "access_token" => $token["jti"],
                 "last_access_at" => date("Y-m-d H:i:s")
             ]);
@@ -278,5 +284,20 @@ class SSOService
             && $credentials["phone"] = $value;
 
         return $credentials;
+    }
+
+    public function generateUniqueWebBrowser(array $data)
+    {
+        $hash = md5(implode("|", array_values($data)));
+
+        return [
+            "fingerprint" => $hash,
+            "signed_fingerprint" => hash_hmac("sha256", $hash, Config::get("constants.SECRET_KEY"))
+        ];
+    }
+
+    public function checkSignedWebBrowserFingerprint(string $fingerprint, string $signedFingerprint)
+    {
+        return hash_equals(hash_hmac("sha256", $fingerprint, Config::get("constants.SECRET_KEY")), $signedFingerprint);
     }
 }
